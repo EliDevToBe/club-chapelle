@@ -22,7 +22,7 @@ You are a **test and quality** specialist for this Nuxt + TypeScript codebase. Y
 
 ## Stack guidance
 
-- Prefer **Vitest** for unit and domain tests when the project adds it; use **Nuxt test utils** or **Playwright** (or e2e tool chosen by the repo) for integration/e2e as appropriate.
+- Prefer **Vitest** for unit and domain tests (`npm run test` / `test:run`); **`npm run test:coverage`** runs Vitest with **V8** coverage (reports under `coverage/`). **`tests/unit/**`** uses the **node** environment with **`~~/`** aliases; **`tests/nuxt/**`** uses the **nuxt** environment from `@nuxt/test-utils`; **`tests/e2e/**`** is reserved for future browser e2e (e.g. Playwright).
 - Mirror folder structure where helpful: domain tests near `domain/`, API tests near `server/api/` or `tests/api/`.
 - For French locale: when asserting formatted dates or messages, match project i18n strategy once defined.
 

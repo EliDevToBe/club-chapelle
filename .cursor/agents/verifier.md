@@ -27,6 +27,7 @@ Output findings in two buckets: **Blocking** (must fix before merge) vs **Nits**
 3. **DDD** — No Prisma or framework imports in domain; handlers thin; **use-case classes** in `application/` depend on **port interfaces** in `application/ports/`; concrete repos are **classes** in infrastructure; server imports persistence only via **`repositories.provider.ts`** (not individual repo modules); **`~~/`** for root modules, not `~/domain` (see `.cursor/rules/ddd-core.mdc`).
 4. **Data** — Migrations safe; rollbacks considered; historical participation data not destroyed by account lifecycle mistakes.
 5. **i18n / UX** — French locale expectations for user-visible copy and dates where relevant.
+6. **Tests** — New or changed behavior under `domain/`, `application/`, `infrastructure/`, `server/` should have **matching tests** or a justified exception—see `.cursor/rules/tests-required.mdc`.
 
 ## Response format
 

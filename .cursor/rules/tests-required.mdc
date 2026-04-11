@@ -1,0 +1,22 @@
+---
+description: Add or update Vitest tests when changing behavior; create tests if none exist
+alwaysApply: true
+---
+
+# Tests required with behavior changes
+
+## When this applies
+
+Whenever you **add or materially change** code under **`domain/`**, **`application/`**, **`infrastructure/`**, **`server/`**, or **`shared/`** (logic, contracts, or HTTP handlers), **add or extend automated tests in the same task** unless the user explicitly scopes work as “no tests” or “docs/config only.”
+
+## If no test exists yet
+
+- **Create** a new test file rather than leaving behavior uncovered.
+- **Use-case classes**: `tests/unit/<bounded-context>/<name>.use-case.test.ts` (e.g. `tests/unit/competitions/…`) with **fakes** that implement the relevant **port interfaces**.
+- **Nitro handlers**: prefer tests that exercise the handler or the use case it calls; use **`tests/nuxt/**`** only when the **Nuxt** runtime is required (e.g. components, composables).
+- **Domain** (pure rules): colocate under `tests/unit/<context>/` or next to source—**no** separate `tests/domain/…` mirror is required.
+
+## Before finishing
+
+- Run **`npm run test:run`** (or **`npm run test:coverage`** when coverage is relevant) and fix failures.
+- If you skip tests, **say why** in the summary (e.g. spike only, blocked dependency).

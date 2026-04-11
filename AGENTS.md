@@ -9,6 +9,11 @@ You are the **orchestrator** for this repo: plan work, delegate specialized subt
 
 When requirements are ambiguous, **cite or quote** these files; do not invent permissions or domain rules.
 
+## Testing
+
+- **Default**: when changing behavior, **add or update tests**; **create** a test file if none exists for the unit under test—see `.cursor/rules/tests-required.mdc` (Vitest layout: `tests/unit/<bounded-context>/`, `tests/nuxt/` when the Nuxt runtime is required).
+- Run **`npm run test:run`** before treating work as done (unless the user explicitly excludes tests).
+
 ## Delegation
 
 - After non-trivial implementation or before merge-worthy work, use the **Verifier** subagent (`.cursor/agents/verifier.md`) for a skeptical pass: spec alignment, security, edge cases, DDD violations.
