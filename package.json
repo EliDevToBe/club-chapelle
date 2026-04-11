@@ -24,6 +24,7 @@
     "cspell": "^10.0.0",
     "happy-dom": "^20.8.9",
     "prisma": "^7.7.0",
+    "tsx": "^4.21.0",
     "vitest": "^3.2.4"
   },
   "scripts": {
@@ -44,6 +45,7 @@
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio",
     "migration:new": "npx prisma migrate dev",
-    "migration:reset": "npx prisma migrate reset"
+    "migration:reset": "npx prisma migrate reset",
+    "db:seed": "tsx --tsconfig tsconfig.seed.json prisma/seed/main.ts"
   }
 }

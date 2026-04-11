@@ -1,4 +1,8 @@
 {
   "extends": "./tsconfig.core.json",
-  "include": ["tests/**/*.ts", "vitest.config.ts"]
+  "include": [
+    "tests/**/*.ts",
+    "vitest.config.ts",
+    "prisma/seed/**/*.ts"
+  ]
 }

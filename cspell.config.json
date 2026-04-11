@@ -1,19 +1,26 @@
 {
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
-  "languages": [
-    "fr",
-    "en"
-  ],
+  "language": "en-GB,fr-FR",
   "words": [
     "barebow",
     "beursault",
+    "datasource",
     "dbgenerated",
+    "enrolments",
     "FFTA",
     "healthcheck",
     "isready",
+    "Joinville",
     "Mandat",
+    "Nogent",
     "Nuxt",
+    "olympic",
+    "Olympique",
     "participations",
-    "trispot"
+    "postgresql",
+    "prisma",
+    "Sénart",
+    "trispot",
+    "uuid"
   ]
 }
