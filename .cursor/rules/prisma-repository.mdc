@@ -1,0 +1,27 @@
+---
+description: Prisma and persistence only in infrastructure; map to domain at edges
+globs:
+  - "**/infrastructure/**/*"
+  - "prisma/**/*"
+  - "generated/**/*"
+alwaysApply: false
+---
+
+# Prisma and repositories
+
+## Where Prisma lives
+
+- Import `@prisma/client` (and generated client paths) only from **infrastructure** (repositories, migrations helpers), not from domain or `.vue` files.
+
+## Mapping
+
+- Persist **entities** via mappers: Prisma models ↔ domain types at repository boundaries.
+- Do not expose Prisma-generated types as the public contract of domain entities; keep domain types explicit in `domain/`.
+
+## Migrations
+
+- Schema changes go through `prisma/schema.prisma` and migrations; coordinate with use cases that depend on new fields or invariants.
+
+## Biome
+
+- Root `biome.json` uses `lint/style/noRestrictedImports` (warn): `domain/`, `application/`, and `shared/` must not import `**/infrastructure/**` or `@prisma/client`; `server/**/*.ts` must not import deep `infrastructure/persistence/**` modules except `repositories.provider.ts` (adjust globs if the composition root file is renamed).

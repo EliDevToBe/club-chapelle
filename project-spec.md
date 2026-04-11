@@ -73,7 +73,7 @@ Capabilities are cumulative by level.
 
 **Admin overview (dedicated)**
 
-- Consolidated place to **manage members** (promote, revoke, etc.), **roles**, a **dashboard** of **missing payments**, and **quick** payment **email reminders** (aligned with one-click payment actions).
+- Consolidated place to **manage members** (promote, revoke, etc.), **roles**, a **dashboard** of **missing participation fees**, and **quick** fee **reminder** emails (aligned with one-click participation fee actions).
 
 **Explicit exclusions**
 
@@ -96,9 +96,46 @@ A **Member** is a user account that may be **linked** to an Archer. Invitations 
 ### 4.3 Competition & participation
 
 - **Competition:** an event managed in the system (metadata: dates, title, detail fields—exact schema TBD).
-- **Participation:** association of an **Archer** (or resolved via Member → Archer) to a **Competition**, with **payment status** and workflow actions driven by **Admin**.
+- **Participation:** association of an **Archer** (or resolved via Member → Archer) to a **Competition**, with **fee / payment status** on that participation and workflow actions driven by **Admin**.
 
-## 5. Competitions, participations, payments
+### 4.4 Bounded contexts (code organization)
+
+Implementation follows DDD slices with these **folder namespaces** (singular vs plural by convention): **`user`** (accounts, roles, invitations), **`archer`** (internal Archer records and linkage), **`competitions`** (competition events), **`participations`** (participation rows, including fee state). See `.cursor/rules/ddd-core.mdc`.
+
+**Target repository layout** (convention—not all folders need to exist on day one):
+
+```text
+club-ai/
+├── app/                          # Nuxt: pages, layouts, components (delivery)
+├── server/api/                   # Nitro: thin handlers → use cases only
+├── shared/                         # DTOs / types shared by client + server (no heavy domain logic)
+│
+├── domain/                         # Pure TypeScript: entities, value objects, invariants (no Prisma/Vue)
+│   ├── user/                       # User account, Role (VO/enum), invitation-related rules
+│   ├── archer/                     # Archer (internal shell), linkage invariants
+│   ├── competitions/               # Competition (events)
+│   └── participations/             # Participation (Archer ↔ Competition), fee status on participation
+│
+├── application/                    # Use cases; depends on domain + ports (interfaces)
+│   ├── user/
+│   ├── archer/
+│   ├── competitions/
+│   ├── participations/
+│   └── ports/                      # e.g. UserRepository, ArcherRepository, CompetitionRepository, ParticipationRepository, MailPort
+│
+├── infrastructure/                 # Prisma, email, external adapters
+│   └── persistence/               # Repository implementations; mappers Prisma ↔ domain
+│
+└── prisma/                         # schema, migrations; optional prisma/seed.ts (local dev)
+```
+
+**Notes**
+
+- **`competitions`** vs **`participations`**: competition **metadata** lives under `competitions/`; each **enrollment** (who shoots where) and **fee state** live under `participations/`. Use cases that “sign someone up” orchestrate both contexts at the application layer.
+- **`shared/`** stays free of domain invariants; keep transport/DTO shapes there when both sides need them.
+- **`infrastructure/persistence/`** may mirror the same context subfolders (`user`, `archer`, …) if the team prefers; flat repos under one folder are also fine as long as mappers stay at the edges.
+
+## 5. Competitions and participations
 
 - **Admin** creates competitions and details; assigns **Members** and/or **Managers** as participants (Managers participate as archers when assigned).
 - Each participation carries **payment state** (exact states TBD—e.g. unpaid / pending / paid).
@@ -165,7 +202,7 @@ Evolve the Listener into an **AI-oriented workflow** that:
 
 ### 10.2 Alternative roadmap (comparison)
 
-Same product goals; different **sequencing** to reduce rework and front-load **RBAC** and **payments** once data exists.
+Same product goals; different **sequencing** to reduce rework and front-load **RBAC** and **participation fee handling** once data exists.
 
 
 | Phase    | Scope                                                                                                                                          |
@@ -174,9 +211,9 @@ Same product goals; different **sequencing** to reduce rework and front-load **R
 | **v1**   | Archer, competitions, participations; add a **read-only competition list** (table/list, not full calendar) for internal validation.            |
 | **v1.5** | **Authentication + RBAC** first; then **invitations** and account linking.                                                                     |
 | **v2**   | **Full calendar** experience: public competitions + **my participations** for logged-in members.                                               |
-| **v2.5** | **Payments** polish: Admin **overview**, missing-payment **dashboard**, **quick email reminders**—explicit release before Listener if desired. |
+| **v2.5** | **Participations** polish (fee tracking): Admin **overview**, dashboard of **missing participation fees**, **quick email reminders**—explicit release before Listener if desired. |
 | **v3**   | **Competition Listener** (cron / scrape / email).                                                                                              |
 | **v4**   | **AI-assisted** discovery (trusted sources, human confirmation).                                                                               |
 
 
-**Comparison:** The primary roadmap emphasizes **content and data model** before **auth**; the alternative introduces **auth and roles earlier** and may add a **thin list** before a **full calendar**, plus an optional **v2.5** payment-focused milestone. Either can be mixed (e.g. adopt “RBAC in v1.5” from the alternative without changing MVP numbering).
+**Comparison:** The primary roadmap emphasizes **content and data model** before **auth**; the alternative introduces **auth and roles earlier** and may add a **thin list** before a **full calendar**, plus an optional **v2.5** milestone focused on **participation fees** and reminders. Either can be mixed (e.g. adopt “RBAC in v1.5” from the alternative without changing MVP numbering).

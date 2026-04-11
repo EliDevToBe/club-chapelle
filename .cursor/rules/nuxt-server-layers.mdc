@@ -1,0 +1,21 @@
+---
+description: Thin Nitro API handlers; use cases and errors from server code
+globs: server/**/*
+alwaysApply: false
+---
+
+# Nuxt server (Nitro) layering
+
+## Handlers stay thin
+
+- `server/api/**` (and route handlers): parse input → call an **application use case** or injected service → map result or error to HTTP.
+- **No Prisma client** or raw SQL in event handlers; use repositories defined in infrastructure and invoked from use cases.
+
+## Errors
+
+- Map domain/application failures to **consistent HTTP status codes** and safe, non-leaky error bodies (no stack traces or secrets in responses).
+- Validate inputs at the boundary (types + runtime checks where needed).
+
+## Server-only code
+
+- Side effects (email, external APIs) live in **infrastructure** or application services that depend on ports—not in Vue or shared client bundles.

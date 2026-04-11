@@ -15,6 +15,57 @@
           }
         }
       }
+    },
+    {
+      "includes": ["domain/**/*", "application/**/*", "shared/**/*"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "warn",
+              "options": {
+                "paths": {
+                  "@prisma/client": "Prisma belongs in infrastructure repositories only (see .cursor/rules/prisma-repository.mdc)."
+                },
+                "patterns": [
+                  {
+                    "group": ["**/infrastructure/**"],
+                    "message": "Domain, application, and shared must not import infrastructure; depend on ports and wire implementations in server/ or infrastructure/."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["server/**/*.ts", "server/**/*.mts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "warn",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "**/infrastructure/persistence/**",
+                      "!**/infrastructure/persistence/repositories.provider.ts",
+                      "!**/infrastructure/persistence/repositories.provider",
+                      "!~/infrastructure/persistence/repositories.provider",
+                      "!~/infrastructure/persistence/repositories.provider.ts",
+                      "!@/infrastructure/persistence/repositories.provider",
+                      "!@/infrastructure/persistence/repositories.provider.ts"
+                    ],
+                    "message": "Import concrete persistence adapters only via infrastructure/persistence/repositories.provider.ts (composition root), not individual repository modules."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "vcs": {
