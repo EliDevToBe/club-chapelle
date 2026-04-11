@@ -8,17 +8,29 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "check": "biome check "
+    "check": "biome check",
+    "db:start": "docker compose up -d",
+    "db:stop": "docker compose down",
+    "db:restart": "npm run db:stop && npm run db:start",
+    "db:reset": "docker compose down -v --rmi all --remove-orphans"
   },
   "dependencies": {
     "@nuxt/ui": "^4.6.1",
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
+    "dotenv": "^17.4.1",
     "nuxt": "^4.4.2",
+    "pg": "^8.20.0",
     "tailwindcss": "^4.2.2",
+    "typescript": "^6.0.2",
     "vue": "^3.5.32",
     "vue-router": "^5.0.4"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.11",
-    "cspell": "^10.0.0"
+    "@types/node": "^25.6.0",
+    "@types/pg": "^8.20.0",
+    "cspell": "^10.0.0",
+    "prisma": "^7.7.0"
   }
 }

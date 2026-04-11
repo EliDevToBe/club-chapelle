@@ -1,5 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
-  "languages": ["fr", "en"],
-  "words": ["Nuxt"]
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "words": [
+    "healthcheck",
+    "isready",
+    "Nuxt"
+  ]
 }
