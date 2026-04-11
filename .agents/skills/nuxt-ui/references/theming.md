@@ -1,8 +1,8 @@
 # Theming
 
-## Semantic colors
+## Semantic colours
 
-| Color | Default | Purpose |
+| Colour | Default | Purpose |
 |---|---|---|
 | `primary` | green | CTAs, active states, brand |
 | `secondary` | blue | Secondary actions |
@@ -12,7 +12,7 @@
 | `error` | red | Errors, destructive actions |
 | `neutral` | slate | Text, borders, disabled |
 
-## Configuring colors
+## Configuring colours
 
 ```ts
 // Nuxt — app.config.ts
@@ -38,9 +38,9 @@ ui({
 })
 ```
 
-You can only use colors that exist in your theme — either [Tailwind's default colors](https://tailwindcss.com/docs/colors) or custom colors defined with `@theme`.
+You can only use colours that exist in your theme — either [Tailwind's default colours](https://tailwindcss.com/docs/colors) or custom colours defined with `@theme`.
 
-## Adding custom colors
+## Adding custom colours
 
 1. Define all 11 shades in CSS:
 
@@ -61,13 +61,13 @@ You can only use colors that exist in your theme — either [Tailwind's default 
 }
 ```
 
-2. Assign it as a semantic color value: `ui: { colors: { primary: 'brand' } }`
+2. Assign it as a semantic colour value: `ui: { colors: { primary: 'brand' } }`
 
-You can only use colors that have all shades defined — either from Tailwind's defaults or custom `@theme` definitions.
+You can only use colours that have all shades defined — either from Tailwind's defaults or custom `@theme` definitions.
 
-### Extending with new semantic color names
+### Extending with new semantic colour names
 
-If you need a new semantic color beyond the defaults (e.g., `tertiary`), register it in `theme.colors`:
+If you need a new semantic colour beyond the defaults (e.g., `tertiary`), register it in `theme.colors`:
 
 ```ts
 // Nuxt — nuxt.config.ts
@@ -120,16 +120,16 @@ Then assign it: `ui: { colors: { tertiary: 'indigo' } }` and use it via the `col
 |---|---|---|---|
 | `border-default` | Default borders | `neutral-200` | `neutral-800` |
 | `border-muted` | Subtle borders | `neutral-200` | `neutral-700` |
-| `border-accented` | Emphasized borders | `neutral-300` | `neutral-700` |
+| `border-accented` | Emphasised borders | `neutral-300` | `neutral-700` |
 | `border-inverted` | Inverted borders | `neutral-900` | `white` |
 
-### Semantic color utilities
+### Semantic colour utilities
 
-Each semantic color (`primary`, `secondary`, `success`, `info`, `warning`, `error`) is available as a Tailwind utility: `text-primary`, `bg-primary`, `border-primary`, `ring-primary`, etc.
+Each semantic colour (`primary`, `secondary`, `success`, `info`, `warning`, `error`) is available as a Tailwind utility: `text-primary`, `bg-primary`, `border-primary`, `ring-primary`, etc.
 
-They resolve to shade **500** in light mode and shade **400** in dark mode (via `--ui-<color>` CSS variables). This is generated at runtime by the colors plugin — you don't need to write dark-mode variants manually.
+They resolve to shade **500** in light mode and shade **400** in dark mode (via `--ui-<color>` CSS variables). This is generated at runtime by the colour plugin — you don't need to write dark-mode variants manually.
 
-To adjust which shade is used, override `--ui-primary` (or any semantic color) in your `main.css`:
+To adjust which shade is used, override `--ui-primary` (or any semantic colour) in your `main.css`:
 
 ```css
 :root { --ui-primary: var(--ui-color-primary-600); }
@@ -138,7 +138,7 @@ To adjust which shade is used, override `--ui-primary` (or any semantic color) i
 
 ### CSS variables
 
-All customizable in `main.css`:
+All customisable in `main.css`:
 
 ```css
 :root {
@@ -153,14 +153,14 @@ All customizable in `main.css`:
 }
 ```
 
-### Solid colors (black/white)
+### Solid colours (black/white)
 
 ```css
 :root { --ui-primary: black; }
 .dark { --ui-primary: white; }
 ```
 
-## Component theme customization
+## Component theme customisation
 
 ### How it works
 
@@ -181,7 +181,7 @@ Tailwind Variants uses [tailwind-merge](https://github.com/dcastil/tailwind-merg
 
 ### Understanding the generated theme
 
-Every component's full resolved theme is generated at build time. Always read this file before customizing a component — it shows exactly what classes are applied where.
+Every component's full resolved theme is generated at build time. Always read this file before customising a component — it shows exactly what classes are applied where.
 
 - **Nuxt**: `.nuxt/ui/<component>.ts`
 - **Vue**: `node_modules/.nuxt-ui/ui/<component>.ts`
@@ -322,13 +322,13 @@ colorMode.preference = 'dark' // 'light', 'dark', 'system'
 
 In Nuxt, fonts defined with `@theme` are automatically loaded by the `@nuxt/fonts` module.
 
-## Brand customization playbook
+## Brand customisation playbook
 
 Follow these steps to fully rebrand Nuxt UI (e.g., "make a Ghibli theme", "match our corporate brand"):
 
-### Step 1 — Define the color palette
+### Step 1 — Define the colour palette
 
-Pick colors that match the brand. Map them to semantic roles:
+Pick colours that match the brand. Map them to semantic roles:
 
 ```ts
 // app.config.ts (Nuxt) or vite.config.ts (Vue)
@@ -345,7 +345,7 @@ ui: {
 }
 ```
 
-If no Tailwind default color fits, define custom shades in CSS (see [Adding custom colors](#adding-custom-colors)):
+If no Tailwind default colour fits, define custom shades in CSS (see [Adding custom colours](#adding-custom-colours)):
 
 ```css
 @theme static {
@@ -386,7 +386,7 @@ Read the generated theme files to find slot names, then apply global overrides:
 ```ts
 // app.config.ts (Nuxt) or vite.config.ts (Vue)
 ui: {
-  // ... colors from Step 1
+  // ... colours from Step 1
   button: {
     slots: {
       base: 'rounded-full font-semibold'
@@ -418,8 +418,8 @@ Check that both modes look correct. Adjust `--ui-primary` shade per mode and tes
 
 | Step | What to change | Where |
 |---|---|---|
-| Colors | `primary`, `secondary`, `neutral` | `app.config.ts` / `vite.config.ts` |
-| Custom palette | 11 shades per color | `main.css` (`@theme static`) |
+| Colours | `primary`, `secondary`, `neutral` | `app.config.ts` / `vite.config.ts` |
+| Custom palette | 11 shades per colour | `main.css` (`@theme static`) |
 | Fonts | `--font-sans`, `--font-mono` | `main.css` (`@theme`) |
 | Radius | `--ui-radius` | `main.css` (`:root`) |
 | Primary shade | `--ui-primary` | `main.css` (`:root` + `.dark`) |

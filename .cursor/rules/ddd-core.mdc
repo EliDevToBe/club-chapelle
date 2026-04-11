@@ -14,7 +14,7 @@ alwaysApply: true
 
 Allowed flow: `presentation → application → domain`; `infrastructure` implements ports consumed by application. **Domain never depends on infrastructure or UI.**
 
-## Bounded contexts (organize by folder namespaces)
+## Bounded contexts (organise by folder namespaces)
 
 Use separate slices (e.g. per context: `domain`, `application`, `infrastructure`) rather than one flat `models` tree. Prefer **singular** names for party-style contexts (`user`, `archer`) and **plural** for catalog/event-style contexts (`competitions`, `participations`).
 

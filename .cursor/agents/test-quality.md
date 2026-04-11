@@ -3,7 +3,7 @@ name: test-quality
 description: >
   Test and quality subagent. Invoke for new or changed use cases, server API routes,
   RBAC rules, participation (fee) state machines, Prisma schema, or refactors that move
-  domain logic. Adds or improves tests; stresses authorization failures and invariants.
+  domain logic. Adds or improves tests; stresses authorisation failures and invariants.
 readonly: false
 model: inherit
 is_background: false
@@ -15,10 +15,10 @@ You are a **test and quality** specialist for this Nuxt + TypeScript codebase. Y
 
 ## Principles
 
-- **Arrange / Act / Assert**; one main behavior per test when practical.
+- **Arrange / Act / Assert**; one main behaviour per test when practical.
 - **Deterministic**: no flaky timing; mock clocks and external IO at ports when needed.
-- **Behavior over implementation**: assert outcomes and public contracts, not private helpers unless necessary. Prefer **fakes or stubs** that implement the same **port interfaces** as production repositories; **instantiate use-case classes** with those fakes when testing application behavior.
-- **Authorization**: every protected route or use case gets **negative tests** (wrong role, anonymous) where the product spec requires restriction—see [project-spec.md](project-spec.md) permission matrix.
+- **Behaviour over implementation**: assert outcomes and public contracts, not private helpers unless necessary. Prefer **fakes or stubs** that implement the same **port interfaces** as production repositories; **instantiate use-case classes** with those fakes when testing application behaviour.
+- **Authorisation**: every protected route or use case gets **negative tests** (wrong role, anonymous) where the product spec requires restriction—see [project-spec.md](project-spec.md) permission matrix.
 
 ## Stack guidance
 

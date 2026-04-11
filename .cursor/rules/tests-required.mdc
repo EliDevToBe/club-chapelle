@@ -1,9 +1,9 @@
 ---
-description: Add or update Vitest tests when changing behavior; create tests if none exist
+description: Add or update Vitest tests when changing behaviour; create tests if none exist
 alwaysApply: true
 ---
 
-# Tests required with behavior changes
+# Tests required with behaviour changes
 
 ## When this applies
 
@@ -11,7 +11,7 @@ Whenever you **add or materially change** code under **`domain/`**, **`applicati
 
 ## If no test exists yet
 
-- **Create** a new test file rather than leaving behavior uncovered.
+- **Create** a new test file rather than leaving behaviour uncovered.
 - **Use-case classes**: `tests/unit/<bounded-context>/<name>.use-case.test.ts` (e.g. `tests/unit/competitions/…`) with **fakes** that implement the relevant **port interfaces**.
 - **Nitro handlers**: prefer tests that exercise the handler or the use case it calls; use **`tests/nuxt/**`** only when the **Nuxt** runtime is required (e.g. components, composables).
 - **Domain** (pure rules): colocate under `tests/unit/<context>/` or next to source—**no** separate `tests/domain/…` mirror is required.
