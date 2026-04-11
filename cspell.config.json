@@ -1,12 +1,18 @@
 {
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
-  "languages": ["fr", "en"],
+  "languages": [
+    "fr",
+    "en"
+  ],
   "words": [
+    "barebow",
+    "beursault",
     "FFTA",
     "healthcheck",
     "isready",
     "Mandat",
     "Nuxt",
-    "participations"
+    "participations",
+    "trispot"
   ]
 }

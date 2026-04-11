@@ -4,6 +4,6 @@ export class ListPublicCompetitions {
   constructor(private readonly competitions: CompetitionRepository) {}
 
   public async findPublic() {
-    return this.competitions.findPublic();
+    return this.competitions.findAll();
   }
 }
