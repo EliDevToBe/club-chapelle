@@ -7,6 +7,7 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env.DATABASE_URL,
+    // Prefer DIRECT_URL for Migrate. Use pooled DATABASE_URL at runtime via the driver adapter.
+    url: process.env.DIRECT_URL ?? process.env.DATABASE_URL,
   },
 });

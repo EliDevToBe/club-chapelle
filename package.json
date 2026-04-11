@@ -2,21 +2,7 @@
   "name": "club-ai",
   "type": "module",
   "private": true,
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "check": "biome check",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "db:start": "docker compose up -d",
-    "db:stop": "docker compose down",
-    "db:restart": "npm run db:stop && npm run db:start",
-    "db:reset": "docker compose down -v --rmi all --remove-orphans"
-  },
+  
   "dependencies": {
     "@nuxt/ui": "^4.6.1",
     "@prisma/adapter-pg": "^7.7.0",
@@ -40,5 +26,21 @@
     "happy-dom": "^20.8.9",
     "prisma": "^7.7.0",
     "vitest": "^3.2.4"
+  },
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "check": "biome check",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "db:start": "docker compose up -d",
+    "db:stop": "docker compose down",
+    "db:restart": "npm run db:stop && npm run db:start",
+    "db:reset": "docker compose down -v --rmi all --remove-orphans",
+    "db:studio": "npx prisma studio"
   }
 }

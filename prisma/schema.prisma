@@ -1,3 +1,7 @@
+// Storage: Supabase Storage buckets are not Prisma models. Create buckets in the Supabase Dashboard,
+// CLI, or via SQL on `storage.buckets`. Link rows using `file.url`, `file.bucket_id`, and
+// `file.internal_bucket_name`.
+
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -5,4 +9,146 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum competition_category {
+  indoor
+  outdoor
+}
+
+enum competition_type {
+  olympic
+  beursault
+  field
+  nature
+  d3
+}
+
+enum registration_status {
+  to_register
+  pending
+  waiting_list
+  registered
+  cancelled
+}
+
+enum payment_status {
+  to_pay
+  pending_reimbursement
+  paid
+  cancelled
+}
+
+enum payer {
+  archer
+  club
+}
+
+enum distance {
+  m18
+  m50
+  m60
+  m70
+  beginner
+  other
+}
+
+enum target {
+  trispot
+  spot40
+}
+
+enum weapon {
+  recurve
+  barebow
+  longbow
+  compound
+}
+
+enum token_type {
+  invitation
+  forgot_password
+  reset_password
+  change_email
+}
+
+model archer {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id   String?         @db.Uuid
+  name           String
+  created_at     DateTime        @db.Date
+  offboarded_at  DateTime        @db.Date
+  auth_user      auth_user?      @relation(fields: [auth_user_id], references: [id])
+  participations participation[]
+
+  @@unique([name])
+  @@index([auth_user_id])
+}
+
+model auth_user {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email         String
+  password      String
+  created_at    DateTime @db.Date
+  authenticated Boolean  @default(false)
+  archers       archer[]
+  tokens        token[]
+
+  @@unique([email])
+}
+
+model competition {
+  id              String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  file_id         String?              @db.Uuid
+  name            String
+  start_date      DateTime             @db.Date
+  end_date        DateTime             @db.Date
+  place           String?
+  price           Decimal              @db.Decimal(8, 2)
+  category        competition_category
+  type            competition_type
+  is_championship Boolean              @default(false)
+  season_year     Int                  @db.SmallInt
+  created_at      DateTime             @db.Date
+  file            file?                @relation(fields: [file_id], references: [id])
+  participations  participation[]
+
+  @@index([name, start_date, end_date])
+}
+
+model participation {
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  archer_id           String              @db.Uuid
+  competition_id      String              @db.Uuid
+  registration_status registration_status @default(to_register)
+  payment_status      payment_status
+  payer               payer               @default(archer)
+  distance            distance
+  target              target?
+  weapon              weapon?
+  created_at          DateTime            @db.Date
+  archer              archer              @relation(fields: [archer_id], references: [id])
+  competition         competition         @relation(fields: [competition_id], references: [id])
+}
+
+model file {
+  id                   String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String
+  mimetype             String
+  url                  String?
+  bucket_id            String?
+  internal_bucket_name String?
+  created_at           DateTime      @db.Date
+  competitions         competition[]
+}
+
+model token {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id String     @db.Uuid
+  token_value  String
+  type         token_type
+  created_at   DateTime   @db.Date
+  expires_at   DateTime   @db.Date
+  used_at      DateTime?  @db.Date
+  auth_user    auth_user  @relation(fields: [auth_user_id], references: [id])
 }
