@@ -13,13 +13,28 @@
 </template>
 
 <script setup lang="ts">
-const ui = {
-  secondaryLabel: "text-lg",
-  mainLabel: "text-4xl",
+const props = withDefaults(
+  defineProps<{
+    density?: "default" | "compact";
+  }>(),
+  { density: "default" },
+);
 
-  rootWrapper: ["flex", "flex-col md:flex-row md:gap-1"],
-  textWrapper: "flex gap-1 items-baseline",
-};
+const ui = computed(() =>
+  props.density === "compact"
+    ? {
+        secondaryLabel: "text-xs md:text-sm",
+        mainLabel: "text-xl md:text-2xl",
+        rootWrapper: ["flex", "flex-col sm:flex-row sm:gap-1"],
+        textWrapper: "flex gap-1 items-baseline",
+      }
+    : {
+        secondaryLabel: "text-lg",
+        mainLabel: "text-4xl",
+        rootWrapper: ["flex", "flex-col md:flex-row md:gap-1"],
+        textWrapper: "flex gap-1 items-baseline",
+      },
+);
 </script>
 
 <style scoped lang=""></style>

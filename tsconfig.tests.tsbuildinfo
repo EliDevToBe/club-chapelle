@@ -1,0 +1,16 @@
+{
+  "root": [
+    "./tests/nuxt/smoke.nuxt.test.ts",
+    "./tests/unit/competitions/list-public-competitions.use-case.test.ts",
+    "./tests/unit/participations/participation.rules.test.ts",
+    "./tests/unit/shared/format-date-for-db.test.ts",
+    "./vitest.config.ts",
+    "./prisma/seed/main.ts",
+    "./prisma/seed/data/archers.ts",
+    "./prisma/seed/data/competitions.ts",
+    "./prisma/seed/lib/dates.ts",
+    "./prisma/seed/lib/participation-for-seed.ts"
+  ],
+  "errors": true,
+  "version": "6.0.2"
+}

@@ -1,0 +1,27 @@
+{
+  "root": [
+    "./domain/archer/archer.ts",
+    "./domain/competitions/competition.ts",
+    "./domain/file/file.ts",
+    "./domain/participations/participation.rules.ts",
+    "./domain/participations/participation.ts",
+    "./domain/user/role.ts",
+    "./domain/user/token.ts",
+    "./domain/user/user.ts",
+    "./application/archer/find-archer-by-id.use-case.ts",
+    "./application/competitions/list-public-competitions.use-case.ts",
+    "./application/participations/find-participation-by-id.use-case.ts",
+    "./application/ports/archer-repository.port.ts",
+    "./application/ports/competition-repository.port.ts",
+    "./application/ports/participation-repository.port.ts",
+    "./application/ports/user-repository.port.ts",
+    "./application/user/find-user-by-id.use-case.ts",
+    "./infrastructure/persistence/repositories.provider.ts",
+    "./infrastructure/persistence/archer/stub-archer.repository.ts",
+    "./infrastructure/persistence/competitions/stub-competition.repository.ts",
+    "./infrastructure/persistence/participations/stub-participation.repository.ts",
+    "./infrastructure/persistence/user/stub-user.repository.ts"
+  ],
+  "errors": true,
+  "version": "6.0.2"
+}

@@ -1,9 +1,13 @@
 <template>
-  <div class="min-h-dvh">
-    <TitleSection />
+  <div class="min-h-dvh flex flex-col">
+    <AppSiteHeader />
 
-    <slot />
+    <UMain class="flex-1">
+      <slot />
+    </UMain>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import AppSiteHeader from "~/components/layout/AppSiteHeader.vue";
+</script>
