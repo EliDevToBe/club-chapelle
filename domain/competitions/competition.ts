@@ -1,7 +1,10 @@
-export type CompetitionId = string;
+import type {
+  CompetitionCategoryEnum,
+  CompetitionTypeEnum,
+} from "~~/shared/db-enums";
 
 export type Competition = {
-  id: CompetitionId;
+  id: string;
   fileId: string | null;
   name: string;
   startDate: Date;
@@ -9,8 +12,8 @@ export type Competition = {
   place: string | null;
   /** Decimal string, e.g. from Prisma `Decimal`. */
   price: string;
-  category: "indoor" | "outdoor";
-  type: "olympic" | "beursault" | "field" | "nature" | "d3";
+  category: CompetitionCategoryEnum;
+  type: CompetitionTypeEnum;
   isChampionship: boolean;
   seasonYear: number;
   createdAt: Date;

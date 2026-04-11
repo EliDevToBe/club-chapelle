@@ -1,7 +1,3 @@
-// Storage: Supabase Storage buckets are not Prisma models. Create buckets in the Supabase Dashboard,
-// CLI, or via SQL on `storage.buckets`. Link rows using `file.url`, `file.bucket_id`, and
-// `file.internal_bucket_name`.
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"

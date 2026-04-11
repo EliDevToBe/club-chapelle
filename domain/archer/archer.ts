@@ -1,8 +1,9 @@
-export type ArcherId = string;
-
+/** Club archer profile (matches `archer` table). */
 export type Archer = {
-  id: ArcherId;
-  displayName: string;
-  /** Club user account id when linked; null before onboarding or after revoke/unlink. */
-  linkedUserId: string | null;
+  id: string;
+  name: string;
+  /** `auth_user.id` when linked; null before onboarding or after unlink. */
+  authUserId: string | null;
+  createdAt: Date;
+  offboardedAt: Date;
 };
