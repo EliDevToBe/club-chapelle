@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "~~/*": ["./*"]
+    }
+  },
+  "include": [
+    "prisma/seed/**/*.ts",
+    "domain/participations/participation.rules.ts",
+    "shared/db-enums.ts"
+  ]
+}

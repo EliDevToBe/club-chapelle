@@ -98,6 +98,31 @@ A **Member** is a user account that may be **linked** to an Archer. Invitations 
 - **Competition:** an event managed in the system (metadata: dates, title, detail fields—exact schema TBD).
 - **Participation:** association of an **Archer** (or resolved via Member → Archer) to a **Competition**, with **fee / payment status** on that participation and workflow actions driven by **Admin**.
 
+#### Participation and competition rules (business invariants)
+
+These rules align with `prisma/schema.prisma` enums (`competition_category`, `competition_type`, `distance`, `target`, `payer`, `payment_status`). They are implemented in **`domain/participations/participation.rules.ts`**, enforced by the **local Prisma seed** (`npm run db:seed`), and must be respected by future back-office and APIs.
+
+**Season year (`season_year` on competitions):** the sport year runs **September (calendar year Y) through August (year Y + 1)**. The stored value is **Y** (e.g. September 2025–August 2026 → `2025`).
+
+**Shared (participation)**
+
+- **`payment_status`** must not be **`pending_reimbursement`** when **`payer`** is **`club`**.
+
+**Indoor competitions (`category === indoor`)**
+
+- **Type:** must **not** be **`beursault`**, **`field`**, or **`nature`** (see `competition_type` in the schema). Indoor events use only **`olympic`** or **`d3`**.
+- **Distance — indoor + `olympic`:** only **`m18`** or **`beginner`**.
+- **Distance — indoor + `d3`:** must be **`other`** (exception to the indoor olympic distance rule).
+- **`target`:** may be set **only** for **indoor + `olympic`** (`trispot` / `spot40`); otherwise **`null`**.
+
+**Outdoor competitions (`category === outdoor`)**
+
+- **Distance:** must **not** be **`m18`**.
+- **Types `field`, `nature`, `d3`:** participation **`distance`** must be **`other`**.
+- **Type `beursault`:** **`distance`** must be **`m50`**.
+- **Type `olympic`:** **`distance`** must be one of **`m50`**, **`m60`**, **`m70`**, **`beginner`** (see `distance` enum in the schema).
+- **`target`:** must **not** be set — always **`null`**.
+
 ### 4.4 Bounded contexts (code organization)
 
 Implementation follows DDD slices with these **folder namespaces** (singular vs plural by convention): **`user`** (accounts, roles, invitations), **`archer`** (internal Archer records and linkage), **`competitions`** (competition events), **`participations`** (participation rows, including fee state). See `.cursor/rules/ddd-core.mdc`.
@@ -126,7 +151,7 @@ club-ai/
 ├── infrastructure/                 # Prisma, email, external adapters
 │   └── persistence/               # Repository implementations; mappers Prisma ↔ domain
 │
-└── prisma/                         # schema, migrations; optional prisma/seed.ts (local dev)
+└── prisma/                         # schema, migrations; `prisma/seed/` for local dev (`npm run db:seed`)
 ```
 
 **Notes**
@@ -140,7 +165,7 @@ club-ai/
 ## 5. Competitions and participations
 
 - **Admin** creates competitions and details; assigns **Members** and/or **Managers** as participants (Managers participate as archers when assigned).
-- Each participation carries **payment state** (exact states TBD—e.g. unpaid / pending / paid).
+- Each participation carries **payment state** (see `payment_status` / `payer` in the schema). Combinations must follow **§4.3.1 Participation and competition rules**.
 - **Notifications:** at minimum **email** for **payment requests** and **reminders** initiated by Admin (one-click flows).
 
 ## 6. Calendars
