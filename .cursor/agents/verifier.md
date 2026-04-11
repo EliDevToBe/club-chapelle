@@ -24,7 +24,7 @@ Output findings in two buckets: **Blocking** (must fix before merge) vs **Nits**
 
 1. **Product / spec** — [project-spec.md](project-spec.md): Admin > Manager > Member; Admin-only items (competitions, assign participants, participation fee actions, promote/demote, revoke/unlink); Manager invite rules; Archer shell preserved on revoke; Member sees only own participations where applicable.
 2. **Security** — Authn/authz on every sensitive mutation; session boundaries; no leakage of PII or internal ids in errors or client bundles.
-3. **DDD** — No Prisma or framework imports in domain; handlers thin; repositories only in infrastructure; dependency direction respected (see `.cursor/rules/ddd-core.mdc`).
+3. **DDD** — No Prisma or framework imports in domain; handlers thin; **use-case classes** in `application/` depend on **port interfaces** in `application/ports/`; concrete repos are **classes** in infrastructure; server imports persistence only via **`repositories.provider.ts`** (not individual repo modules); **`~~/`** for root modules, not `~/domain` (see `.cursor/rules/ddd-core.mdc`).
 4. **Data** — Migrations safe; rollbacks considered; historical participation data not destroyed by account lifecycle mistakes.
 5. **i18n / UX** — French locale expectations for user-visible copy and dates where relevant.
 

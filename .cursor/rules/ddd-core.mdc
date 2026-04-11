@@ -8,8 +8,8 @@ alwaysApply: true
 ## Dependency direction
 
 - **Domain** (pure TypeScript): entities, value objects, domain services, invariants. No Vue, Nuxt, Nitro, Prisma, or HTTP imports.
-- **Application**: use cases / application services; depends on domain + **ports** (interfaces). No `.vue` files.
-- **Infrastructure**: implements ports (Prisma repos, email, clocks). May import Prisma and framework adapters here only.
+- **Application**: **use-case classes** (PascalCase, e.g. `ListPublicCompetitions`, `FindUserById`) in `application/<context>/`; constructor-inject **ports** (`export interface` in `application/ports/`—repository contracts, mail, clocks). Keep them **stateless** (no mutable fields beyond injected ports). Thin **public** methods orchestrate ports and domain types only—no `.vue` files.
+- **Infrastructure**: **implements** ports (e.g. repository **classes** in `infrastructure/persistence/` with `implements SomeRepository`). Inject dependencies (Prisma client, adapters) via constructors. May import Prisma and framework adapters here only.
 - **Presentation / delivery**: `app/**` and thin `server/api/**` handlers—map HTTP ↔ use cases; no business rules duplicated ad hoc in templates.
 
 Allowed flow: `presentation → application → domain`; `infrastructure` implements ports consumed by application. **Domain never depends on infrastructure or UI.**
@@ -25,6 +25,19 @@ Use separate slices (e.g. per context: `domain`, `application`, `infrastructure`
 
 Cross-context calls go through application-layer orchestration or explicit anti-corruption layers—avoid “god” imports across contexts.
 
+## Use-case naming
+
+- One class per user-visible or system action; **PascalCase** imperative name (verb + object), e.g. `InviteMember`, `RecordParticipationPayment`.
+- File name: **`kebab-case.use-case.ts`** (e.g. `list-public-competitions.use-case.ts`). Rely on path + suffix for “use case”; do not repeat a `UseCase` suffix on the class unless disambiguation is needed.
+
 ## Shared kernel
 
 Put **DTOs and types** shared by client and server under `shared/` (or equivalent). Keep them free of framework imports where possible.
+
+## Nuxt path aliases (imports)
+
+In this repo, **`~` resolves to the Nuxt `app/` directory**. Import code **outside** `app/` (e.g. `domain/`, `application/`, `infrastructure/`, `shared/`) using the **project root** alias **`~~/`** (e.g. `~~/domain/...`, `~~/application/...`). Use `~/` for assets and files under `app/` only. Wrong: `~/domain/...` (would resolve under `app/`).
+
+## Composition root (repositories)
+
+Server and other composition roots obtain repository **instances** from **`infrastructure/persistence/repositories.provider.ts`** (or a renamed successor). Do not import concrete repository modules from `server/` except through that provider—see `.cursor/rules/prisma-repository.mdc` and `biome.json`.

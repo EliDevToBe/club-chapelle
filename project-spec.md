@@ -116,7 +116,7 @@ club-ai/
 │   ├── competitions/               # Competition (events)
 │   └── participations/             # Participation (Archer ↔ Competition), fee status on participation
 │
-├── application/                    # Use cases; depends on domain + ports (interfaces)
+├── application/                    # Use-case classes; depends on domain + ports (interfaces)
 │   ├── user/
 │   ├── archer/
 │   ├── competitions/
@@ -134,6 +134,8 @@ club-ai/
 - **`competitions`** vs **`participations`**: competition **metadata** lives under `competitions/`; each **enrollment** (who shoots where) and **fee state** live under `participations/`. Use cases that “sign someone up” orchestrate both contexts at the application layer.
 - **`shared/`** stays free of domain invariants; keep transport/DTO shapes there when both sides need them.
 - **`infrastructure/persistence/`** may mirror the same context subfolders (`user`, `archer`, …) if the team prefers; flat repos under one folder are also fine as long as mappers stay at the edges.
+- **Ports and adapters**: declare repository (and other) contracts as **TypeScript interfaces** in **`application/ports/`**; implement them as **classes** in **`infrastructure/persistence/`** (`implements`). **Use cases** are **classes** in `application/<context>/` that take ports via constructors (see `.cursor/rules/ddd-core.mdc`). Server/API code obtains repository instances from a single **composition root**—**`infrastructure/persistence/repositories.provider.ts`**—rather than importing each adapter module from Nitro handlers (see `biome.json` and `.cursor/rules/prisma-repository.mdc`).
+- **Nuxt imports**: in this codebase, **`~` points at `app/`**; import **`domain/`**, **`application/`**, **`infrastructure/`**, and **`shared/`** using the project-root alias **`~~/`** (documented in `.cursor/rules/ddd-core.mdc`).
 
 ## 5. Competitions and participations
 

@@ -8,8 +8,8 @@ alwaysApply: false
 
 ## Handlers stay thin
 
-- `server/api/**` (and route handlers): parse input → call an **application use case** or injected service → map result or error to HTTP.
-- **No Prisma client** or raw SQL in event handlers; use repositories defined in infrastructure and invoked from use cases.
+- `server/api/**` (and route handlers): parse input → **`createRepositories()`** from **`~~/infrastructure/persistence/repositories.provider`** → **`new SomeUseCase(repos.someRepository)`** (or inject multiple ports) → call a **public** method on the use case → map result or error to HTTP.
+- **No Prisma client**, raw SQL, or **direct imports of concrete repository modules** in event handlers; persistence is accessed only through ports inside use cases. **No Prisma** in handlers.
 
 ## Errors
 

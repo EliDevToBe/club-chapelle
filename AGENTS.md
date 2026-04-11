@@ -18,9 +18,12 @@ When requirements are ambiguous, **cite or quote** these files; do not invent pe
 
 ## DDD boundaries
 
-- New behavior starts in **domain** and **application** (use cases, ports); **infrastructure** (Prisma, email) implements ports; **delivery** stays thin (`server/api`, `app/pages`, components).
+- New behavior starts in **domain** and **application** (**use-case classes**, **ports**); **infrastructure** (Prisma, email) **implements** ports as **classes**; **delivery** stays thin (`server/api`, `app/pages`, components).
+- **Use cases** are **`class`**es in `application/<context>/` (constructor-injected ports; stateless). Naming: see **Use-case naming** in `.cursor/rules/ddd-core.mdc`.
+- **Ports** are **`export interface`** in `application/ports/`; **repository implementations** are **`class … implements …`** under `infrastructure/persistence/`. Wire instances from **`repositories.provider.ts`** in server/composition roots—not ad hoc imports of each repository file from `server/api`.
 - Bounded context folders (see `.cursor/rules/ddd-core.mdc`): **`user`**, **`archer`**, **`competitions`**, **`participations`** (singular vs plural as defined there).
 - Dependency direction: **domain** ← **application** ← **infrastructure** / HTTP / UI. Domain code must not import Vue, Nitro handlers, or Prisma types.
+- **Imports**: use **`~~/`** for project-root modules (`domain`, `application`, `infrastructure`, `shared`); **`~/`** is under `app/` only (see `.cursor/rules/ddd-core.mdc`).
 
 ## Non-negotiables from the spec
 

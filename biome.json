@@ -55,6 +55,8 @@
                       "!**/infrastructure/persistence/repositories.provider",
                       "!~/infrastructure/persistence/repositories.provider",
                       "!~/infrastructure/persistence/repositories.provider.ts",
+                      "!~~/infrastructure/persistence/repositories.provider",
+                      "!~~/infrastructure/persistence/repositories.provider.ts",
                       "!@/infrastructure/persistence/repositories.provider",
                       "!@/infrastructure/persistence/repositories.provider.ts"
                     ],
