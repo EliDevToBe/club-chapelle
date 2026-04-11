@@ -4,7 +4,7 @@
 
 ## Layout
 
-Core structural components for organizing your application's layout.
+Core structural components for organising your application's layout.
 
 | Component | Purpose |
 |---|---|
@@ -132,7 +132,7 @@ const files = ref<File[]>([])
 
 ## Data
 
-Components for displaying and organizing data.
+Components for displaying and organising data.
 
 | Component | Key props |
 |---|---|
@@ -314,7 +314,7 @@ Pre-built sections for marketing and content pages.
 
 ## Dashboard
 
-Specialized components for admin interfaces with resizable panels and sidebars.
+Specialised components for admin interfaces with resizable panels and sidebars.
 
 | Component | Purpose |
 |---|---|

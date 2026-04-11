@@ -79,7 +79,7 @@ const items = computed<NavigationMenuItem[]>(() => [{
     description="A comprehensive suite of components and utilities."
     :features="[
       { title: 'Accessible', description: 'Built on Reka UI with full ARIA support.', icon: 'i-lucide-accessibility' },
-      { title: 'Customizable', description: 'Tailwind Variants theming with full control.', icon: 'i-lucide-palette' },
+      { title: 'Customisable', description: 'Tailwind Variants theming with full control.', icon: 'i-lucide-palette' },
       { title: 'Responsive', description: 'Mobile-first components.', icon: 'i-lucide-monitor-smartphone' }
     ]"
   />

@@ -1,6 +1,6 @@
 ---
 name: nuxt-ui
-description: Build UIs with @nuxt/ui v4 — 125+ accessible Vue components with Tailwind CSS theming. Use when creating interfaces, customizing themes to match a brand, building forms, or composing layouts like dashboards, docs sites, and chat interfaces.
+description: Build UIs with @nuxt/ui v4 — 125+ accessible Vue components with Tailwind CSS theming. Use when creating interfaces, customising themes to match a brand, building forms, or composing layouts like dashboards, docs sites, and chat interfaces.
 ---
 
 # Nuxt UI
@@ -146,11 +146,11 @@ export default defineNuxtConfig({
 
 Nuxt UI ships with a default look. The goal is to adapt it to your brand so every app looks unique.
 
-**Always use semantic utilities** (`text-default`, `bg-elevated`, `border-muted`), never raw Tailwind palette colors. See [references/theming.md](references/theming.md) for the full list.
+**Always use semantic utilities** (`text-default`, `bg-elevated`, `border-muted`), never raw Tailwind palette colours. See [references/theming.md](references/theming.md) for the full list.
 
 ### Colors
 
-7 semantic colors (`primary`, `secondary`, `success`, `info`, `warning`, `error`, `neutral`) configurable at runtime:
+7 semantic colours (`primary`, `secondary`, `success`, `info`, `warning`, `error`, `neutral`) configurable at runtime:
 
 ```ts
 // Nuxt — app.config.ts
@@ -175,7 +175,7 @@ export default defineConfig({
 })
 ```
 
-### Customizing components
+### Customising components
 
 **Override priority** (highest wins): `ui` prop / `class` prop > global config > theme defaults.
 
@@ -191,7 +191,7 @@ The `ui` prop overrides a component's **slots** after variants are computed — 
 - **Nuxt**: `.nuxt/ui/<component>.ts`
 - **Vue**: `node_modules/.nuxt-ui/ui/<component>.ts`
 
-> For CSS variables, custom colors, global config, compound variants, and a **full brand customization playbook**, see [references/theming.md](references/theming.md)
+> For CSS variables, custom colours, global config, compound variants, and a **full brand customisation playbook**, see [references/theming.md](references/theming.md)
 
 ## Composables
 

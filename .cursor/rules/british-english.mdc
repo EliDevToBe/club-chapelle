@@ -1,0 +1,12 @@
+---
+description: Use British English spelling in prose; keep API and tool identifiers unchanged
+alwaysApply: true
+---
+
+# British English
+
+Use **British English** (en-GB) in documentation, comments, user-facing copy, agent definitions, and Cursor rules.
+
+**Examples:** behaviour, organisation, authorisation, favour, customise, customisation, customisable, recognise, summarise, specialised, authorisation.
+
+**Do not** change **identifiers** required by tools or libraries (e.g. Biome `organizeImports`, Vite `optimizeDeps`, Vue/Nuxt `color` props, Tailwind class names, npm package names).

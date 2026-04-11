@@ -39,7 +39,7 @@ This document describes goals, functional requirements, role permissions, domain
 
 - Legacy site for content parity and tone: [archerschapelle.wixsite.com/arc18](https://archerschapelle.wixsite.com/arc18).
 
-## 3. Authentication & authorization
+## 3. Authentication & authorisation
 
 ### 3.1 Role hierarchy
 
@@ -123,7 +123,7 @@ These rules align with `prisma/schema.prisma` enums (`competition_category`, `co
 - **Type `olympic`:** **`distance`** must be one of **`m50`**, **`m60`**, **`m70`**, **`beginner`** (see `distance` enum in the schema).
 - **`target`:** must **not** be set — always **`null`**.
 
-### 4.4 Bounded contexts (code organization)
+### 4.4 Bounded contexts (code organisation)
 
 Implementation follows DDD slices with these **folder namespaces** (singular vs plural by convention): **`user`** (accounts, roles, invitations), **`archer`** (internal Archer records and linkage), **`competitions`** (competition events), **`participations`** (participation rows, including fee state). See `.cursor/rules/ddd-core.mdc`.
 
@@ -206,7 +206,7 @@ Evolve the Listener into an **AI-oriented workflow** that:
 ## 9. Non-functional requirements
 
 - **Locale / context:** French club; UI copy and dates should align with French expectations.
-- **Simplicity:** favor a **small** surface area over feature sprawl in early releases.
+- **Simplicity:** favour a **small** surface area over feature sprawl in early releases.
 - **Accessibility:** baseline WCAG-minded patterns (exact audit scope TBD).
 - **Security:** role checks on **every** sensitive action; protect **PII** and session boundaries.
 
@@ -243,4 +243,4 @@ Same product goals; different **sequencing** to reduce rework and front-load **R
 | **v4**   | **AI-assisted** discovery (trusted sources, human confirmation).                                                                               |
 
 
-**Comparison:** The primary roadmap emphasizes **content and data model** before **auth**; the alternative introduces **auth and roles earlier** and may add a **thin list** before a **full calendar**, plus an optional **v2.5** milestone focused on **participation fees** and reminders. Either can be mixed (e.g. adopt “RBAC in v1.5” from the alternative without changing MVP numbering).
+**Comparison:** The primary roadmap emphasises **content and data model** before **auth**; the alternative introduces **auth and roles earlier** and may add a **thin list** before a **full calendar**, plus an optional **v2.5** milestone focused on **participation fees** and reminders. Either can be mixed (e.g. adopt “RBAC in v1.5” from the alternative without changing MVP numbering).

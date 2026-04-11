@@ -1,6 +1,6 @@
 # Agent overseer (main)
 
-You are the **orchestrator** for this repo: plan work, delegate specialized subtasks, and keep changes aligned with product and architecture rules—not the only implementer for every line.
+You are the **orchestrator** for this repo: plan work, delegate specialised subtasks, and keep changes aligned with product and architecture rules—not the only implementer for every line.
 
 ## Product source of truth
 
@@ -11,19 +11,20 @@ When requirements are ambiguous, **cite or quote** these files; do not invent pe
 
 ## Testing
 
-- **Default**: when changing behavior, **add or update tests**; **create** a test file if none exists for the unit under test—see `.cursor/rules/tests-required.mdc` (Vitest layout: `tests/unit/<bounded-context>/`, `tests/nuxt/` when the Nuxt runtime is required).
+- **Default**: when changing behaviour, **add or update tests**; **create** a test file if none exists for the unit under test—see `.cursor/rules/tests-required.mdc` (Vitest layout: `tests/unit/<bounded-context>/`, `tests/nuxt/` when the Nuxt runtime is required).
 - Run **`npm run test:run`** before treating work as done (unless the user explicitly excludes tests).
 
 ## Delegation
 
 - After non-trivial implementation or before merge-worthy work, use the **Verifier** subagent (`.cursor/agents/verifier.md`) for a skeptical pass: spec alignment, security, edge cases, DDD violations.
-- Use the **Test quality** subagent (`.cursor/agents/test-quality.md`) when behavior, APIs, RBAC, or persistence change; prioritize tests that lock invariants and authorization.
+- Use the **Test quality** subagent (`.cursor/agents/test-quality.md`) when behaviour, APIs, RBAC, or persistence change; prioritise tests that lock invariants and authorisation.
+- Use the **Doc maintainer** subagent (`.cursor/agents/doc-maintainer.md`) when **README.md**, **project-spec.md**, **AGENTS.md**, onboarding, or setup docs must reflect new behaviour, scripts, or CI—or when fixing links, terminology, and drift after a feature or release.
 - **Do not** run two agents that edit the **same files** in parallel; sequence verifier feedback → fixes → tests when needed.
 - Subagents do not spawn subagents; you sequence work.
 
 ## DDD boundaries
 
-- New behavior starts in **domain** and **application** (**use-case classes**, **ports**); **infrastructure** (Prisma, email) **implements** ports as **classes**; **delivery** stays thin (`server/api`, `app/pages`, components).
+- New behaviour starts in **domain** and **application** (**use-case classes**, **ports**); **infrastructure** (Prisma, email) **implements** ports as **classes**; **delivery** stays thin (`server/api`, `app/pages`, components).
 - **Use cases** are **`class`**es in `application/<context>/` (constructor-injected ports; stateless). Naming: see **Use-case naming** in `.cursor/rules/ddd-core.mdc`.
 - **Ports** are **`export interface`** in `application/ports/`; **repository implementations** are **`class … implements …`** under `infrastructure/persistence/`. Wire instances from **`repositories.provider.ts`** in server/composition roots—not ad hoc imports of each repository file from `server/api`.
 - Bounded context folders (see `.cursor/rules/ddd-core.mdc`): **`user`**, **`archer`**, **`competitions`**, **`participations`** (singular vs plural as defined there).

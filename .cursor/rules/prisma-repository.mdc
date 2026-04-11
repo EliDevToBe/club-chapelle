@@ -29,4 +29,4 @@ alwaysApply: false
 
 ## Biome
 
-- Root `biome.json` uses `lint/style/noRestrictedImports` (warn): `domain/`, `application/`, and `shared/` must not import `**/infrastructure/**` or `@prisma/client`; `server/**/*.ts` must not import deep `infrastructure/persistence/**` modules except `repositories.provider.ts` (adjust globs if the composition root file is renamed). Allowed imports use **`~~/infrastructure/persistence/repositories.provider`** (and `.ts`) so the rule recognizes the composition root—see `.cursor/rules/ddd-core.mdc` for `~~/` vs `~/`.
+- Root `biome.json` uses `lint/style/noRestrictedImports` (warn): `domain/`, `application/`, and `shared/` must not import `**/infrastructure/**` or `@prisma/client`; `server/**/*.ts` must not import deep `infrastructure/persistence/**` modules except `repositories.provider.ts` (adjust globs if the composition root file is renamed). Allowed imports use **`~~/infrastructure/persistence/repositories.provider`** (and `.ts`) so the rule recognises the composition root—see `.cursor/rules/ddd-core.mdc` for `~~/` vs `~/`.
