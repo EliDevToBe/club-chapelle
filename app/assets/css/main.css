@@ -1,2 +1,38 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+@theme static {
+  --color-brand-carrot-50: #fff4ef;
+  --color-brand-carrot-100: #ffeadf;
+  --color-brand-carrot-200: #ffd4bb;
+  --color-brand-carrot-300: #ffbe91;
+  --color-brand-carrot-400: #ffa857;
+  --color-brand-carrot-500: #f39300;
+  --color-brand-carrot-600: #c27400;
+  --color-brand-carrot-700: #905500;
+  --color-brand-carrot-800: #623800;
+  --color-brand-carrot-900: #371e00;
+  --color-brand-carrot-950: #241100;
+  --color-brand-greenblue-50: #bbfcff;
+  --color-brand-greenblue-100: #36faff;
+  --color-brand-greenblue-200: #00dce1;
+  --color-brand-greenblue-300: #00c1c5;
+  --color-brand-greenblue-400: #00a4a7;
+  --color-brand-greenblue-500: #00878a;
+  --color-brand-greenblue-600: #006c6e;
+  --color-brand-greenblue-700: #005254;
+  --color-brand-greenblue-800: #003738;
+  --color-brand-greenblue-900: #002021;
+  --color-brand-greenblue-950: #001415;
+  --color-brand-stone-50: #fff0cc;
+  --color-brand-stone-100: #ffe39e;
+  --color-brand-stone-200: #ffc639;
+  --color-brand-stone-300: #ffbb14;
+  --color-brand-stone-400: #eba700;
+  --color-brand-stone-500: #c28a00;
+  --color-brand-stone-600: #9e7100;
+  --color-brand-stone-700: #755400;
+  --color-brand-stone-800: #4d3600;
+  --color-brand-stone-900: #291d00;
+  --color-brand-stone-950: #140f00;
+}

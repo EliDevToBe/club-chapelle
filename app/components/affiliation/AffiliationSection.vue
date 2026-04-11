@@ -23,7 +23,7 @@
           alt=""
           width="40"
           height="40"
-          class="size-10 shrink-0"
+          class="size-10 shrink-0 bg-white rounded-full"
           loading="lazy"
         />
         <span
