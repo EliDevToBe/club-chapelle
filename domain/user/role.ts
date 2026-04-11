@@ -1,3 +1,8 @@
-export const ROLE_ORDER = ["Member", "Manager", "Admin"] as const;
+import type { RoleEnum } from "~~/shared/db-enums";
 
-export type Role = (typeof ROLE_ORDER)[number];
+export const ROLE_ORDER: readonly RoleEnum[] = [
+  "member",
+  "manager",
+  "admin",
+  "developer",
+] as const satisfies RoleEnum[];

@@ -79,6 +79,7 @@
     "ignoreUnknown": false
   },
   "formatter": {
+    "lineWidth": 80,
     "enabled": true,
     "indentStyle": "space"
   },

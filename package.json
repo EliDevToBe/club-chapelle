@@ -2,7 +2,6 @@
   "name": "club-ai",
   "type": "module",
   "private": true,
-  
   "dependencies": {
     "@nuxt/ui": "^4.6.1",
     "@prisma/adapter-pg": "^7.7.0",
@@ -34,6 +33,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "check": "biome check",
+    "check:schema": "npx prisma validate && npx prisma format",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -41,6 +41,9 @@
     "db:stop": "docker compose down",
     "db:restart": "npm run db:stop && npm run db:start",
     "db:reset": "docker compose down -v --rmi all --remove-orphans",
-    "db:studio": "npx prisma studio"
+    "db:generate": "npx prisma generate",
+    "db:studio": "npx prisma studio",
+    "migration:new": "npx prisma migrate dev",
+    "migration:reset": "npx prisma migrate reset"
   }
 }

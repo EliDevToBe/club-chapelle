@@ -72,11 +72,18 @@ enum token_type {
   change_email
 }
 
+enum role {
+  member
+  manager
+  admin
+  developer
+}
+
 model archer {
   id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   auth_user_id   String?         @db.Uuid
   name           String
-  created_at     DateTime        @db.Date
+  created_at     DateTime        @db.Date @default(now())
   offboarded_at  DateTime        @db.Date
   auth_user      auth_user?      @relation(fields: [auth_user_id], references: [id])
   participations participation[]
@@ -88,8 +95,9 @@ model archer {
 model auth_user {
   id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email         String
-  password      String
-  created_at    DateTime @db.Date
+  password      String?
+  role          role
+  created_at    DateTime @db.Date @default(now())
   authenticated Boolean  @default(false)
   archers       archer[]
   tokens        token[]
@@ -104,12 +112,12 @@ model competition {
   start_date      DateTime             @db.Date
   end_date        DateTime             @db.Date
   place           String?
-  price           Decimal              @db.Decimal(8, 2)
+  price           Decimal              @db.Decimal(6, 2)
   category        competition_category
   type            competition_type
   is_championship Boolean              @default(false)
   season_year     Int                  @db.SmallInt
-  created_at      DateTime             @db.Date
+  created_at      DateTime             @db.Date @default(now())
   file            file?                @relation(fields: [file_id], references: [id])
   participations  participation[]
 
@@ -121,12 +129,12 @@ model participation {
   archer_id           String              @db.Uuid
   competition_id      String              @db.Uuid
   registration_status registration_status @default(to_register)
-  payment_status      payment_status
+  payment_status      payment_status      @default(to_pay)
   payer               payer               @default(archer)
   distance            distance
   target              target?
   weapon              weapon?
-  created_at          DateTime            @db.Date
+  created_at          DateTime            @db.Date @default(now())
   archer              archer              @relation(fields: [archer_id], references: [id])
   competition         competition         @relation(fields: [competition_id], references: [id])
 }
@@ -138,7 +146,7 @@ model file {
   url                  String?
   bucket_id            String?
   internal_bucket_name String?
-  created_at           DateTime      @db.Date
+  created_at           DateTime      @db.Date @default(now())
   competitions         competition[]
 }
 
@@ -147,7 +155,7 @@ model token {
   auth_user_id String     @db.Uuid
   token_value  String
   type         token_type
-  created_at   DateTime   @db.Date
+  created_at   DateTime   @db.Date @default(now())
   expires_at   DateTime   @db.Date
   used_at      DateTime?  @db.Date
   auth_user    auth_user  @relation(fields: [auth_user_id], references: [id])

@@ -35,3 +35,5 @@ export type TokenTypeEnum =
   | "forgot_password"
   | "reset_password"
   | "change_email";
+
+export type RoleEnum = "member" | "manager" | "admin" | "developer";
