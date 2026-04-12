@@ -6,9 +6,9 @@ on:
 
 jobs:
   quality:
+    name: Quality check
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    name: Quality check
     steps:
       - uses: actions/checkout@v4
 
