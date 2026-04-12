@@ -12,17 +12,18 @@
     <p class="text-muted text-sm md:text-base">
       Une question ? Écrivez-nous ou rendez-vous sur la page dédiée.
     </p>
-    <UButton
+    <ChapButton
       to="/contact"
-      color="secondary"
       size="lg"
-      class="min-h-11 w-full sm:w-auto"
-    >
-      Aller à la page Contact
-    </UButton>
+      color="secondary"
+      class="min-h-11 w-full sm:w-auto sm:justify-center"
+      label="Nous contacter"
+    />
   </section>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ChapButton from "~/components/ui/ChapButton.vue";
+</script>
 
 <style scoped lang=""></style>

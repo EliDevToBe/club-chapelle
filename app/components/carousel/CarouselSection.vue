@@ -7,23 +7,16 @@
       id="landing-photos-title"
       class="text-lg font-semibold text-highlighted md:text-xl"
     >
-      Quelques images
+      Le club en photos
     </h2>
     <UCarousel
       v-slot="{ item }"
       loop
-      arrows
       dots
       wheel-gestures
       class="w-full min-w-0"
       :items="carouselItems"
       :autoplay="{ delay: 4500 }"
-      :prev="{ color: 'neutral', variant: 'solid' }"
-      :next="{ color: 'neutral', variant: 'solid' }"
-      :ui="{
-        item: 'basis-full min-w-0 ps-0 shrink-0',
-        container: 'ms-0',
-      }"
     >
       <img
         v-if="isCarouselSlide(item)"
@@ -55,11 +48,6 @@ const isCarouselSlide = (value: unknown): value is CarouselSlide => {
     typeof (value as CarouselSlide).alt === "string"
   );
 };
-
-const { public: pub } = useRuntimeConfig();
-
-const socialInstagram = computed(() => pub.socialInstagram);
-const socialFacebook = computed(() => pub.socialFacebook);
 
 const carouselItems: CarouselSlide[] = [
   {

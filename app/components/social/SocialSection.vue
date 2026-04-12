@@ -13,33 +13,29 @@
       Retrouvez le club sur les réseaux !
     </p>
     <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap md:gap-4">
-      <UButton
+      <ChapButton
         :to="socialInstagram"
         target="_blank"
-        rel="noopener noreferrer"
         icon="i-ph-instagram-logo-duotone"
         variant="outline"
         size="lg"
-        class="min-h-11 justify-center"
-      >
-        Instagram
-      </UButton>
-      <UButton
+        label="Instagram"
+      />
+      <ChapButton
         :to="socialFacebook"
         target="_blank"
-        rel="noopener noreferrer"
         icon="i-ph-facebook-logo-duotone"
         variant="outline"
         size="lg"
-        class="min-h-11 justify-center"
-      >
-        Facebook
-      </UButton>
+        label="Facebook"
+      />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
+import ChapButton from "~/components/ui/ChapButton.vue";
+
 const { public: pub } = useRuntimeConfig();
 
 const socialInstagram = computed(() => pub.socialInstagram);

@@ -1,19 +1,10 @@
 <template>
-  <section
-    aria-labelledby="landing-partners-title"
-    class="space-y-4 md:space-y-5"
-  >
-    <h2
-      id="landing-partners-title"
-      class="text-lg font-semibold text-highlighted md:text-xl"
-    >
-      Fédération et région
-    </h2>
+  <section class="space-y-4 md:space-y-5" aria-label="Fédération et région">
     <div
       class="flex flex-col gap-6 border-default border-t pt-6 md:flex-row md:items-center md:justify-start md:gap-10 md:pt-8"
     >
-      <a
-        href="https://www.ffta.fr/"
+      <NuxtLink
+        to="https://www.ffta.fr/"
         target="_blank"
         rel="noopener noreferrer"
         class="focus-visible:ring-primary flex items-center gap-3 rounded-md focus-visible:ring-2 focus-visible:outline-none"
@@ -27,13 +18,13 @@
           loading="lazy"
         />
         <span
-          class="text-highlighted text-base font-medium underline-offset-4 hover:underline"
+          class="text-base font-medium underline-offset-4 hover:underline hover:text-secondary"
         >
           Fédération française de tir à l’arc (FFTA)
         </span>
-      </a>
-      <a
-        href="https://www.tiralarcidf.com/"
+      </NuxtLink>
+      <NuxtLink
+        to="https://www.tiralarcidf.com/"
         target="_blank"
         rel="noopener noreferrer"
         class="focus-visible:ring-primary flex items-center gap-3 rounded-md focus-visible:ring-2 focus-visible:outline-none"
@@ -47,11 +38,11 @@
           loading="lazy"
         />
         <span
-          class="text-highlighted text-base font-medium underline-offset-4 hover:underline"
+          class="text-base font-medium underline-offset-4 hover:underline hover:text-secondary"
         >
           Comité régional Île-de-France de tir à l’arc
         </span>
-      </a>
+      </NuxtLink>
     </div>
   </section>
 </template>
