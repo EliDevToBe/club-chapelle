@@ -1,10 +1,12 @@
 <template>
-  <div class="mx-auto max-w-5xl px-4 py-8 md:py-12">
-    <p class="text-muted font-mono text-sm md:text-base">{{ route.name }}</p>
-  </div>
+  <ContentPageWrapper>
+    <section></section>
+  </ContentPageWrapper>
 </template>
 
 <script setup lang="ts">
+import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
+
 definePageMeta({
   layout: "default",
 });

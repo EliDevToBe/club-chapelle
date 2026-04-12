@@ -1,5 +1,5 @@
 <template>
-  <div :class="ui.root">
+  <ContentPageWrapper>
     <IntroductionSection />
 
     <CarouselSection />
@@ -9,15 +9,13 @@
     <ContactSection />
 
     <AffiliationSection />
-  </div>
+  </ContentPageWrapper>
 </template>
 
 <script setup lang="ts">
+import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
+
 definePageMeta({
   layout: "default",
 });
-
-const ui = {
-  root: "mx-auto max-w-5xl px-4 py-8 md:py-12 space-y-10 md:space-y-14",
-};
 </script>

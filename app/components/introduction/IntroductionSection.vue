@@ -1,14 +1,5 @@
 <template>
-  <section
-    aria-labelledby="landing-presentation-title"
-    class="space-y-3 md:space-y-4"
-  >
-    <h1
-      id="landing-presentation-title"
-      class="text-2xl font-semibold text-highlighted md:text-3xl"
-    >
-      Bienvenue aux Archers de La Chapelle
-    </h1>
+  <ChapSection title="Bienvenue aux Archers de La Chapelle" is-main-section>
     <div class="text-muted space-y-3 text-base leading-relaxed md:text-lg">
       <p>
         Les Archers de La Chapelle (ARC18) est un club de tir à l’arc à Paris.
@@ -20,9 +11,11 @@
         et les moyens de nous contacter — le tout au même endroit.
       </p>
     </div>
-  </section>
+  </ChapSection>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ChapSection from "~/components/ui/ChapSection.vue";
+</script>
 
 <style scoped lang=""></style>

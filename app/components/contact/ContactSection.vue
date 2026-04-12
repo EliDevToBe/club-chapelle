@@ -1,14 +1,5 @@
 <template>
-  <section
-    aria-labelledby="landing-contact-title"
-    class="space-y-3 md:space-y-4"
-  >
-    <h2
-      id="landing-contact-title"
-      class="text-lg font-semibold text-highlighted md:text-xl"
-    >
-      Contact
-    </h2>
+  <ChapSection title="Contact">
     <p class="text-muted text-sm md:text-base">
       Une question ? Écrivez-nous ou rendez-vous sur la page dédiée.
     </p>
@@ -19,11 +10,12 @@
       class="min-h-11 w-full sm:w-auto sm:justify-center"
       label="Nous contacter"
     />
-  </section>
+  </ChapSection>
 </template>
 
 <script setup lang="ts">
 import ChapButton from "~/components/ui/ChapButton.vue";
+import ChapSection from "~/components/ui/ChapSection.vue";
 </script>
 
 <style scoped lang=""></style>

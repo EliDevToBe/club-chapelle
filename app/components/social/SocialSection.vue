@@ -1,14 +1,5 @@
 <template>
-  <section
-    aria-labelledby="landing-social-title"
-    class="space-y-3 md:space-y-4"
-  >
-    <h2
-      id="landing-social-title"
-      class="text-lg font-semibold text-highlighted md:text-xl"
-    >
-      Suivez-nous
-    </h2>
+  <ChapSection title="Suivez-nous">
     <p class="text-muted text-sm md:text-base">
       Retrouvez le club sur les réseaux !
     </p>
@@ -30,11 +21,12 @@
         label="Facebook"
       />
     </div>
-  </section>
+  </ChapSection>
 </template>
 
 <script setup lang="ts">
 import ChapButton from "~/components/ui/ChapButton.vue";
+import ChapSection from "~/components/ui/ChapSection.vue";
 
 const { public: pub } = useRuntimeConfig();
 
