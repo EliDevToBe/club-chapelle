@@ -1,14 +1,8 @@
 <template>
   <UHeader
     to="/"
-    :ui="{
-      center: 'hidden md:flex',
-      toggle: 'md:hidden',
-      content: 'md:hidden',
-      overlay: 'md:hidden',
-      left: 'md:flex-1 flex items-center gap-1.5',
-      right: 'md:flex-1 flex items-center justify-end gap-1.5',
-    }"
+    v-model:open="isMenuOpen"
+    :toggle="{ color: isMenuOpen ? 'secondary' : 'primary' }"
   >
     <template #title>
       <Title density="compact" />
@@ -21,7 +15,7 @@
         :items="items"
         orientation="vertical"
         variant="link"
-        class="-mx-2.5 w-full"
+        class="-mx-2.5"
       />
     </template>
   </UHeader>
@@ -31,4 +25,6 @@
 import Title from "~/components/title/Title.vue";
 
 const items = useSiteNavItems();
+
+const isMenuOpen = ref(false);
 </script>

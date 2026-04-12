@@ -23,14 +23,14 @@ const props = withDefaults(
 const ui = computed(() =>
   props.density === "compact"
     ? {
-        secondaryLabel: "text-xs md:text-sm",
-        mainLabel: "text-xl md:text-2xl",
+        secondaryLabel: "text-xs text-secondary  md:text-sm",
+        mainLabel: "text-xl md:text-2xl text-primary",
         rootWrapper: ["flex", "flex-col sm:flex-row sm:gap-1"],
         textWrapper: "flex gap-1 items-baseline",
       }
     : {
-        secondaryLabel: "text-lg",
-        mainLabel: "text-4xl",
+        secondaryLabel: "text-lg text-secondary",
+        mainLabel: "text-4xl text-primary",
         rootWrapper: ["flex", "flex-col md:flex-row md:gap-1"],
         textWrapper: "flex gap-1 items-baseline",
       },
