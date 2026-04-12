@@ -4,14 +4,15 @@
     :target="target"
     :icon="icon"
     :variant="variant"
-    size="lg"
+    :size="size"
     :label="label"
-    :class="ui.button"
+    :class="overrideClass ?? ui.button"
   />
 </template>
 
 <script setup lang="ts">
 type Variant = "solid" | "outline" | "soft" | "subtle" | "ghost" | "link";
+type Size = "xs" | "sm" | "md" | "lg" | "xl";
 
 const props = withDefaults(
   defineProps<{
@@ -19,8 +20,9 @@ const props = withDefaults(
     target?: string;
     icon?: string;
     variant?: Variant;
-    size?: string;
+    size?: Size;
     label: string;
+    overrideClass?: string;
   }>(),
   {
     variant: "solid",
