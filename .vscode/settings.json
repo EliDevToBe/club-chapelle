@@ -32,5 +32,11 @@
     "source.fixAll.biome": "explicit",
     "source.organizeImports.biome": "explicit",
     "source.action.useSortedKeys.biome": "explicit"
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/package-lock.json": true
   }
 }

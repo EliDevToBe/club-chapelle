@@ -1,14 +1,5 @@
 <template>
-  <section
-    aria-labelledby="landing-photos-title"
-    class="space-y-3 md:space-y-4"
-  >
-    <h2
-      id="landing-photos-title"
-      class="text-lg font-semibold text-highlighted md:text-xl"
-    >
-      Le club en photos
-    </h2>
+  <ChapSection title="Le club en photos">
     <UCarousel
       v-slot="{ item }"
       loop
@@ -29,10 +20,12 @@
         decoding="async"
       />
     </UCarousel>
-  </section>
+  </ChapSection>
 </template>
 
 <script setup lang="ts">
+import ChapSection from "~/components/ui/ChapSection.vue";
+
 type CarouselSlide = {
   src: string;
   alt: string;

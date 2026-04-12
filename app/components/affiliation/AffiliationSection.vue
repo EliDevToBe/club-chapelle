@@ -1,7 +1,7 @@
 <template>
-  <section class="space-y-4 md:space-y-5" aria-label="Fédération et région">
+  <ChapSection>
     <div
-      class="flex flex-col gap-6 border-default border-t pt-6 md:flex-row md:items-center md:justify-start md:gap-10 md:pt-8"
+      class="flex flex-col items-center sm:items-start gap-6 border-default border-t pt-6 md:flex-row md:items-center md:justify-around md:gap-10 md:pt-8"
     >
       <NuxtLink
         to="https://www.ffta.fr/"
@@ -44,9 +44,11 @@
         </span>
       </NuxtLink>
     </div>
-  </section>
+  </ChapSection>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ChapSection from "~/components/ui/ChapSection.vue";
+</script>
 
 <style scoped lang=""></style>
