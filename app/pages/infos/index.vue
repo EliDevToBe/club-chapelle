@@ -104,19 +104,22 @@
     </ChapSection>
 
     <ChapSection title="Philosophie du club">
-      <p>
-        Que ce soit dans notre gouvernance, nos projets, mais aussi nos
-        évènements, notre association se veut de garantir un espace de confiance
-        et en toute sécurité pour chacun·e·s d’entre nous quelque soit notre
-        genre, âge, notre orientation sexuelle, notre origine ethnique, notre
-        origine sociale ou encore notre corps.
-      </p>
-      <p>
-        Notre association s’engage contre toute forme de rejet de l’autre alors
-        mettons ces valeurs en application. Nous sommes intransigeant·e·s sur
-        les actes racistes, sexistes et toutes les -phobies qui existent et qui
-        sont, pour rappel, répréhensibles par la loi.
-      </p>
+      <ContentTextWrapper>
+        <p>
+          Que ce soit dans notre gouvernance, nos projets, mais aussi nos
+          évènements, notre association se veut de garantir un espace de
+          confiance et en toute sécurité pour chacun·e·s d’entre nous quelque
+          soit notre genre, âge, notre orientation sexuelle, notre origine
+          ethnique, notre origine sociale ou encore notre corps.
+        </p>
+        <p>
+          Notre association s’engage contre toute forme de rejet de l’autre
+          alors mettons ces valeurs en application. Nous sommes
+          intransigeant·e·s sur les actes racistes, sexistes et toutes les
+          -phobies qui existent et qui sont, pour rappel, répréhensibles par la
+          loi.
+        </p>
+      </ContentTextWrapper>
     </ChapSection>
 
     <div class="flex flex-col md:flex-row justify-between gap-9">
