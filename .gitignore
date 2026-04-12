@@ -27,3 +27,5 @@ coverage
 !.env.example
 
 /generated/prisma
+
+*.tsbuildinfo
