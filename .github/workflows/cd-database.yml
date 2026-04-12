@@ -55,6 +55,16 @@ jobs:
           npx prisma migrate deploy
           npx prisma migrate status
 
+      - name: Check production database secrets
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_PRODUCTION_URL }}
+          DIRECT_URL: ${{ secrets.DATABASE_PRODUCTION_DIRECT_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ] || [ -z "$DIRECT_URL" ]; then
+            echo "::error::Secrets DATABASE_PRODUCTION_URL and DATABASE_PRODUCTION_DIRECT_URL are not set."
+            exit 1
+          fi
+
       - name: Deploy migrations to production
         env:
           DATABASE_URL: ${{ secrets.DATABASE_PRODUCTION_URL }}
