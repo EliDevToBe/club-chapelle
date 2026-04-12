@@ -1,0 +1,71 @@
+name: CD - Deploy database schema (production)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "prisma/**"
+      - "./prisma.config.ts"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5433:5432
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate Prisma schema
+        env:
+          DATABASE_URL: "postgresql://postgres:test@localhost:5433/test_db"
+          DIRECT_URL: "postgresql://postgres:test@localhost:5433/test_db"
+        
+        run: npx prisma validate
+
+      - name: Test migrations on local database
+        env:
+          DATABASE_URL: "postgresql://postgres:test@localhost:5433/test_db"
+          DIRECT_URL: "postgresql://postgres:test@localhost:5433/test_db"
+          # Test migrations on local database
+          # Verify the migration worked
+        run: |
+         npx prisma migrate deploy
+         npx prisma migrate status
+      
+      - name: Deploy migrations to production
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_PRODUCTION_URL }}
+          DIRECT_URL: ${{ secrets.DATABASE_PRODUCTION_DIRECT_URL }}
+        run: npx prisma migrate deploy
+
+      - name: Verify migration success
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_PRODUCTION_URL }}
+          DIRECT_URL: ${{ secrets.DATABASE_PRODUCTION_DIRECT_URL }}
+        run: |
+          npx prisma migrate status
+          npx prisma db execute --stdin <<< "SELECT current_database(), current_user, version();"
+          npx prisma db execute --stdin <<< "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
