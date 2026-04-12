@@ -6,4 +6,15 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   modules: ["@nuxt/ui", "@nuxt/test-utils/module"],
+
+  runtimeConfig: {
+    public: {
+      socialInstagram:
+        process.env.NUXT_PUBLIC_SOCIAL_INSTAGRAM ??
+        "https://www.instagram.com/les_archers_de_la_chapelle",
+      socialFacebook:
+        process.env.NUXT_PUBLIC_SOCIAL_FACEBOOK ??
+        "https://www.facebook.com/archersdelachapelle/",
+    },
+  },
 });
