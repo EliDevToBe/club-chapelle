@@ -1,16 +1,16 @@
 <template>
   <section class="space-y-3 md:space-y-4">
-    <template v-if="isMainSection && title">
-      <h1 :class="ui.mainTitle">
+    <div>
+      <div
+        v-if="!!title"
+        :class="isMainSection ? ui.mainTitle : ui.sectionTitle"
+      >
         {{ title }}
-      </h1>
-    </template>
-
-    <template v-else-if="title">
-      <h2 :class="ui.sectionTitle">
-        {{ title }}
-      </h2>
-    </template>
+      </div>
+      <p v-if="description" :class="ui.description">
+        {{ description }}
+      </p>
+    </div>
 
     <slot />
   </section>
@@ -20,6 +20,7 @@
 withDefaults(
   defineProps<{
     title?: string;
+    description?: string;
     isMainSection?: boolean;
   }>(),
   {
@@ -28,8 +29,8 @@ withDefaults(
 );
 
 const ui = {
-  root: "space-y-3 md:space-y-4",
   mainTitle: "text-2xl font-semibold text-highlighted md:text-3xl",
-  sectionTitle: "text-lg font-semibold text-highlighted md:text-xl",
+  sectionTitle: "text-lg font-semibold text-highlighted md:text-2xl",
+  description: "text-muted text-sm",
 };
 </script>

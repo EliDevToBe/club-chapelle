@@ -1,8 +1,8 @@
 <template>
-  <ChapSection title="Contact">
-    <p class="text-muted text-sm md:text-base">
-      Une question ? Écrivez-nous ou rendez-vous sur la page dédiée.
-    </p>
+  <ChapSection
+    title="Contact"
+    description="Une question ? Écrivez-nous ou rendez-vous sur la page dédiée."
+  >
     <ChapButton
       to="/contact"
       size="lg"

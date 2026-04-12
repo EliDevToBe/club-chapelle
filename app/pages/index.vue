@@ -2,11 +2,12 @@
   <ContentPageWrapper>
     <IntroductionSection />
 
-    <CarouselSection />
+    <CarouselSection class="mb-11" />
 
-    <SocialSection />
-
-    <ContactSection />
+    <div class="flex flex-col md:flex-row justify-between gap-9">
+      <ContactSection />
+      <SocialSection />
+    </div>
 
     <AffiliationSection />
   </ContentPageWrapper>

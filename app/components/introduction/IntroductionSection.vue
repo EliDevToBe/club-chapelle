@@ -1,6 +1,6 @@
 <template>
   <ChapSection title="Bienvenue aux Archers de La Chapelle" is-main-section>
-    <div class="text-muted space-y-3 text-base leading-relaxed md:text-lg">
+    <ContentTextWrapper class="text-muted">
       <p>
         Les Archers de La Chapelle (ARC18) est un club de tir à l’arc à Paris.
         Ce site remplace l’ancienne vitrine pour offrir une information plus
@@ -10,11 +10,12 @@
         Vous y trouverez bientôt l’actualité du club, des informations pratiques
         et les moyens de nous contacter — le tout au même endroit.
       </p>
-    </div>
+    </ContentTextWrapper>
   </ChapSection>
 </template>
 
 <script setup lang="ts">
+import ContentTextWrapper from "~/components/layout/ContentTextWrapper.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 </script>
 

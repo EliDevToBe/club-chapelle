@@ -1,8 +1,8 @@
 <template>
-  <ChapSection title="Suivez-nous">
-    <p class="text-muted text-sm md:text-base">
-      Retrouvez le club sur les réseaux !
-    </p>
+  <ChapSection
+    title="Suivez-nous"
+    description="Retrouvez le club sur les réseaux !"
+  >
     <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap md:gap-4">
       <ChapButton
         :to="socialInstagram"
