@@ -23,8 +23,16 @@ export default defineAppConfig({
           active: false,
           variant: "link",
           class: {
-            link: ["hover:text-secondary", "transition-colors"],
+            link: [
+              "hover:text-secondary active:text-secondary-600!",
+              "transition-colors",
+            ],
           },
+        },
+        {
+          active: true,
+          variant: "link",
+          class: { link: ["active:text-primary-600!"] },
         },
         {
           variant: "link",

@@ -29,6 +29,8 @@ export const useSiteNavItems = () => {
         label: "Se connecter",
         to: "/login",
         active: route.path.startsWith("/login"),
+        class:
+          "text-secondary hover:text-secondary-300! active:text-secondary-600!",
       },
     ];
   });

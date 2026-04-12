@@ -13,14 +13,16 @@
     <UNavigationMenu :items="navItems" variant="link" class="min-w-0" />
 
     <template #right>
-      <ChapButton
-        to="/login"
-        label="Se connecter"
-        size="sm"
-        variant="ghost"
-        color="secondary"
-        override-class="h-fit"
-      />
+      <div class="hidden md:flex items-center">
+        <ChapButton
+          to="/login"
+          label="Se connecter"
+          size="sm"
+          variant="ghost"
+          color="secondary"
+          override-class="h-fit"
+        />
+      </div>
     </template>
 
     <template #body>
