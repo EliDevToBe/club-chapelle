@@ -12,7 +12,7 @@
         trailing-icon="i-ph-github-logo-duotone"
         color="neutral"
         variant="link"
-        to="https://github.com/user-attachments/assets/517348e2-eb57-4c8a-ad5c-2cbef464013a"
+        to="https://archers-chapelle.sirv.com/chapelle/dakos.jpg"
         target="_blank"
         label="Avec ❤️ pour les Archers de La Chapelle"
         class="text-muted"
