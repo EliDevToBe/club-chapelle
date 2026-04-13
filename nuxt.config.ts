@@ -17,4 +17,9 @@ export default defineNuxtConfig({
         "https://www.facebook.com/archersdelachapelle/",
     },
   },
+
+  routeRules: {
+    "/contact": { redirect: "/work-in-progress" },
+    "/login": { redirect: "/work-in-progress" },
+  },
 });
