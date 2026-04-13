@@ -54,8 +54,6 @@ definePageMeta({
   layout: "default",
 });
 
-const watermarkLabel = "ARC 18";
-
 const ui = {
   watermark: [
     "select-none font-bold tabular-nums leading-none tracking-tighter",
