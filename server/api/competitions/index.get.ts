@@ -4,7 +4,7 @@ import { toCompetitionDto } from "~~/server/mappers/competition.mapper";
 import { requireRoles } from "~~/server/utils/rbac";
 import type { RoleEnum } from "~~/shared/db-enums";
 
-const allowedRoles: RoleEnum[] = ["member"];
+const allowedRoles: RoleEnum[] = ["member", "manager", "admin"];
 
 export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);

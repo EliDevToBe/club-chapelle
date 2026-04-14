@@ -1,5 +1,4 @@
 import { createError, getHeader, type H3Event } from "h3";
-import { ROLE_ORDER } from "~~/domain/user/role";
 import type { RoleEnum } from "~~/shared/db-enums";
 
 type AuthUserContext = {
@@ -7,19 +6,6 @@ type AuthUserContext = {
   role: RoleEnum;
   authenticated: boolean;
 };
-
-const ROLE_INDEX = ROLE_ORDER.reduce<Record<RoleEnum, number>>(
-  (acc, role, index) => {
-    acc[role] = index;
-    return acc;
-  },
-  {
-    member: 0,
-    manager: 1,
-    admin: 2,
-    developer: 3,
-  },
-);
 
 const isRoleEnum = (value: string): value is RoleEnum =>
   value === "member" ||
@@ -59,13 +45,19 @@ const readAuthUser = (event: H3Event): AuthUserContext | null => {
 const hasRoleAccess = (
   userRole: RoleEnum,
   allowedRoles: readonly RoleEnum[],
-) => {
-  const userRoleIndex = ROLE_INDEX[userRole];
-  return allowedRoles.some(
-    (allowedRole) => userRoleIndex >= ROLE_INDEX[allowedRole],
-  );
+): boolean => {
+  if (userRole === "developer") {
+    return true;
+  }
+
+  return allowedRoles.includes(userRole);
 };
 
+/**
+ * Requires an authenticated user whose `role` is **literally** one of `allowedRoles`,
+ * except `developer`, which is always allowed after authentication (do not list it on routes).
+ * Role hierarchy is **not** applied: list every non-developer role that may call the route (e.g. `["manager", "admin"]`).
+ */
 export const requireRoles = (
   event: H3Event,
   allowedRoles: readonly RoleEnum[],

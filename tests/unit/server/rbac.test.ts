@@ -17,7 +17,7 @@ describe("requireRoles", () => {
     expect(() => requireRoles(baseEvent, ["member"])).not.toThrow();
   });
 
-  it("allows access with inherited role permissions", () => {
+  it("allows access when user role appears in allowedRoles", () => {
     const event = {
       ...baseEvent,
       context: {
@@ -30,6 +30,51 @@ describe("requireRoles", () => {
     } as unknown as H3Event;
 
     expect(() => requireRoles(event, ["manager"])).not.toThrow();
+  });
+
+  it("does not treat higher roles as implicitly allowed", () => {
+    const event = {
+      ...baseEvent,
+      context: {
+        ...baseEvent.context,
+        authUser: {
+          ...baseEvent.context.authUser,
+          role: "admin",
+        },
+      },
+    } as unknown as H3Event;
+
+    expect(() => requireRoles(event, ["manager"])).toThrowError("Forbidden");
+  });
+
+  it("allows access when higher roles are listed explicitly", () => {
+    const event = {
+      ...baseEvent,
+      context: {
+        ...baseEvent.context,
+        authUser: {
+          ...baseEvent.context.authUser,
+          role: "admin",
+        },
+      },
+    } as unknown as H3Event;
+
+    expect(() => requireRoles(event, ["manager", "admin"])).not.toThrow();
+  });
+
+  it("allows developer on any route without listing developer in allowedRoles", () => {
+    const event = {
+      ...baseEvent,
+      context: {
+        ...baseEvent.context,
+        authUser: {
+          ...baseEvent.context.authUser,
+          role: "developer",
+        },
+      },
+    } as unknown as H3Event;
+
+    expect(() => requireRoles(event, ["member"])).not.toThrow();
   });
 
   it("rejects unauthenticated users with 401", () => {
