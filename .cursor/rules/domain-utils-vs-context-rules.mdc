@@ -1,0 +1,32 @@
+---
+description: Where to put domain helpers — generic utils vs bounded-context rules
+globs: "domain/**/*.ts"
+alwaysApply: false
+---
+
+# Domain helpers: `domain/utils` vs bounded-context modules
+
+## Dependency direction
+
+Domain stays **pure TypeScript** with **no** Vue, Nuxt, Nitro, Prisma, or HTTP imports (see `ddd-core.mdc`).
+
+## Generic business helpers
+
+- Put **cross-cutting** business logic helpers that are **not owned by a single** bounded context in:
+  - [`domain/utils/index.ts`](domain/utils/index.ts)
+- Examples: calendar rules shared by multiple contexts, small pure helpers reused across `domain/` without belonging to one slice.
+
+## Bounded-context-specific helpers
+
+- Put **context-owned** business rules and helpers next to that context under `domain/<context>/`, using clear names (e.g. `*.rules.ts`, `*.ts` as appropriate).
+- Example: participation invariants live in [`domain/participations/participation.rules.ts`](domain/participations/participation.rules.ts).
+
+## Naming and growth
+
+- Prefer **new named exports** in `domain/utils/index.ts` for new generic helpers rather than ad hoc files at `domain/` root.
+- If `domain/utils/index.ts` grows large, split into `domain/utils/<topic>.ts` and re-export from `index.ts`—still one obvious entry for generic helpers.
+
+## Anti-patterns
+
+- Do **not** move framework-specific or persistence-specific logic into `domain/utils`.
+- Do **not** put context-specific rules in `domain/utils` to avoid “grab bag” coupling across bounded contexts.
