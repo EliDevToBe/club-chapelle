@@ -2,10 +2,11 @@ import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 import { validateParticipationRules } from "../../domain/participations/participation.rules";
+import { seasonYearFromDate } from "../../domain/utils/index.js";
 import { type Prisma, PrismaClient } from "../../generated/prisma/client.js";
 import { seedLinkedArchers, seedUnlinkedArcherNames } from "./data/archers.js";
 import { seedCompetitions } from "./data/competitions.js";
-import { addDaysUtc, seasonYearFromDate, utcDateOnly } from "./lib/dates.js";
+import { addDaysUtc, utcDateOnly } from "./lib/dates.js";
 import {
   distanceAndTargetForSeed,
   payerPaymentForSeed,

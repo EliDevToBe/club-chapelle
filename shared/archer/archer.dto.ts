@@ -4,5 +4,13 @@ export type ArcherDto = {
   auth_user_id: string | null;
   name: string;
   created_at: string;
-  offboarded_at: string;
+  offboarded_at: string | null;
 };
+
+export type ArcherCreateDto = {
+  auth_user_id?: string | null;
+  name: string;
+  offboarded_at?: string | null;
+};
+
+export type ArcherUpdateDto = Partial<ArcherCreateDto>;

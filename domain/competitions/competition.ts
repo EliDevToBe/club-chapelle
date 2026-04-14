@@ -3,8 +3,10 @@ import type {
   CompetitionTypeEnum,
 } from "~~/shared/db-enums";
 
+export type CompetitionId = string;
+
 export type Competition = {
-  id: string;
+  id: CompetitionId;
   fileId: string | null;
   name: string;
   startDate: Date;

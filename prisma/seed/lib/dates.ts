@@ -1,13 +1,3 @@
-/** Sport season: September (year Y) through August (year Y + 1); stored `season_year` is Y. */
-export const seasonYearFromDate = (d: Date): number => {
-  const month = d.getUTCMonth();
-  const year = d.getUTCFullYear();
-  if (month >= 8) {
-    return year;
-  }
-  return year - 1;
-};
-
 export const addDaysUtc = (d: Date, days: number): Date => {
   const next = new Date(d);
   next.setUTCDate(next.getUTCDate() + days);

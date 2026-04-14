@@ -66,13 +66,15 @@
         <p>Envoyez-nous un message afin de savoir s'il reste des places !</p>
       </ContentTextWrapper>
     </ChapSection>
+
+    <AffiliationSection />
   </ContentPageWrapper>
 </template>
 
 <script setup lang="ts">
+import AffiliationSection from "~/components/affiliation/AffiliationSection.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ContentTextWrapper from "~/components/layout/ContentTextWrapper.vue";
-import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapListItem from "~/components/ui/ChapListItem.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 

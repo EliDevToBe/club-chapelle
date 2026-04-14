@@ -1,0 +1,44 @@
+---
+description: Use block bodies (curly braces) for functions; avoid expression-body one-liners
+globs: "**/*.ts"
+alwaysApply: true
+---
+
+# TypeScript: block function bodies
+
+## Requirement
+
+- Prefer **block bodies** with `{ ... }` and an explicit `return` (where applicable) over **expression bodies** (`=> singleExpression`) for:
+  - **Exported** functions and constants (including arrow functions assigned to `const` at module scope).
+  - **Public methods** on classes (including arrow-function properties used as methods).
+
+## Rationale
+
+Expression-body one-liners are harder to extend safely (debugging, logging, guards) and are inconsistent with the rest of the codebase style.
+
+## Examples
+
+```typescript
+// ❌ Avoid (expression body at module scope)
+export const parseThing = (x: string): number => Number.parseInt(x, 10);
+
+// ✅ Prefer
+export const parseThing = (x: string): number => {
+  return Number.parseInt(x, 10);
+};
+```
+
+```typescript
+// ❌ Avoid (expression-body method)
+public findById = async (id: string) => this.repo.findById(id);
+
+// ✅ Prefer
+public findById = async (id: string) => {
+  return this.repo.findById(id);
+};
+```
+
+## Narrow exceptions
+
+- **Very small inline callbacks** inside higher-order helpers (e.g. `.map((x) => x.id)`) may stay as one-line expressions when that improves readability.
+- Generated or third-party code is out of scope.

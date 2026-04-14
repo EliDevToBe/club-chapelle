@@ -19,3 +19,18 @@ export type CompetitionDto = {
   season_year: number;
   created_at: string;
 };
+
+export type CompetitionCreateDto = {
+  file_id?: string | null;
+  name: string;
+  start_date: string;
+  end_date: string;
+  place?: string | null;
+  price: string;
+  category: CompetitionCategoryEnum;
+  type: CompetitionTypeEnum;
+  is_championship?: boolean;
+  season_year: number;
+};
+
+export type CompetitionUpdateDto = Partial<CompetitionCreateDto>;

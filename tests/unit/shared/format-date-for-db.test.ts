@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDateForDb } from "~~/shared/utils";
+import { formatDateForDb } from "~~/shared/utils/dates";
 
 describe("formatDateForDb", () => {
   it("formats a Date as YYYY-MM-DD (UTC)", () => {
