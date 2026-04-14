@@ -1,3 +1,4 @@
+import type { H3Event } from "h3";
 import { describe, expect, it } from "vitest";
 import { requireRoles } from "~~/server/utils/rbac";
 
@@ -9,7 +10,7 @@ const baseEvent = {
       authenticated: true,
     },
   },
-} as never;
+} as unknown as H3Event;
 
 describe("requireRoles", () => {
   it("allows access when role is explicitly authorised", () => {
@@ -18,45 +19,52 @@ describe("requireRoles", () => {
 
   it("allows access with inherited role permissions", () => {
     const event = {
+      ...baseEvent,
       context: {
+        ...baseEvent.context,
         authUser: {
-          id: "u2",
-          role: "admin",
-          authenticated: true,
+          ...baseEvent.context.authUser,
+          role: "manager",
         },
       },
-    } as never;
+    } as unknown as H3Event;
 
     expect(() => requireRoles(event, ["manager"])).not.toThrow();
   });
 
   it("rejects unauthenticated users with 401", () => {
     const event = {
+      ...baseEvent,
       context: {
+        ...baseEvent.context,
         authUser: {
+          ...baseEvent.context.authUser,
           id: "u3",
           role: "admin",
           authenticated: false,
         },
       },
-    } as never;
+    } as unknown as H3Event;
 
     expect(() => requireRoles(event, ["member"])).toThrowError(
-      /Authentication required/,
+      "Authentication required",
     );
   });
 
   it("rejects role mismatch with 403", () => {
     const event = {
+      ...baseEvent,
       context: {
+        ...baseEvent.context,
         authUser: {
+          ...baseEvent.context.authUser,
           id: "u4",
           role: "member",
           authenticated: true,
         },
       },
-    } as never;
+    } as unknown as H3Event;
 
-    expect(() => requireRoles(event, ["admin"])).toThrowError(/Forbidden/);
+    expect(() => requireRoles(event, ["admin"])).toThrowError("Forbidden");
   });
 });
