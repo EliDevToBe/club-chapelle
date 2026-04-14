@@ -14,10 +14,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const repos = createRepositories();
-  const deleteParticipation = new DeleteParticipation(
+  const deleteParticipationHandler = new DeleteParticipation(
     repos.participationRepository,
   );
-  const deleted = await deleteParticipation.delete(id);
+  const deleted = await deleteParticipationHandler.delete(id);
 
   if (!deleted) {
     throw createError({

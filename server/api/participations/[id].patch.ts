@@ -20,10 +20,10 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<ParticipationUpdateDto>(event);
   const repos = createRepositories();
-  const updateParticipation = new UpdateParticipation(
+  const updateParticipationHandler = new UpdateParticipation(
     repos.participationRepository,
   );
-  const participation = await updateParticipation.update(
+  const participation = await updateParticipationHandler.update(
     id,
     toUpdateParticipationInput(body),
   );

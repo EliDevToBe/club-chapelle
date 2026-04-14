@@ -1,0 +1,37 @@
+---
+description: Name use-case instances explicitly in Nitro API handlers (Handler suffix)
+globs: server/api/**/*.ts
+alwaysApply: false
+---
+
+# Use-case instance naming in `server/api/**`
+
+When you instantiate an **application-layer use-case class** in a Nitro handler, give the variable an **explicit handler name** so it is not mistaken for a function, DTO, or domain entity.
+
+## Rules
+
+1. **Suffix with `Handler`**, using the imperative use-case name as the stem: e.g. `UpdateUser` → `updateUserHandler`, `ListPublicCompetitions` → `listPublicCompetitionsHandler`, `FindCompetitionById` → `findCompetitionByIdHandler`.
+2. **Do not** name the variable exactly like the class in camelCase only (e.g. avoid `const updateUser = new UpdateUser(...)` when `updateUser` reads like a single operation function).
+3. Keep the **two-statement** rule from `.cursor/rules/nuxt-server-layers.mdc`: assign the use case to a `const`, then `await` its method on the next line—never `await new SomeUseCase(...).method()`.
+
+## Examples
+
+```typescript
+// ❌ Avoid: reads like a bare operation, easy to confuse with a function
+const updateUser = new UpdateUser(repos.userRepository, auth.password);
+const user = await updateUser.update(id, input);
+
+// ✅ Prefer: delivery role is explicit
+const updateUserHandler = new UpdateUser(repos.userRepository, auth.password);
+const user = await updateUserHandler.update(id, input);
+```
+
+```typescript
+// ✅ Multi-line constructor stays on the use-case type; only the binding name changes
+const findCompetitionByIdHandler = new FindCompetitionById(
+  repos.competitionRepository,
+);
+const competition = await findCompetitionByIdHandler.findById(id);
+```
+
+**Note:** `createAuthServices()`, repositories, and mappers are **not** use-case classes—name those as you like (`authServices`, `repos`, etc.).

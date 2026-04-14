@@ -14,8 +14,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const repos = createRepositories();
-  const deleteArcher = new DeleteArcher(repos.archerRepository);
-  const deleted = await deleteArcher.delete(id);
+  const deleteArcherHandler = new DeleteArcher(repos.archerRepository);
+  const deleted = await deleteArcherHandler.delete(id);
 
   if (!deleted) {
     throw createError({ statusCode: 404, statusMessage: "Archer not found" });

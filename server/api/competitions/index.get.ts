@@ -9,9 +9,9 @@ const allowedRoles: RoleEnum[] = ["member", "manager", "admin"];
 export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
   const repos = createRepositories();
-  const listPublicCompetitions = new ListPublicCompetitions(
+  const listPublicCompetitionsHandler = new ListPublicCompetitions(
     repos.competitionRepository,
   );
-  const rows = await listPublicCompetitions.findPublic();
+  const rows = await listPublicCompetitionsHandler.findPublic();
   return { competitions: rows.map(toCompetitionDto) };
 });

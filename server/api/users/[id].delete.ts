@@ -14,8 +14,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const repos = createRepositories();
-  const deleteUser = new DeleteUser(repos.userRepository);
-  const deleted = await deleteUser.delete(id);
+  const deleteUserHandler = new DeleteUser(repos.userRepository);
+  const deleted = await deleteUserHandler.delete(id);
 
   if (!deleted) {
     throw createError({ statusCode: 404, statusMessage: "User not found" });

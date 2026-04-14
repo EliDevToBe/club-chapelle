@@ -15,8 +15,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const repos = createRepositories();
-  const findArcherById = new FindArcherById(repos.archerRepository);
-  const archer = await findArcherById.findById(id);
+  const findArcherByIdHandler = new FindArcherById(repos.archerRepository);
+  const archer = await findArcherByIdHandler.findById(id);
 
   if (!archer) {
     throw createError({ statusCode: 404, statusMessage: "Archer not found" });

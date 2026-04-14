@@ -15,10 +15,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const repos = createRepositories();
-  const findParticipationById = new FindParticipationById(
+  const findParticipationByIdHandler = new FindParticipationById(
     repos.participationRepository,
   );
-  const participation = await findParticipationById.findById(id);
+  const participation = await findParticipationByIdHandler.findById(id);
 
   if (!participation) {
     throw createError({

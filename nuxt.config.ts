@@ -8,6 +8,10 @@ export default defineNuxtConfig({
   modules: ["@nuxt/ui", "@nuxt/test-utils/module"],
 
   runtimeConfig: {
+    // Used for access and refresh, should be different from each other
+    authJwtAccessSecret: process.env.NUXT_AUTH_JWT_ACCESS_SECRET ?? "",
+    authJwtRefreshSecret: process.env.NUXT_AUTH_JWT_REFRESH_SECRET ?? "",
+
     public: {
       socialInstagram:
         process.env.NUXT_PUBLIC_SOCIAL_INSTAGRAM ??

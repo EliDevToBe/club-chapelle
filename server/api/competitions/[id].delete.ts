@@ -14,8 +14,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const repos = createRepositories();
-  const deleteCompetition = new DeleteCompetition(repos.competitionRepository);
-  const deleted = await deleteCompetition.delete(id);
+  const deleteCompetitionHandler = new DeleteCompetition(
+    repos.competitionRepository,
+  );
+  const deleted = await deleteCompetitionHandler.delete(id);
 
   if (!deleted) {
     throw createError({

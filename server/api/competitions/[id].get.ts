@@ -15,10 +15,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const repos = createRepositories();
-  const findCompetitionById = new FindCompetitionById(
+  const findCompetitionByIdHandler = new FindCompetitionById(
     repos.competitionRepository,
   );
-  const competition = await findCompetitionById.findById(id);
+  const competition = await findCompetitionByIdHandler.findById(id);
 
   if (!competition) {
     throw createError({

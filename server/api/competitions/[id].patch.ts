@@ -20,8 +20,10 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<CompetitionUpdateDto>(event);
   const repos = createRepositories();
-  const updateCompetition = new UpdateCompetition(repos.competitionRepository);
-  const competition = await updateCompetition.update(
+  const updateCompetitionHandler = new UpdateCompetition(
+    repos.competitionRepository,
+  );
+  const competition = await updateCompetitionHandler.update(
     id,
     toUpdateCompetitionInput(body),
   );

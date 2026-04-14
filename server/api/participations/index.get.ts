@@ -9,9 +9,9 @@ const allowedRoles: RoleEnum[] = ["admin"];
 export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
   const repos = createRepositories();
-  const listParticipations = new ListParticipations(
+  const listParticipationsHandler = new ListParticipations(
     repos.participationRepository,
   );
-  const participations = await listParticipations.findMany();
+  const participations = await listParticipationsHandler.findMany();
   return { participations: participations.map(toParticipationDto) };
 });

@@ -15,8 +15,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const repos = createRepositories();
-  const findUserById = new FindUserById(repos.userRepository);
-  const user = await findUserById.findById(id);
+  const findUserByIdHandler = new FindUserById(repos.userRepository);
+  const user = await findUserByIdHandler.findById(id);
 
   if (!user) {
     throw createError({ statusCode: 404, statusMessage: "User not found" });

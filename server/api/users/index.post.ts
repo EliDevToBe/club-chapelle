@@ -1,4 +1,5 @@
 import { CreateUser } from "~~/application/user/create-user.use-case";
+import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
 import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { toCreateUserInput, toUserDto } from "~~/server/mappers/user.mapper";
 import { requireRoles } from "~~/server/utils/rbac";
@@ -12,7 +13,16 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<UserCreateDto>(event);
 
   const repos = createRepositories();
-  const createUser = new CreateUser(repos.userRepository);
-  const user = await createUser.create(toCreateUserInput(body));
+  const config = useRuntimeConfig(event);
+
+  const accessSecret = config.authJwtAccessSecret;
+  const refreshSecret = config.authJwtRefreshSecret;
+
+  const auth = createAuthServices({
+    accessSecret,
+    refreshSecret,
+  });
+  const createUserHandler = new CreateUser(repos.userRepository, auth.password);
+  const user = await createUserHandler.create(toCreateUserInput(body));
   return { user: toUserDto(user) };
 });

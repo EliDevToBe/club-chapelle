@@ -20,8 +20,11 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<ArcherUpdateDto>(event);
   const repos = createRepositories();
-  const updateArcher = new UpdateArcher(repos.archerRepository);
-  const archer = await updateArcher.update(id, toUpdateArcherInput(body));
+  const updateArcherHandler = new UpdateArcher(repos.archerRepository);
+  const archer = await updateArcherHandler.update(
+    id,
+    toUpdateArcherInput(body),
+  );
 
   if (!archer) {
     throw createError({ statusCode: 404, statusMessage: "Archer not found" });
