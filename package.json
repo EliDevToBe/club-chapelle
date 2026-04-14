@@ -29,7 +29,7 @@
     "vue-tsc": "^3.2.6"
   },
   "scripts": {
-    "build": "nuxt build",
+    "build": "npx prisma generate && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
