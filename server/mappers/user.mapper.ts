@@ -8,7 +8,7 @@ import type {
   UserDto,
   UserUpdateDto,
 } from "~~/shared/user/user.dto";
-import { formatDateForDb } from "~~/shared/utils";
+import { formatDateForDb } from "~~/shared/utils/dates";
 
 export const toUserDto = (user: User): UserDto => ({
   id: user.id,

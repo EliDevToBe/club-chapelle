@@ -14,6 +14,7 @@
   },
   "include": [
     "prisma/seed/**/*.ts",
+    "domain/utils/index.ts",
     "domain/participations/participation.rules.ts",
     "shared/db-enums.ts"
   ]

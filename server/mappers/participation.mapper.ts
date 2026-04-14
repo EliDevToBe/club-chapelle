@@ -8,7 +8,7 @@ import type {
   ParticipationDto,
   ParticipationUpdateDto,
 } from "~~/shared/participation/participation.dto";
-import { formatDateForDb } from "~~/shared/utils";
+import { formatDateForDb } from "~~/shared/utils/dates";
 
 export const toParticipationDto = (
   participation: Participation,

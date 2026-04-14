@@ -8,20 +8,18 @@ import type {
   ArcherDto,
   ArcherUpdateDto,
 } from "~~/shared/archer/archer.dto";
-import { formatDateForDb } from "~~/shared/utils";
-
-const dateOrNull = (value: Date | null): string | null =>
-  value ? formatDateForDb(value) : null;
-
-const parseDateOrNull = (value: string | null | undefined): Date | null =>
-  value ? new Date(value) : null;
+import {
+  formatDateForDb,
+  formatDateForDbOrNull,
+  parseDbDateStringOrNull,
+} from "~~/shared/utils/dates";
 
 export const toArcherDto = (archer: Archer): ArcherDto => ({
   id: archer.id,
   auth_user_id: archer.authUserId,
   name: archer.name,
   created_at: formatDateForDb(archer.createdAt),
-  offboarded_at: dateOrNull(archer.offboardedAt),
+  offboarded_at: formatDateForDbOrNull(archer.offboardedAt),
 });
 
 export const toCreateArcherInput = (
@@ -29,7 +27,7 @@ export const toCreateArcherInput = (
 ): CreateArcherInput => ({
   name: dto.name,
   authUserId: dto.auth_user_id,
-  offboardedAt: parseDateOrNull(dto.offboarded_at),
+  offboardedAt: parseDbDateStringOrNull(dto.offboarded_at),
 });
 
 export const toUpdateArcherInput = (
@@ -37,5 +35,5 @@ export const toUpdateArcherInput = (
 ): UpdateArcherInput => ({
   name: dto.name,
   authUserId: dto.auth_user_id,
-  offboardedAt: parseDateOrNull(dto.offboarded_at),
+  offboardedAt: parseDbDateStringOrNull(dto.offboarded_at),
 });

@@ -8,9 +8,7 @@ import type {
   CompetitionDto,
   CompetitionUpdateDto,
 } from "~~/shared/competitions/competition.dto";
-import { formatDateForDb } from "~~/shared/utils";
-
-const parseDate = (value: string): Date => new Date(value);
+import { formatDateForDb, parseDbDateString } from "~~/shared/utils/dates";
 
 export const toCompetitionDto = (competition: Competition): CompetitionDto => ({
   id: competition.id,
@@ -32,8 +30,8 @@ export const toCreateCompetitionInput = (
 ): CreateCompetitionInput => ({
   fileId: dto.file_id,
   name: dto.name,
-  startDate: parseDate(dto.start_date),
-  endDate: parseDate(dto.end_date),
+  startDate: parseDbDateString(dto.start_date),
+  endDate: parseDbDateString(dto.end_date),
   place: dto.place,
   price: dto.price,
   category: dto.category,
@@ -47,8 +45,8 @@ export const toUpdateCompetitionInput = (
 ): UpdateCompetitionInput => ({
   fileId: dto.file_id,
   name: dto.name,
-  startDate: dto.start_date ? parseDate(dto.start_date) : undefined,
-  endDate: dto.end_date ? parseDate(dto.end_date) : undefined,
+  startDate: dto.start_date ? parseDbDateString(dto.start_date) : undefined,
+  endDate: dto.end_date ? parseDbDateString(dto.end_date) : undefined,
   place: dto.place,
   price: dto.price,
   category: dto.category,
