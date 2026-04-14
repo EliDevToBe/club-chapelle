@@ -19,7 +19,6 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    "/contact": { redirect: "/work-in-progress" },
     "/login": { redirect: "/work-in-progress" },
   },
 });
