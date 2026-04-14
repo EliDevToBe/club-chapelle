@@ -1,9 +1,11 @@
 /** Club archer profile (matches `archer` table). */
+export type ArcherId = string;
+
 export type Archer = {
-  id: string;
+  id: ArcherId;
   name: string;
   /** `auth_user.id` when linked; null before onboarding or after unlink. */
   authUserId: string | null;
   createdAt: Date;
-  offboardedAt: Date;
+  offboardedAt: Date | null;
 };

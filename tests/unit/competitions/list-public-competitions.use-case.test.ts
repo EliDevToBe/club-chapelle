@@ -22,10 +22,14 @@ describe("ListPublicCompetitions", () => {
   it("delegates to the competition repository", async () => {
     const rows = [sampleCompetition()];
     const repo: CompetitionRepository = {
-      findAll: vi.fn().mockResolvedValue(rows),
+      create: vi.fn(),
+      findById: vi.fn(),
+      findMany: vi.fn().mockResolvedValue(rows),
+      update: vi.fn(),
+      delete: vi.fn(),
     };
     const useCase = new ListPublicCompetitions(repo);
     await expect(useCase.findPublic()).resolves.toEqual(rows);
-    expect(repo.findAll).toHaveBeenCalledTimes(1);
+    expect(repo.findMany).toHaveBeenCalledTimes(1);
   });
 });

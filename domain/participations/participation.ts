@@ -7,9 +7,11 @@ import type {
   WeaponEnum,
 } from "~~/shared/db-enums";
 
+export type ParticipationId = string;
+
 /** Archer registration for a competition (matches `participation` table). */
 export type Participation = {
-  id: string;
+  id: ParticipationId;
   archerId: string;
   competitionId: string;
   registrationStatus: RegistrationStatusEnum;

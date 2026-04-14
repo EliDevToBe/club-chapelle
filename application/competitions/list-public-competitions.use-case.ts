@@ -3,7 +3,5 @@ import type { CompetitionRepository } from "~~/application/ports/competition-rep
 export class ListPublicCompetitions {
   constructor(private readonly competitions: CompetitionRepository) {}
 
-  public async findPublic() {
-    return this.competitions.findAll();
-  }
+  public findPublic = async () => this.competitions.findMany();
 }
