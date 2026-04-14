@@ -1,6 +1,6 @@
 <template>
   <ContentPageWrapper>
-    <ChapSection title="Nous contacter">
+    <ChapSection is-main-section title="Nous contacter">
       <ContentTextWrapper>
         <p>
           Directement par mail à
