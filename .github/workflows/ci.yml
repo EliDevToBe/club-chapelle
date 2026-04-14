@@ -21,6 +21,10 @@ jobs:
 
       - run: npm run check
 
-      - run: npm run check:schema
+      - run: |
+          npx prisma generate
+          npm run check:schema
+
+      - run: npm run check:ts
 
       - run: npm run test:run
