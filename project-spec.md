@@ -15,7 +15,7 @@ This document describes goals, functional requirements, role permissions, domain
 - Staff can create a competition, attach participants, and see **who still owes a fee** in one overview.
 - A **Member** can log in and see **only** their participations (and public competition listings as defined).
 - **Revoking** access does not erase historical participation data (see **Archer shell** below).
-- Public visitors can navigate **landing**, **infos**, and **contact**, view **images** managed by the club, and reach **Instagram** and **Facebook**.
+- Public visitors can navigate **landing**, **infos**, and **contact**, view a **landing carousel** of **images curated by the club** (see **MVP** under §2 and §10.1), and reach **Instagram** and **Facebook**.
 
 ## 2. Public website
 
@@ -29,7 +29,8 @@ This document describes goals, functional requirements, role permissions, domain
 
 **Media**
 
-- **Image upload / gallery:** club-managed visuals (implementation detail: storage and who may upload—at minimum **staff**; exact role TBD, default assumption **Admin** or **Manager** for uploads).
+- **MVP — landing gallery:** an **Admin** can **upload** pictures and **choose which uploaded images appear** on the public **landing** carousel (including **order** if the product requires it). Visitors see only that **curated** set on the carousel—no reliance on hard-coded placeholder assets in production. **Authenticated Admin** routes and APIs are required for upload and curation; apply **§3.2** (role checks on every sensitive path). Broader club galleries or **Manager** upload rights may come later; **MVP** scope is **Admin-only** for this workflow.
+- **Beyond MVP:** additional club-managed visuals, other pages, or **Manager** participation in uploads remain **implementation details** to decide after MVP.
 
 **Social**
 
@@ -55,6 +56,7 @@ Capabilities are cumulative by level.
 | Capability                                                                                             | Member | Manager | Admin |
 | ------------------------------------------------------------------------------------------------------ | ------ | ------- | ----- |
 | View public pages                                                                                      | ✅     | ✅      | ✅    |
+| **Upload** and **curate** the **landing carousel** images (MVP club gallery; **§2**)                  | ❌     | ❌      | ✅    |
 | Log in                                                                                                 | ✅     | ✅      | ✅    |
 | Browse **available competitions** (club-managed list/pool)                                             | ✅     | ✅      | ✅    |
 | View **own** participations                                                                            | ✅     | ✅      | ✅    |
@@ -79,6 +81,7 @@ Capabilities are cumulative by level.
 
 - Only **Admin** may **revoke** and **unlink** accounts from the **Archer** shell (preserving history).
 - **Creating competitions** and **assigning participants** is **Admin-only** (not Manager) per current spec.
+- **MVP landing gallery:** only **Admin** may **upload** images or **curate** the public landing **carousel** set (Manager upload is **out of scope** for MVP; revisit after MVP if the club wants to widen who may publish visuals).
 
 ### 3.3 Technical session model (reference)
 
@@ -259,12 +262,14 @@ Evolve the Listener into an **AI-oriented workflow** that:
 
 ## 10. Roadmaps
 
+**Checkable sub-tasks** for delivery (including dependency order inside MVP) live in [`project-roadmap.md`](project-roadmap.md); the tables below summarise **phase intent**.
+
 ### 10.1 Primary roadmap (author’s plan)
 
 
 | Phase    | Scope                                                                                                                                                     |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **MVP**  | Base **informational / showcase** website (public).                                                                                                       |
+| **MVP**  | **Public showcase:** **landing**, **infos**, **contact**, configurable **Instagram** and **Facebook** links. **Plus:** **Admin-managed landing gallery**—upload images and **curate which appear** (and in which order, if required) on the landing **carousel**; public site reads that curated set. |
 | **v1**   | **Back-office:** archers (internal shell), **competitions**, **participations**—**without** email linking yet (Archer before full Member implementation). |
 | **v1.5** | **Member invitation**, **role management**, **Admin** panel **overview**.                                                                                 |
 | **v2**   | **Calendar** overview (public competitions + member participations as specified).                                                                         |
@@ -279,7 +284,7 @@ Same product goals; different **sequencing** to reduce rework and front-load **R
 
 | Phase    | Scope                                                                                                                                          |
 | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **MVP**  | Same: public showcase (**landing**, **infos**, **contact**), images, social links.                                                             |
+| **MVP**  | Same public showcase (**landing**, **infos**, **contact**) and **social** links; **images** on the landing **carousel** are **Admin-uploaded** and **Admin-curated** as in §2.                                                             |
 | **v1**   | Archer, competitions, participations; add a **read-only competition list** (table/list, not full calendar) for internal validation.            |
 | **v1.5** | **Authentication + RBAC** first; then **invitations** and account linking.                                                                     |
 | **v2**   | **Full calendar** experience: public competitions + **my participations** for logged-in members.                                               |
