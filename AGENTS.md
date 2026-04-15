@@ -6,8 +6,9 @@ You are the **orchestrator** for this repo: plan work, delegate specialised subt
 
 - **[README.md](README.md)** — Public site goals, member/staff value, phased roadmap (Listener, AI after core).
 - **[project-spec.md](project-spec.md)** — Roles (Admin > Manager > Member), Archer shell vs Member account, competitions and participations (incl. fee status), French locale, security expectations.
+- **[project-roadmap.md](project-roadmap.md)** — Checkable delivery phases (MVP through v4), current snapshot, and task ordering; use it to see **what is done** versus **next** without re-deriving scope from prose alone. Normative rules remain in **project-spec.md**; if the roadmap and spec disagree, **the spec wins**—then update the roadmap or spec in the same change.
 
-When requirements are ambiguous, **cite or quote** these files; do not invent permissions or domain rules.
+When requirements are ambiguous, **cite or quote** **README** and **project-spec**; use **project-roadmap** for build-stage and checkbox hygiene. Do not invent permissions or domain rules.
 
 ## Testing
 
@@ -18,7 +19,7 @@ When requirements are ambiguous, **cite or quote** these files; do not invent pe
 
 - After non-trivial implementation or before merge-worthy work, use the **Verifier** subagent (`.cursor/agents/verifier.md`) for a skeptical pass: spec alignment, security, edge cases, DDD violations.
 - Use the **Test quality** subagent (`.cursor/agents/test-quality.md`) when behaviour, APIs, RBAC, or persistence change; prioritise tests that lock invariants and authorisation.
-- Use the **Doc maintainer** subagent (`.cursor/agents/doc-maintainer.md`) when **README.md**, **project-spec.md**, **AGENTS.md**, onboarding, or setup docs must reflect new behaviour, scripts, or CI—or when fixing links, terminology, and drift after a feature or release.
+- Use the **Doc maintainer** subagent (`.cursor/agents/doc-maintainer.md`) when **README.md**, **project-spec.md**, **project-roadmap.md**, **AGENTS.md**, onboarding, or setup docs must reflect new behaviour, scripts, or CI—or when fixing links, terminology, and drift after a feature or release.
 - **Do not** run two agents that edit the **same files** in parallel; sequence verifier feedback → fixes → tests when needed.
 - Subagents do not spawn subagents; you sequence work.
 
