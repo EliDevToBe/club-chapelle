@@ -1,4 +1,4 @@
-import { createError, getHeader, type H3Event } from "h3";
+import { createError, type H3Event } from "h3";
 import type { RoleEnum } from "~~/shared/db-enums";
 
 type AuthUserContext = {
@@ -7,39 +7,13 @@ type AuthUserContext = {
   authenticated: boolean;
 };
 
-const isRoleEnum = (value: string): value is RoleEnum =>
-  value === "member" ||
-  value === "manager" ||
-  value === "admin" ||
-  value === "developer";
-
-const readAuthUserFromHeaders = (event: H3Event): AuthUserContext | null => {
-  const roleHeader = getHeader(event, "x-user-role");
-  const idHeader = getHeader(event, "x-user-id");
-  const authenticatedHeader = getHeader(event, "x-user-authenticated");
-
-  if (!roleHeader || !idHeader || !authenticatedHeader) {
-    return null;
-  }
-
-  if (!isRoleEnum(roleHeader)) {
-    return null;
-  }
-
-  return {
-    id: idHeader,
-    role: roleHeader,
-    authenticated: authenticatedHeader === "true",
-  };
-};
-
 const readAuthUser = (event: H3Event): AuthUserContext | null => {
   const fromContext = event.context.authUser as AuthUserContext | undefined;
   if (fromContext) {
     return fromContext;
   }
 
-  return readAuthUserFromHeaders(event);
+  return null;
 };
 
 const hasRoleAccess = (

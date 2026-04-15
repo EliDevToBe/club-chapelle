@@ -30,8 +30,8 @@ import ChapSection from "~/components/ui/ChapSection.vue";
 
 const { public: pub } = useRuntimeConfig();
 
-const socialInstagram = computed(() => pub.socialInstagram);
-const socialFacebook = computed(() => pub.socialFacebook);
+const socialInstagram = pub.socialInstagram;
+const socialFacebook = pub.socialFacebook;
 </script>
 
 <style scoped lang=""></style>

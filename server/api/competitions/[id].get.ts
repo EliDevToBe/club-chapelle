@@ -1,6 +1,6 @@
 import { createError } from "h3";
 import { FindCompetitionById } from "~~/application/competitions/find-competition-by-id.use-case";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { toCompetitionDto } from "~~/server/mappers/competition.mapper";
 import { requireRoles } from "~~/server/utils/rbac";
 import type { RoleEnum } from "~~/shared/db-enums";
@@ -14,11 +14,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const repos = createRepositories();
-  const findCompetitionById = new FindCompetitionById(
+  const repos = getRepositories();
+  const findCompetitionByIdHandler = new FindCompetitionById(
     repos.competitionRepository,
   );
-  const competition = await findCompetitionById.findById(id);
+  const competition = await findCompetitionByIdHandler.findById(id);
 
   if (!competition) {
     throw createError({

@@ -80,6 +80,51 @@ Capabilities are cumulative by level.
 - Only **Admin** may **revoke** and **unlink** accounts from the **Archer** shell (preserving history).
 - **Creating competitions** and **assigning participants** is **Admin-only** (not Manager) per current spec.
 
+### 3.3 Technical session model (reference)
+
+This subsection documents how the **implemented** HTTP session works today (cookie-based JWTs, **no** extra database tables or enums for sessions).
+
+- **Password storage:** `auth_user.password` holds an **Argon2id** hash (library defaults). Plain passwords are never stored.
+- **Tokens:** Two **HS256 JWT** families—**access** (20-minute lifetime) and **refresh** (7-day lifetime)—signed with **two different secrets** (`NUXT_AUTH_JWT_ACCESS_SECRET` and `NUXT_AUTH_JWT_REFRESH_SECRET`). Access and refresh are **not** distinguished by custom JWT header fields or by extra payload “type” claims; separation is by **signing secret** and by **which cookie** carries the string, so a refresh token cannot be verified as an access token.
+- **Cookies (HttpOnly):** `club-access` (access JWT) and `club-refresh` (refresh JWT). The browser should send both on same-origin API calls using **`credentials: 'include'`**.
+- **Middleware (Nitro):** On `/api/**` routes (except `POST /api/auth/login`), the server verifies the access JWT from `club-access`, loads the user from the database by `sub`, and sets server **`event.context`** for RBAC. If access is missing or invalid but `club-refresh` verifies, the server issues a **new** access JWT, sets **`Set-Cookie`** for `club-access`, then continues with the same user resolution.
+- **Login / logout:** `POST /api/auth/login` validates email and password and sets both cookies. `POST /api/auth/logout` clears both cookies (no database session row to delete).
+- **Revocation limits:** Without server-side refresh/session storage, revoking **all** devices for a user is not automatic beyond password change or future token blocklists.
+
+```mermaid
+sequenceDiagram
+  participant Browser
+  participant LoginAPI as POST_api_auth_login
+  participant UC as LoginUser_use_case
+  participant LogoutAPI as POST_api_auth_logout
+  participant MW as server_middleware
+  participant API as Protected_api_handlers
+
+  Browser->>LoginAPI: email, password
+  LoginAPI->>UC: authenticate
+  UC-->>LoginAPI: access JWT, refresh JWT
+  LoginAPI-->>Browser: Set-Cookie club-access + club-refresh
+
+  Browser->>LogoutAPI: credentials include
+  LogoutAPI-->>Browser: Clear-Cookie club-access + club-refresh
+
+  Browser->>MW: Cookie club-access + Cookie club-refresh
+  MW->>MW: verify JWT with access secret
+  alt access valid
+    MW->>MW: findById user, event.context.authUser
+  else access invalid or expired
+    MW->>MW: verify JWT with refresh secret
+    alt refresh valid
+      MW->>MW: sign new access JWT, Set-Cookie club-access
+      MW->>MW: findById user, event.context.authUser
+    else refresh invalid
+      MW->>MW: no authUser context
+    end
+  end
+  MW->>API: continue
+  API->>API: requireRoles uses context only
+```
+
 ## 4. Domain concepts
 
 ### 4.1 Archer (internal shell)

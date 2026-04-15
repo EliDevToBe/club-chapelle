@@ -1,6 +1,15 @@
 import type { User, UserId } from "~~/domain/user/user";
 import type { RoleEnum } from "~~/shared/db-enums";
 
+/** Row fields needed for password login (not part of the public `User` domain type). */
+export type UserAuthCredentials = {
+  id: UserId;
+  email: string;
+  role: RoleEnum;
+  authenticated: boolean;
+  passwordHash: string | null;
+};
+
 export type CreateUserInput = {
   email: string;
   role: RoleEnum;
@@ -18,6 +27,9 @@ export type UpdateUserInput = {
 export interface UserRepository {
   create: (input: CreateUserInput) => Promise<User>;
   findById: (id: UserId) => Promise<User | null>;
+  findByEmailWithPasswordHash: (
+    email: string,
+  ) => Promise<UserAuthCredentials | null>;
   findMany: () => Promise<User[]>;
   update: (id: UserId, input: UpdateUserInput) => Promise<User | null>;
   delete: (id: UserId) => Promise<boolean>;

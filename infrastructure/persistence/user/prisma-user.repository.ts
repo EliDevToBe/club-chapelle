@@ -1,6 +1,7 @@
 import type {
   CreateUserInput,
   UpdateUserInput,
+  UserAuthCredentials,
   UserRepository,
 } from "~~/application/ports/user-repository.port";
 import type { User } from "~~/domain/user/user";
@@ -32,6 +33,24 @@ export class PrismaUserRepository implements UserRepository {
   public findById = async (id: string): Promise<User | null> => {
     const row = await prismaClient.auth_user.findUnique({ where: { id } });
     return row ? toDomain(row) : null;
+  };
+
+  public findByEmailWithPasswordHash = async (
+    email: string,
+  ): Promise<UserAuthCredentials | null> => {
+    const row = await prismaClient.auth_user.findFirst({
+      where: { email: { equals: email.trim(), mode: "insensitive" } },
+    });
+    if (!row) {
+      return null;
+    }
+    return {
+      id: row.id,
+      email: row.email,
+      role: row.role,
+      authenticated: row.authenticated,
+      passwordHash: row.password,
+    };
   };
 
   public findMany = async (): Promise<User[]> => {

@@ -1,6 +1,6 @@
 import { createError } from "h3";
 import { DeleteParticipation } from "~~/application/participations/delete-participation.use-case";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { requireRoles } from "~~/server/utils/rbac";
 import type { RoleEnum } from "~~/shared/db-enums";
 
@@ -13,11 +13,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const repos = createRepositories();
-  const deleteParticipation = new DeleteParticipation(
+  const repos = getRepositories();
+  const deleteParticipationHandler = new DeleteParticipation(
     repos.participationRepository,
   );
-  const deleted = await deleteParticipation.delete(id);
+  const deleted = await deleteParticipationHandler.delete(id);
 
   if (!deleted) {
     throw createError({

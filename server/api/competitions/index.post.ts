@@ -1,5 +1,5 @@
 import { CreateCompetition } from "~~/application/competitions/create-competition.use-case";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import {
   toCompetitionDto,
   toCreateCompetitionInput,
@@ -14,9 +14,11 @@ export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
   const body = await readBody<CompetitionCreateDto>(event);
 
-  const repos = createRepositories();
-  const createCompetition = new CreateCompetition(repos.competitionRepository);
-  const competition = await createCompetition.create(
+  const repos = getRepositories();
+  const createCompetitionHandler = new CreateCompetition(
+    repos.competitionRepository,
+  );
+  const competition = await createCompetitionHandler.create(
     toCreateCompetitionInput(body),
   );
   return { competition: toCompetitionDto(competition) };

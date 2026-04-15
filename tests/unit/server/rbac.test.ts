@@ -112,4 +112,23 @@ describe("requireRoles", () => {
 
     expect(() => requireRoles(event, ["admin"])).toThrowError("Forbidden");
   });
+
+  it("does not trust legacy x-user-* headers without event.context", () => {
+    const event = {
+      context: {},
+      node: {
+        req: {
+          headers: {
+            "x-user-role": "admin",
+            "x-user-id": "attacker",
+            "x-user-authenticated": "true",
+          },
+        },
+      },
+    } as unknown as H3Event;
+
+    expect(() => requireRoles(event, ["admin"])).toThrowError(
+      "Authentication required",
+    );
+  });
 });

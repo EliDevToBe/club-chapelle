@@ -1,5 +1,5 @@
 import { CreateArcher } from "~~/application/archer/create-archer.use-case";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import {
   toArcherDto,
   toCreateArcherInput,
@@ -14,8 +14,8 @@ export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
   const body = await readBody<ArcherCreateDto>(event);
 
-  const repos = createRepositories();
-  const createArcher = new CreateArcher(repos.archerRepository);
-  const archer = await createArcher.create(toCreateArcherInput(body));
+  const repos = getRepositories();
+  const createArcherHandler = new CreateArcher(repos.archerRepository);
+  const archer = await createArcherHandler.create(toCreateArcherInput(body));
   return { archer: toArcherDto(archer) };
 });

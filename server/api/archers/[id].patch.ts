@@ -1,6 +1,6 @@
 import { createError } from "h3";
 import { UpdateArcher } from "~~/application/archer/update-archer.use-case";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import {
   toArcherDto,
   toUpdateArcherInput,
@@ -19,9 +19,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<ArcherUpdateDto>(event);
-  const repos = createRepositories();
-  const updateArcher = new UpdateArcher(repos.archerRepository);
-  const archer = await updateArcher.update(id, toUpdateArcherInput(body));
+  const repos = getRepositories();
+  const updateArcherHandler = new UpdateArcher(repos.archerRepository);
+  const archer = await updateArcherHandler.update(
+    id,
+    toUpdateArcherInput(body),
+  );
 
   if (!archer) {
     throw createError({ statusCode: 404, statusMessage: "Archer not found" });

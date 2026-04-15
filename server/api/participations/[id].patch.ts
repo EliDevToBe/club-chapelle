@@ -1,6 +1,6 @@
 import { createError } from "h3";
 import { UpdateParticipation } from "~~/application/participations/update-participation.use-case";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import {
   toParticipationDto,
   toUpdateParticipationInput,
@@ -19,11 +19,11 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<ParticipationUpdateDto>(event);
-  const repos = createRepositories();
-  const updateParticipation = new UpdateParticipation(
+  const repos = getRepositories();
+  const updateParticipationHandler = new UpdateParticipation(
     repos.participationRepository,
   );
-  const participation = await updateParticipation.update(
+  const participation = await updateParticipationHandler.update(
     id,
     toUpdateParticipationInput(body),
   );

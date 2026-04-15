@@ -1,4 +1,4 @@
-/** Linked archers: each row gets one `auth_user` (no `developer` role). */
+/** Linked archers: each row gets one `auth_user` */
 export const seedLinkedArchers = [
   {
     name: "Claire Bernard",
@@ -29,6 +29,11 @@ export const seedLinkedArchers = [
     name: "Thomas Blanchard",
     email: "seed.admin02@local.test",
     role: "admin" as const,
+  },
+  {
+    name: "Local Dev",
+    email: "local@dev.com",
+    role: "developer" as const,
   },
 ] as const;
 

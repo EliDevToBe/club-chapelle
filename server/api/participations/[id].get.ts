@@ -1,6 +1,6 @@
 import { createError } from "h3";
 import { FindParticipationById } from "~~/application/participations/find-participation-by-id.use-case";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { toParticipationDto } from "~~/server/mappers/participation.mapper";
 import { requireRoles } from "~~/server/utils/rbac";
 import type { RoleEnum } from "~~/shared/db-enums";
@@ -14,11 +14,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const repos = createRepositories();
-  const findParticipationById = new FindParticipationById(
+  const repos = getRepositories();
+  const findParticipationByIdHandler = new FindParticipationById(
     repos.participationRepository,
   );
-  const participation = await findParticipationById.findById(id);
+  const participation = await findParticipationByIdHandler.findById(id);
 
   if (!participation) {
     throw createError({

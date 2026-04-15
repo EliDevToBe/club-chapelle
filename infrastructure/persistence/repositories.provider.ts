@@ -3,7 +3,7 @@ import { PrismaCompetitionRepository } from "./competitions/prisma-competition.r
 import { PrismaParticipationRepository } from "./participations/prisma-participation.repository";
 import { PrismaUserRepository } from "./user/prisma-user.repository";
 
-export const createRepositories = () => ({
+const createRepositories = () => ({
   userRepository: new PrismaUserRepository(),
   archerRepository: new PrismaArcherRepository(),
   competitionRepository: new PrismaCompetitionRepository(),
@@ -11,3 +11,13 @@ export const createRepositories = () => ({
 });
 
 export type Repositories = ReturnType<typeof createRepositories>;
+
+let repositories: Repositories | null = null;
+
+export const getRepositories = () => {
+  if (repositories) {
+    return repositories;
+  }
+  repositories = createRepositories();
+  return repositories;
+};

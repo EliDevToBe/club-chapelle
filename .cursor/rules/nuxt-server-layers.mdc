@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## Handlers stay thin
 
-- `server/api/**` (and route handlers): parse input → **`createRepositories()`** from **`~~/infrastructure/persistence/repositories.provider`** → **instantiate the use case** → **call a public method** on that instance → map result or error to HTTP.
+- `server/api/**` (and route handlers): parse input → **`getRepositories()`** from **`~~/infrastructure/persistence/repositories.provider`** → **instantiate the use case** → **call a public method** on that instance → map result or error to HTTP.
 - **Do not chain** construction and invocation: **never** write `await new SomeUseCase(deps).someMethod()` (or `.someMethod()` on the same expression as `new`). Always use **two statements**: assign the use case to a `const` (e.g. `const listFoo = new ListFoo(...)` or `const handler = new ListFoo(...)`) **then** `const result = await listFoo.someMethod()` (or `await handler.someMethod()`). Same rule for any application use-case class.
 - **No Prisma client**, raw SQL, or **direct imports of concrete repository modules** in event handlers; persistence is accessed only through ports inside use cases. **No Prisma** in handlers.
 

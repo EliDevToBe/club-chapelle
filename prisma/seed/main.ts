@@ -4,6 +4,8 @@ import pg from "pg";
 import { validateParticipationRules } from "../../domain/participations/participation.rules";
 import { seasonYearFromDate } from "../../domain/utils/index.js";
 import { type Prisma, PrismaClient } from "../../generated/prisma/client.js";
+import { Argon2PasswordHasher } from "../../infrastructure/auth/argon2-password-hasher.js";
+import type { RoleEnum } from "../../shared/db-enums.js";
 import { seedLinkedArchers, seedUnlinkedArcherNames } from "./data/archers.js";
 import { seedCompetitions } from "./data/competitions.js";
 import { addDaysUtc, utcDateOnly } from "./lib/dates.js";
@@ -50,7 +52,7 @@ const main = async () => {
   await prisma.archer.deleteMany();
   await prisma.auth_user.deleteMany();
 
-  const authRows: { id: string }[] = [];
+  const authRows: { id: string; role: RoleEnum }[] = [];
   for (const spec of seedLinkedArchers) {
     const u = await prisma.auth_user.create({
       data: {
@@ -61,6 +63,22 @@ const main = async () => {
       },
     });
     authRows.push(u);
+  }
+
+  /**
+   * Seed the first user with a hashed password
+   */
+  const seedDevPassword = process.env.SEED_DEV_PASSWORD;
+  if (seedDevPassword && authRows.length > 0) {
+    const argon2 = new Argon2PasswordHasher();
+    const passwordHash = await argon2.hash(seedDevPassword);
+    const firstAuthId = authRows.find((u) => u.role === "developer")?.id;
+    if (firstAuthId) {
+      await prisma.auth_user.update({
+        where: { id: firstAuthId },
+        data: { password: passwordHash },
+      });
+    }
   }
 
   const archerIds: string[] = [];
