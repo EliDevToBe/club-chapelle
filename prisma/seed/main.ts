@@ -4,6 +4,7 @@ import pg from "pg";
 import { validateParticipationRules } from "../../domain/participations/participation.rules";
 import { seasonYearFromDate } from "../../domain/utils/index.js";
 import { type Prisma, PrismaClient } from "../../generated/prisma/client.js";
+import { Argon2PasswordHasher } from "../../infrastructure/auth/argon2-password-hasher.js";
 import type { RoleEnum } from "../../shared/db-enums.js";
 import { seedLinkedArchers, seedUnlinkedArcherNames } from "./data/archers.js";
 import { seedCompetitions } from "./data/competitions.js";
@@ -69,7 +70,7 @@ const main = async () => {
    */
   const seedDevPassword = process.env.SEED_DEV_PASSWORD;
   if (seedDevPassword && authRows.length > 0) {
-    const argon2 = await import("argon2");
+    const argon2 = new Argon2PasswordHasher();
     const passwordHash = await argon2.hash(seedDevPassword);
     const firstAuthId = authRows.find((u) => u.role === "developer")?.id;
     if (firstAuthId) {

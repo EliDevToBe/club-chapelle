@@ -48,6 +48,7 @@
     "db:stop": "docker compose down",
     "db:restart": "npm run db:stop && npm run db:start",
     "db:reset": "docker compose down -v --rmi all --remove-orphans",
+    "db:fullcycle": "npm run db:reset && npm run db:start && npm run db:generate && npm run db:seed",
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio",
     "migration:new": "npx prisma migrate dev",

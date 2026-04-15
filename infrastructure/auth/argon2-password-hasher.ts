@@ -13,7 +13,9 @@ export class Argon2PasswordHasher implements PasswordHasher {
     passwordHash: string,
   ): Promise<boolean> => {
     try {
-      return await argon2.verify(passwordHash, plainPassword);
+      return await argon2.verify(passwordHash, plainPassword, {
+        secret: Buffer.from(process.env.AUTH_PASSWORD_SECRET ?? ""),
+      });
     } catch {
       return false;
     }

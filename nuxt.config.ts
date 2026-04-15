@@ -9,16 +9,11 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     // Used for access and refresh, should be different from each other
-    authJwtAccessSecret: process.env.NUXT_AUTH_JWT_ACCESS_SECRET ?? "",
-    authJwtRefreshSecret: process.env.NUXT_AUTH_JWT_REFRESH_SECRET ?? "",
+    authJwtAccessSecret: process.env.AUTH_JWT_ACCESS_SECRET ?? "",
+    authJwtRefreshSecret: process.env.AUTH_JWT_REFRESH_SECRET ?? "",
 
     public: {
-      socialInstagram:
-        process.env.NUXT_PUBLIC_SOCIAL_INSTAGRAM ??
-        "https://www.instagram.com/les_archers_de_la_chapelle",
-      socialFacebook:
-        process.env.NUXT_PUBLIC_SOCIAL_FACEBOOK ??
-        "https://www.facebook.com/archersdelachapelle/",
+      // Any public configuration here
     },
   },
 
