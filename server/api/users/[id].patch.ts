@@ -1,7 +1,7 @@
 import { createError } from "h3";
 import { UpdateUser } from "~~/application/user/update-user.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { toUpdateUserInput, toUserDto } from "~~/server/mappers/user.mapper";
 import { requireRoles } from "~~/server/utils/rbac";
 import type { RoleEnum } from "~~/shared/db-enums";
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<UserUpdateDto>(event);
-  const repos = createRepositories();
+  const repos = getRepositories();
   const config = useRuntimeConfig(event);
 
   const accessSecret = config.authJwtAccessSecret;

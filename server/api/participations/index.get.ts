@@ -1,5 +1,5 @@
 import { ListParticipations } from "~~/application/participations/list-participations.use-case";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { toParticipationDto } from "~~/server/mappers/participation.mapper";
 import { requireRoles } from "~~/server/utils/rbac";
 import type { RoleEnum } from "~~/shared/db-enums";
@@ -8,7 +8,7 @@ const allowedRoles: RoleEnum[] = ["admin"];
 
 export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
-  const repos = createRepositories();
+  const repos = getRepositories();
   const listParticipationsHandler = new ListParticipations(
     repos.participationRepository,
   );

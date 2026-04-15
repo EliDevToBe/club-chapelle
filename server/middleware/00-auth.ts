@@ -1,6 +1,6 @@
 import { getCookie, getRequestURL, setCookie } from "h3";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { resolveAuthContextFromCookies } from "~~/server/utils/resolve-auth-context";
 import {
   CLUB_ACCESS_COOKIE,
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
     refreshSecret,
   });
 
-  const repos = createRepositories();
+  const repos = getRepositories();
 
   const { authUser, newAccessToken } = await resolveAuthContextFromCookies({
     accessToken,

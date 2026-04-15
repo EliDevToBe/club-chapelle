@@ -1,6 +1,6 @@
 import { createError } from "h3";
 import { UpdateCompetition } from "~~/application/competitions/update-competition.use-case";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import {
   toCompetitionDto,
   toUpdateCompetitionInput,
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<CompetitionUpdateDto>(event);
-  const repos = createRepositories();
+  const repos = getRepositories();
   const updateCompetitionHandler = new UpdateCompetition(
     repos.competitionRepository,
   );

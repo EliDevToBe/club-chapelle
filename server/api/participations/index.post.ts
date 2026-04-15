@@ -1,5 +1,5 @@
 import { CreateParticipation } from "~~/application/participations/create-participation.use-case";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import {
   toCreateParticipationInput,
   toParticipationDto,
@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
   const body = await readBody<ParticipationCreateDto>(event);
 
-  const repos = createRepositories();
+  const repos = getRepositories();
   const createParticipationHandler = new CreateParticipation(
     repos.participationRepository,
   );

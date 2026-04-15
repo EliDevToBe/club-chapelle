@@ -1,6 +1,6 @@
 import { createError } from "h3";
 import { DeleteCompetition } from "~~/application/competitions/delete-competition.use-case";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { requireRoles } from "~~/server/utils/rbac";
 import type { RoleEnum } from "~~/shared/db-enums";
 
@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const repos = createRepositories();
+  const repos = getRepositories();
   const deleteCompetitionHandler = new DeleteCompetition(
     repos.competitionRepository,
   );

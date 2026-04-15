@@ -1,7 +1,7 @@
 import { createError } from "h3";
 import { LoginUser } from "~~/application/user/login-user.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
-import { createRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { setAuthSessionCookies } from "~~/server/utils/auth-cookies";
 
 type LoginBody = {
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<LoginBody>(event);
-  const repos = createRepositories();
+  const repos = getRepositories();
   const authServices = createAuthServices({
     accessSecret,
     refreshSecret,
