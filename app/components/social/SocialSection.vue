@@ -28,8 +28,10 @@
 import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 
-const socialInstagram = "https://www.instagram.com/les_archers_de_la_chapelle";
-const socialFacebook = "https://www.facebook.com/archersdelachapelle/";
+const { public: pub } = useRuntimeConfig();
+
+const socialInstagram = pub.socialInstagram;
+const socialFacebook = pub.socialFacebook;
 </script>
 
 <style scoped lang=""></style>

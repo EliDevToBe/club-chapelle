@@ -14,6 +14,8 @@ export default defineNuxtConfig({
 
     public: {
       // Any public configuration here
+      socialInstagram: "https://www.instagram.com/les_archers_de_la_chapelle",
+      socialFacebook: "https://www.facebook.com/archersdelachapelle/",
     },
   },
 
