@@ -127,7 +127,10 @@ const onSubmit = async () => {
     form.subject = "";
     form.message = "";
 
-    addToastSuccess("Merci ! Nous vous répondrons dès que possible.");
+    addToastSuccess(
+      "Merci pour votre message ! Nous vous répondrons dès que possible.",
+      { duration: 5000 },
+    );
   } catch (e: unknown) {
     addToastError(
       "Une erreur est survenue. Réessayez plus tard ou écrivez-nous directement par mail.",
