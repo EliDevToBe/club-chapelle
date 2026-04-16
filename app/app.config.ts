@@ -77,5 +77,74 @@ export default defineAppConfig({
         ],
       },
     },
+
+    toast: {
+      slots: {
+        root: "relative group overflow-hidden bg-default shadow-lg rounded-lg ring ring-default p-4 flex gap-2.5 focus:outline-none",
+        wrapper: "w-0 flex-1 flex flex-col",
+        title: "text-sm font-medium text-highlighted",
+        description: "text-sm text-muted",
+        icon: "shrink-0 size-5",
+        avatar: "shrink-0",
+        avatarSize: "2xl",
+        actions: "flex gap-1.5 shrink-0",
+        progress: "absolute inset-x-0 bottom-0",
+        close: "p-0",
+      },
+      variants: {
+        color: {
+          primary: {
+            root: "ring ring-inset ring-primary/25 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
+            icon: "text-primary",
+            title: "text-primary font-semibold",
+          },
+          secondary: {
+            root: "ring ring-inset ring-secondary/25 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-secondary",
+            icon: "text-secondary",
+            title: "text-secondary font-semibold",
+          },
+          success: {
+            root: "ring ring-inset ring-success/25 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-success",
+            icon: "text-success",
+            title: "text-success font-semibold",
+          },
+          info: {
+            root: "ring ring-inset ring-info/25 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-info",
+            icon: "text-info",
+            title: "text-info font-semibold",
+          },
+          warning: {
+            root: "ring ring-inset ring-warning/25 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-warning",
+            icon: "text-warning",
+            title: "text-warning font-semibold",
+          },
+          error: {
+            root: "ring ring-inset ring-error/25 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-error",
+            icon: "text-error",
+            title: "text-error font-semibold",
+          },
+          neutral: {
+            root: "ring ring-inset ring-inverted/25 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-inverted",
+            icon: "text-highlighted",
+            title: "text-highlighted font-semibold",
+          },
+        },
+        orientation: {
+          horizontal: {
+            root: "items-center",
+            actions: "items-center",
+          },
+          vertical: {
+            root: "items-start",
+            actions: "items-start mt-2.5",
+          },
+        },
+        title: {
+          true: {
+            description: "mt-1",
+          },
+        },
+      },
+    },
   },
 });
