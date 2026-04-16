@@ -41,12 +41,13 @@
             :disabled="submitting"
             :class="ui.formInput"
           />
-          <span class="flex items-center justify-end mr-1 gap-1">
+
+          <span :class="ui.formInputHint">
             <span
               class="text-sm text-muted transition-all duration-300 ease-in-out"
               :class="{
                 'text-error! font-semibold':
-                  form.message.length && form.message.length < 10,
+                  form.message.length && form.message.length < 20,
               }"
             >
               {{ `${form.message.length} / 3000` }}
@@ -77,6 +78,7 @@ import { contactFormSchema } from "~/schemas/contact-form.zod";
 const ui = {
   form: "max-w-100 flex flex-col gap-4",
   formInput: "w-full md:w-80",
+  formInputHint: "w-full md:w-80 flex items-center justify-end mr-1 gap-1",
 };
 
 const { addToastError, addToastSuccess } = useChapToast();
