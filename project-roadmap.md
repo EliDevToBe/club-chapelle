@@ -5,7 +5,7 @@
 
 This file is a **checkable build roadmap** for humans and agents: when behaviour lands in `main`, update tasks in the **same change** as the feature where practical. **Incomplete:** `- [ ]` only. **Complete:** tick the Markdown checkbox, then a **space**, then **✅** (U+2705, white heavy check mark)—same line, **only** when done; never add **✅** to open tasks.
 
-**Last reviewed:** 2026-04-16 (repository snapshot below).
+**Last reviewed:** 2026-04-17 (repository snapshot below).
 
 ---
 
@@ -20,7 +20,7 @@ This file is a **checkable build roadmap** for humans and agents: when behaviour
 
 ## Current snapshot (repository vs roadmap)
 
-The **public** Nuxt shell is in place (landing, infos, contact **route**; French-oriented navigation; Instagram and Facebook URLs from runtime config). The **contact form** (name, email, subject, message) is an **MVP** requirement—see checklist below. **JWT cookie auth** and login/logout API handlers exist per project-spec §3.3, but there is **no** `app/pages` login route yet while navigation still points at `/login`, so the signed-in experience is not end-to-end. The landing **carousel** is implemented with **static** placeholder images, not an **Admin-uploaded, curated** set backed by storage APIs. **Core back-office data** (archers, competitions, participations, users) has **DDD-shaped** use cases, Prisma models, and **protected** Nitro handlers using `requireRoles` in `server/utils/rbac.ts`; role checks are **explicit role lists**, not the **inherited** Admin > Manager > Member model described in project-spec §3.1. **Listing participations** via API is **Admin-only** today, not yet scoped to a Member’s own rows per §3.2. **Invitations**, **mail**, **revoke/unlink**, **promote/demote**, **calendars**, **Competition Listener**, and **AI-assisted** discovery are **not** implemented in the application layer (aside from schema/token enums where present).
+The **public** Nuxt shell is in place (landing, infos, **contact** with a **contact form**: name, email, subject, message; client validation, `POST /api/contact`, and transactional mail via Mailtrap when runtime mail settings and `contactFormToEmail` are configured—see `.env.example`). French-oriented navigation; Instagram and Facebook URLs from runtime config. **JWT cookie auth** and login/logout API handlers exist per project-spec §3.3, but there is **no** `app/pages` login route yet while navigation still points at `/login`, so the signed-in experience is not end-to-end. The landing **carousel** is implemented with **static** placeholder images, not an **Admin-uploaded, curated** set backed by storage APIs. **Core back-office data** (archers, competitions, participations, users) has **DDD-shaped** use cases, Prisma models, and **protected** Nitro handlers using `requireRoles` in `server/utils/rbac.ts`; role checks are **explicit role lists**, not the **inherited** Admin > Manager > Member model described in project-spec §3.1. **Listing participations** via API is **Admin-only** today, not yet scoped to a Member’s own rows per §3.2. **Transactional mail** is wired for the **contact form** only; **invitation** / **fee-reminder**-style mail and broader mail-driven workflows in later phases are **not** implemented yet. **Invitations**, **revoke/unlink**, **promote/demote**, **calendars**, **Competition Listener**, and **AI-assisted** discovery are **not** implemented in the application layer (aside from schema/token enums where present).
 
 ---
 
@@ -60,7 +60,7 @@ Later phases assume earlier ones are **actually** complete (not only partially).
 - [x] ✅ **Landing** route and primary content (`app/pages/index.vue`).
 - [x] ✅ **Infos** route (`app/pages/infos/`).
 - [x] ✅ **Contact** route (`app/pages/contact/`).
-- [ ] **Contact form** on the contact page: fields **name**, **email**, **subject**, and **message**; validation, accessible labels, and a secure delivery path (API + mail or equivalent—align with [project-spec.md](project-spec.md) §9).
+- [x] ✅ **Contact form** on the contact page: fields **name**, **email**, **subject**, and **message**; validation, accessible labels, and a secure delivery path (API + mail or equivalent—align with [project-spec.md](project-spec.md) §9).
 - [x] ✅ **Social:** prominent Instagram and Facebook links driven by configurable URLs (see `public` runtime config and `SocialSection.vue`).
 - [x] ✅ **French-first** public navigation labels and tone (adjust remaining copy as needed).
 
@@ -77,7 +77,7 @@ _Order: persistence and authenticated Admin surfaces before exposing mutations; 
 
 ### MVP exit criteria (self-check)
 
-- [ ] A visitor can submit the **contact form** (name, email, subject, message) from `/contact` and staff receive or can act on the message per your chosen delivery mechanism.
+- [x] ✅ A visitor can submit the **contact form** (name, email, subject, message) from `/contact` and staff receive or can act on the message per your chosen delivery mechanism.
 - [ ] A visitor sees the **same** public areas as today, but the **carousel** reflects **club-managed** content.
 - [ ] Only **Admin** (per matrix; see §3.2) can change gallery content.
 
@@ -176,5 +176,6 @@ _Can ship after v2 or be pulled earlier if the club prioritises fee follow-up._
 
 | Date       | Change                                                                 |
 | ---------- | ---------------------------------------------------------------------- |
+| 2026-04-17 | MVP **Public showcase**: mark **contact form** and related **MVP exit** criterion complete (implemented in d6aa11d—`POST /api/contact`, Mailtrap); refresh snapshot. |
 | 2026-04-16 | MVP **Public showcase**: add **contact form** task (name, email, subject, message) and exit criterion; clarify snapshot (contact route vs form). |
 | 2026-04-15 | Initial roadmap: phases MVP–v4, MVP includes Admin-managed carousel. Completed checklist lines use **✅** after `- [x]`. |
