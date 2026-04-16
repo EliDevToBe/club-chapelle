@@ -32,6 +32,8 @@
       </ContentTextWrapper>
     </ChapSection>
 
+    <ContactForm />
+
     <ChapSection title="Où nous trouver ?">
       <ContentTextWrapper>
         <p>
@@ -73,6 +75,7 @@
 
 <script setup lang="ts">
 import AffiliationSection from "~/components/affiliation/AffiliationSection.vue";
+import ContactForm from "~/components/contact/ContactForm.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ContentTextWrapper from "~/components/layout/ContentTextWrapper.vue";
 import ChapListItem from "~/components/ui/ChapListItem.vue";

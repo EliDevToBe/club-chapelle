@@ -1,4 +1,9 @@
 {
   "extends": "./.nuxt/tsconfig.shared.json",
-  "include": ["domain/**/*.ts", "application/**/*.ts", "infrastructure/**/*.ts"]
+  "include": [
+    "domain/**/*.ts",
+    "application/**/*.ts",
+    "infrastructure/**/*.ts",
+    "schemas/**/*.ts"
+  ]
 }
