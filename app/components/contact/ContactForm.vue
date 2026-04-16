@@ -8,6 +8,7 @@
           autocomplete="name"
           :disabled="submitting"
           :class="ui.formInput"
+          placeholder="Robin des Bois"
         />
       </UFormField>
 
@@ -17,6 +18,7 @@
           autocomplete="email"
           :disabled="submitting"
           :class="ui.formInput"
+          placeholder="robin@sherwood.bow"
         />
       </UFormField>
       <UFormField label="Objet" name="subject" required>
@@ -26,6 +28,7 @@
           autocomplete="off"
           :disabled="submitting"
           :class="ui.formInput"
+          placeholder="Demandes d'informations"
         />
       </UFormField>
       <UFormField label="Message" name="message" required>
@@ -37,6 +40,7 @@
             :maxrows="16"
             :disabled="submitting"
             :class="ui.formInput"
+            placeholder="Votre message ici..."
           />
 
           <span :class="ui.formInputHint">
