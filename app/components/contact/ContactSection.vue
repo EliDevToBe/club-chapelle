@@ -7,7 +7,7 @@
       to="/contact"
       size="lg"
       color="secondary"
-      class="min-h-11 w-full sm:w-auto sm:justify-center"
+      class="w-full sm:w-auto sm:justify-center"
       label="Nous contacter"
     />
   </ChapSection>

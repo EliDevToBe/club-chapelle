@@ -1,5 +1,6 @@
 <template>
   <UButton
+    :disabled="disabled"
     :to="to"
     :target="target"
     :icon="icon"
@@ -16,6 +17,7 @@ type Size = "xs" | "sm" | "md" | "lg" | "xl";
 
 const props = withDefaults(
   defineProps<{
+    disabled?: boolean;
     to?: string;
     target?: string;
     icon?: string;
@@ -31,6 +33,6 @@ const props = withDefaults(
 );
 
 const ui = {
-  button: ["min-h-11"],
+  button: ["min-h-10"],
 };
 </script>
