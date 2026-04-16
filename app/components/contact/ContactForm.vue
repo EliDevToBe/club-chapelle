@@ -1,8 +1,5 @@
 <template>
   <ChapSection title="Envoyer un message">
-    <!-- <div class="flex flex-col gap-4">
-      
-    </div> -->
     <form :class="ui.form" @submit.prevent="onSubmit">
       <UFormField label="Nom" name="name" required>
         <UInput
@@ -55,7 +52,7 @@
           </span>
         </div>
       </UFormField>
-      <div class="flex justify-center">
+      <div :class="ui.formInputHint">
         <ChapButton
           type="submit"
           color="primary"
