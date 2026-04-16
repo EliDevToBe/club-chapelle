@@ -12,6 +12,16 @@ export default defineNuxtConfig({
     authJwtAccessSecret: process.env.AUTH_JWT_ACCESS_SECRET ?? "",
     authJwtRefreshSecret: process.env.AUTH_JWT_REFRESH_SECRET ?? "",
 
+    // Mailtrap transactional (sandbox vs production via MAILTRAP_USE_SANDBOX)
+    mailtrapApiKey: process.env.MAILTRAP_API_KEY ?? "",
+    mailtrapUseSandbox: process.env.MAILTRAP_USE_SANDBOX === "true",
+    mailtrapInboxId: process.env.MAILTRAP_INBOX_ID ?? "",
+    mailtrapFromEmail: process.env.MAILTRAP_FROM_EMAIL ?? "",
+    mailtrapFromName:
+      process.env.MAILTRAP_FROM_NAME ?? "Les Archers de la Chapelle",
+    contactFormToEmail:
+      process.env.CONTACT_FORM_TO_EMAIL ?? "archerschapelle@gmail.com",
+
     public: {
       // Any public configuration here
       socialInstagram: "https://www.instagram.com/les_archers_de_la_chapelle",
