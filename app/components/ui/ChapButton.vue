@@ -9,6 +9,7 @@
     :label="label"
     :color="color"
     :class="[ui.base, additionalClass ?? '']"
+    :loading="loading"
   />
 </template>
 
@@ -26,12 +27,14 @@ const props = withDefaults(
     size?: Size;
     label: string;
     additionalClass?: string;
+    loading?: boolean;
     color?: "primary" | "secondary";
   }>(),
   {
     variant: "solid",
     size: "lg",
     color: "primary",
+    loading: false,
   },
 );
 

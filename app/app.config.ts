@@ -78,11 +78,15 @@ export default defineAppConfig({
       },
       compoundVariants: [
         {
+          loading: true,
+          class: { base: "cursor-not-allowed bg-neutral-600! " },
+        },
+        {
           color: "primary",
           variant: "solid",
           class: {
             base: [
-              "text-inverted bg-primary-500",
+              "cursor-pointer text-inverted bg-primary-500",
               "hover:bg-primary",
               "active:bg-primary-600",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
