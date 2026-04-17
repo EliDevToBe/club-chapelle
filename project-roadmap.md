@@ -20,7 +20,7 @@ This file is a **checkable build roadmap** for humans and agents: when behaviour
 
 ## Current snapshot (repository vs roadmap)
 
-The **public** Nuxt shell is in place (landing, infos, **contact** with a **contact form**: name, email, subject, message; client validation, `POST /api/contact`, and transactional mail via Mailtrap when runtime mail settings and `contactFormToEmail` are configured—see `.env.example`). French-oriented navigation; Instagram and Facebook URLs from runtime config. **JWT cookie auth** and login/logout API handlers exist per project-spec §3.3, but there is **no** `app/pages` login route yet while navigation still points at `/login`, so the signed-in experience is not end-to-end. The landing **carousel** is implemented with **static** placeholder images, not an **Admin-uploaded, curated** set backed by storage APIs. **Core back-office data** (archers, competitions, participations, users) has **DDD-shaped** use cases, Prisma models, and **protected** Nitro handlers using `requireRoles` in `server/utils/rbac.ts`; role checks are **explicit role lists**, not the **inherited** Admin > Manager > Member model described in project-spec §3.1. **Listing participations** via API is **Admin-only** today, not yet scoped to a Member’s own rows per §3.2. **Transactional mail** is wired for the **contact form** only; **invitation** / **fee-reminder**-style mail and broader mail-driven workflows in later phases are **not** implemented yet. **Invitations**, **revoke/unlink**, **promote/demote**, **calendars**, **Competition Listener**, and **AI-assisted** discovery are **not** implemented in the application layer (aside from schema/token enums where present).
+The **public** Nuxt shell is in place (landing, infos, **contact** with a **contact form**: name, email, subject, message; client validation, `POST /api/contact`, and transactional mail via Mailtrap when runtime mail settings and `contactFormToEmail` are configured—see `.env.example`). French-oriented navigation; Instagram and Facebook URLs from runtime config. **JWT cookie auth** and login/logout API handlers exist per project-spec §3.3; a **`/login`** page posts to `POST /api/auth/login` with **`credentials: 'include'`**. **Logout**, client **session awareness**, and **route protection** for staff areas are still **not** shipped, so the signed-in experience is not end-to-end. The landing **carousel** is implemented with **static** placeholder images, not an **Admin-uploaded, curated** set backed by storage APIs. **Core back-office data** (archers, competitions, participations, users) has **DDD-shaped** use cases, Prisma models, and **protected** Nitro handlers using `requireRoles` in `server/utils/rbac.ts`; role checks are **explicit role lists**, not the **inherited** Admin > Manager > Member model described in project-spec §3.1. **Listing participations** via API is **Admin-only** today, not yet scoped to a Member’s own rows per §3.2. **Transactional mail** is wired for the **contact form** only; **invitation** / **fee-reminder**-style mail and broader mail-driven workflows in later phases are **not** implemented yet. **Invitations**, **revoke/unlink**, **promote/demote**, **calendars**, **Competition Listener**, and **AI-assisted** discovery are **not** implemented in the application layer (aside from schema/token enums where present).
 
 ---
 
@@ -87,11 +87,11 @@ _Order: persistence and authenticated Admin surfaces before exposing mutations; 
 
 **Spec reference:** [project-spec.md](project-spec.md) §3 (authentication and authorisation), §3.3 (session model).
 
-- [ ] **Login** page (and flow) in Nuxt that calls `POST /api/auth/login` with **`credentials: 'include'`**.
+- [x] ✅ **Login** page (and flow) in Nuxt that calls `POST /api/auth/login` with **`credentials: 'include'`**.
 - [ ] **Logout** control that calls `POST /api/auth/logout`.
 - [ ] **Session awareness** in the client (composable or equivalent): current user role/email as needed for UI gating (source from a small `GET` me endpoint or equivalent pattern—keep handlers thin).
 - [ ] **Route protection** for member/manager/admin areas once those routes exist.
-- [ ] **Fix navigation** so “Se connecter” / header actions do not target a missing route once login exists (`useSiteNavItems`, header).
+- [x] ✅ **Fix navigation** so “Se connecter” / header actions do not target a missing route once login exists (`useSiteNavItems`, header).
 - [ ] Document for front-end agents: all mutating or private `fetch`/`$fetch` to same-origin APIs use **`credentials: 'include'`** per §3.3.
 
 ---
@@ -176,6 +176,7 @@ _Can ship after v2 or be pulled earlier if the club prioritises fee follow-up._
 
 | Date       | Change                                                                 |
 | ---------- | ---------------------------------------------------------------------- |
+| 2026-04-17 | **v0.5**: **Login** page (`/login`, `credentials: 'include'`); tick **Fix navigation** (link now resolves); snapshot updated. |
 | 2026-04-17 | MVP **Public showcase**: mark **contact form** and related **MVP exit** criterion complete (implemented in d6aa11d—`POST /api/contact`, Mailtrap); refresh snapshot. |
 | 2026-04-16 | MVP **Public showcase**: add **contact form** task (name, email, subject, message) and exit criterion; clarify snapshot (contact route vs form). |
 | 2026-04-15 | Initial roadmap: phases MVP–v4, MVP includes Admin-managed carousel. Completed checklist lines use **✅** after `- [x]`. |
