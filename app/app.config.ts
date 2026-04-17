@@ -32,7 +32,7 @@ export default defineAppConfig({
         {
           active: true,
           variant: "link",
-          class: { link: ["active:text-primary-600!"] },
+          class: { link: ["text-primary-500", "active:text-primary-600!"] },
         },
         {
           variant: "link",
@@ -76,6 +76,45 @@ export default defineAppConfig({
           "transition-colors",
         ],
       },
+      compoundVariants: [
+        {
+          color: "primary",
+          variant: "solid",
+          class: {
+            base: [
+              "text-inverted bg-primary-500",
+              "hover:bg-primary",
+              "active:bg-primary-600",
+              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+              "disabled:bg-primary aria-disabled:bg-primary",
+            ],
+          },
+        },
+        {
+          variant: "link",
+          color: "primary",
+          class: {
+            base: [
+              "cursor-pointer",
+              "text-primary-500 hover:text-primary hover:underline hover:underline-offset-4",
+            ],
+          },
+        },
+        {
+          color: "secondary",
+          variant: "ghost",
+          class: {
+            base: [
+              "text-secondary",
+              "hover:bg-secondary/10",
+              "active:bg-secondary/7",
+              "focus:outline-none focus-visible:bg-secondary/10",
+              "disabled:bg-transparent aria-disabled:bg-transparent",
+              "dark:disabled:bg-transparent dark:aria-disabled:bg-transparent",
+            ],
+          },
+        },
+      ],
     },
 
     toast: {
