@@ -4,14 +4,16 @@ import type { RoleEnum } from "~~/shared/db-enums";
 export type UserDto = {
   id: string;
   email: string;
-  role: RoleEnum;
+  name: string | null;
+  roles: RoleEnum[];
   authenticated: boolean;
   created_at: string;
 };
 
 export type UserCreateDto = {
   email: string;
-  role: RoleEnum;
+  name?: string | null;
+  roles: RoleEnum[];
   authenticated?: boolean;
   password?: string | null;
 };

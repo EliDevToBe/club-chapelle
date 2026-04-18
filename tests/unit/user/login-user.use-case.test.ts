@@ -12,7 +12,8 @@ describe("LoginUser", () => {
       findByEmailWithPasswordHash: vi.fn().mockResolvedValue({
         id: "u1",
         email: "a@b.c",
-        role: "member",
+        name: null,
+        roles: ["member"],
         authenticated: true,
         passwordHash: "argon-hash",
       }),
@@ -54,7 +55,8 @@ describe("LoginUser", () => {
       findByEmailWithPasswordHash: vi.fn().mockResolvedValue({
         id: "u1",
         email: "a@b.c",
-        role: "member",
+        name: null,
+        roles: ["member"],
         authenticated: false,
         passwordHash: "argon-hash",
       }),
@@ -85,7 +87,8 @@ describe("LoginUser", () => {
       findByEmailWithPasswordHash: vi.fn().mockResolvedValue({
         id: "u1",
         email: "a@b.c",
-        role: "member",
+        name: null,
+        roles: ["member"],
         authenticated: true,
         passwordHash: "argon-hash",
       }),

@@ -4,7 +4,8 @@ import type { RoleEnum } from "~~/shared/db-enums";
 
 export type ResolvedAuthUser = {
   id: string;
-  role: RoleEnum;
+  name: string | null;
+  roles: RoleEnum[];
   authenticated: boolean;
 };
 
@@ -32,7 +33,8 @@ export const resolveAuthContextFromCookies = async (options: {
         return {
           authUser: {
             id: user.id,
-            role: user.role,
+            name: user.name,
+            roles: user.roles,
             authenticated: user.authenticated,
           },
           newAccessToken: null,
@@ -49,7 +51,8 @@ export const resolveAuthContextFromCookies = async (options: {
         return {
           authUser: {
             id: user.id,
-            role: user.role,
+            name: user.name,
+            roles: user.roles,
             authenticated: user.authenticated,
           },
           newAccessToken: jwt.signAccess(user.id),
