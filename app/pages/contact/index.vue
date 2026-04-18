@@ -6,33 +6,20 @@
           <ContentTextWrapper>
             <p>
               Directement par mail à
-              <span>
-                <NuxtLink
-                  class="inline-flex gap-0.5 text-primary font-bold hover:underline hover:underline-offset-4"
-                  to="mailto:archerschapelle@gmail.com"
-                >
-                  <span> archerschapelle@gmail.com </span>
-
-                  <UIcon class="text-muted w-3" name="i-ph-envelope-duotone" />
-                </NuxtLink>
-              </span>
+              <ChapLink
+                to="mailto:archerschapelle@gmail.com"
+                label="archerschapelle@gmail.com"
+                icon="i-ph-envelope-duotone"
+              />
             </p>
             <p>
               Sur notre page
-              <span>
-                <NuxtLink
-                  class="inline-flex gap-0.5 text-primary font-bold hover:underline hover:underline-offset-4"
-                  :to="socialFacebook"
-                  target="_blank"
-                >
-                  <span>Facebook</span>
-
-                  <UIcon
-                    class="text-muted w-3"
-                    name="i-ph-facebook-logo-duotone"
-                  />
-                </NuxtLink>
-              </span>
+              <ChapLink
+                :to="socialFacebook"
+                label="Facebook"
+                icon="i-ph-facebook-logo-duotone"
+                target="_blank"
+              />
             </p>
           </ContentTextWrapper>
 
@@ -43,7 +30,7 @@
           <ContentTextWrapper>
             <p>
               Au
-              <span class="text-primary"
+              <span class="text-primary-500"
                 >Gymnase Tristan Tzara, 11 rue Tristan Tzara, 75018 PARIS
               </span>
             </p>
@@ -85,6 +72,7 @@
         <ContactForm class="hidden absolute md:block md:pl-10" />
       </ContentPageWrapper>
     </div>
+
     <ContentPageWrapper>
       <AffiliationSection />
     </ContentPageWrapper>
@@ -96,6 +84,7 @@ import AffiliationSection from "~/components/affiliation/AffiliationSection.vue"
 import ContactForm from "~/components/contact/ContactForm.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ContentTextWrapper from "~/components/layout/ContentTextWrapper.vue";
+import ChapLink from "~/components/ui/ChapLink.vue";
 import ChapListItem from "~/components/ui/ChapListItem.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 

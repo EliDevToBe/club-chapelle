@@ -7,7 +7,9 @@
     :variant="variant"
     :size="size"
     :label="label"
-    :class="overrideClass ?? ui.button"
+    :color="color"
+    :class="[ui.base, additionalClass ?? '']"
+    :loading="loading"
   />
 </template>
 
@@ -24,15 +26,19 @@ const props = withDefaults(
     variant?: Variant;
     size?: Size;
     label: string;
-    overrideClass?: string;
+    additionalClass?: string;
+    loading?: boolean;
+    color?: "primary" | "secondary";
   }>(),
   {
     variant: "solid",
     size: "lg",
+    color: "primary",
+    loading: false,
   },
 );
 
 const ui = {
-  button: ["min-h-10"],
+  base: "min-h-10",
 };
 </script>

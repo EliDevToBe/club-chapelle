@@ -2,14 +2,7 @@
   <div
     class="relative isolate min-h-dvh flex flex-col overflow-hidden bg-default"
   >
-    <div
-      class="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
-      aria-hidden="true"
-    >
-      <span :class="ui.backgroundCode">
-        {{ backgroundCode }}
-      </span>
-    </div>
+    <ChapWatermark>{{ backgroundCode }}</ChapWatermark>
 
     <div class="relative z-10 flex flex-1 flex-col justify-center">
       <div :class="ui.shell">
@@ -43,6 +36,7 @@
 
 <script setup lang="ts">
 import type { NuxtError } from "#app";
+import ChapWatermark from "~/components/ui/ChapWatermark.vue";
 
 const error = useError();
 

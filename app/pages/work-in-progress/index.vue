@@ -1,6 +1,6 @@
 <template>
   <div class="relative isolate overflow-x-hidden">
-    <div
+    <!-- <div
       class="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
       aria-hidden="true"
     >
@@ -8,7 +8,14 @@
         <span>ARC</span>
         <span>18</span>
       </span>
-    </div>
+    </div> -->
+
+    <ChapWatermark>
+      <span class="mt-20 flex flex-col md:flex-row md:gap-8">
+        <span>ARC</span>
+        <span>18</span>
+      </span>
+    </ChapWatermark>
 
     <ContentPageWrapper class="relative z-10 h-full">
       <ChapSection
@@ -17,10 +24,6 @@
         description="Cette partie du site est encore en préparation."
       >
         <ContentTextWrapper class="text-muted">
-          <p>
-            La page de contact dédiée et l’espace membre (connexion) seront
-            proposés ici prochainement.
-          </p>
           <p>
             En attendant, vous pouvez consulter nos informations pratiques ou
             nous suivre sur les réseaux sociaux.
@@ -49,16 +52,9 @@ import ContentTextWrapper from "~/components/layout/ContentTextWrapper.vue";
 import SocialSection from "~/components/social/SocialSection.vue";
 import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
+import ChapWatermark from "~/components/ui/ChapWatermark.vue";
 
 definePageMeta({
   layout: "default",
 });
-
-const ui = {
-  watermark: [
-    "select-none font-bold tabular-nums leading-none tracking-tighter",
-    "text-highlighted/[0.07] dark:text-highlighted/[0.11]",
-    "text-[min(18rem,55vw)] sm:text-[min(22rem,50vw)]",
-  ],
-};
 </script>

@@ -14,7 +14,7 @@ const ui = {
   listWrapper: "flex items-start md:items-center gap-2",
   listIcon: {
     icon: "i-ph-arrow-right-bold",
-    class: "mt-1 shrink-0 text-primary",
+    class: "mt-1 shrink-0 text-primary-500",
   },
 };
 </script>

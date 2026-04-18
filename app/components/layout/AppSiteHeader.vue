@@ -20,7 +20,7 @@
           size="sm"
           variant="ghost"
           color="secondary"
-          override-class="h-fit"
+          additional-class="min-h-0 h-fit!"
         />
       </div>
     </template>

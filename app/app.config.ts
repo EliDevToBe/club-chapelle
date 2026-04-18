@@ -32,7 +32,7 @@ export default defineAppConfig({
         {
           active: true,
           variant: "link",
-          class: { link: ["active:text-primary-600!"] },
+          class: { link: ["text-primary-500", "active:text-primary-600!"] },
         },
         {
           variant: "link",
@@ -63,7 +63,7 @@ export default defineAppConfig({
       variants: {
         active: {
           true: {
-            dot: "data-[state=active]:bg-secondary",
+            dot: "data-[state=active]:bg-secondary-500",
           },
         },
       },
@@ -76,6 +76,90 @@ export default defineAppConfig({
           "transition-colors",
         ],
       },
+      compoundVariants: [
+        {
+          loading: true,
+          class: { base: "cursor-not-allowed bg-neutral-600! " },
+        },
+        {
+          color: "primary",
+          variant: "solid",
+          class: {
+            base: [
+              "cursor-pointer text-inverted bg-primary-500",
+              "hover:bg-primary",
+              "active:bg-primary-600",
+              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+              "disabled:bg-primary aria-disabled:bg-primary",
+            ],
+          },
+        },
+        {
+          color: "secondary",
+          variant: "solid",
+          class: {
+            base: [
+              "text-inverted bg-secondary-500",
+              "hover:bg-secondary",
+              "active:bg-secondary-600",
+              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary",
+              "disabled:bg-secondary aria-disabled:bg-secondary",
+            ],
+          },
+        },
+        {
+          color: "primary",
+          variant: "outline",
+          class: {
+            base: [
+              "ring ring-inset ring-primary/50 text-primary",
+              "hover:bg-primary/10",
+              "active:bg-primary/7 active:ring-primary/30 active:text-primary-500",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+              "disabled:bg-transparent aria-disabled:bg-transparent",
+              "dark:disabled:bg-transparent dark:aria-disabled:bg-transparent",
+            ],
+          },
+        },
+        {
+          color: "secondary",
+          variant: "outline",
+          class: {
+            base: [
+              "ring ring-inset ring-secondary/50 text-secondary",
+              "hover:bg-secondary/10",
+              "active:bg-secondary/7 active:ring-secondary/30 active:text-secondary-500",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary",
+              "disabled:bg-transparent aria-disabled:bg-transparent",
+              "dark:disabled:bg-transparent dark:aria-disabled:bg-transparent",
+            ],
+          },
+        },
+        {
+          variant: "link",
+          color: "primary",
+          class: {
+            base: [
+              "cursor-pointer",
+              "text-primary-500 hover:text-primary hover:underline hover:underline-offset-4",
+            ],
+          },
+        },
+        {
+          color: "secondary",
+          variant: "ghost",
+          class: {
+            base: [
+              "text-secondary-500",
+              "hover:bg-secondary/10",
+              "active:bg-secondary/7 active:text-secondary-600",
+              "focus:outline-none focus-visible:bg-secondary/10",
+              "disabled:bg-transparent aria-disabled:bg-transparent",
+              "dark:disabled:bg-transparent dark:aria-disabled:bg-transparent",
+            ],
+          },
+        },
+      ],
     },
 
     toast: {

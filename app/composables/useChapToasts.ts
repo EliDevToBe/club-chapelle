@@ -26,8 +26,21 @@ export const useChapToast = () => {
     });
   };
 
+  const addToastInfo = (
+    description: string,
+    opts: { title?: string; id?: string; duration?: number } = {},
+  ) => {
+    return toast.add({
+      ...(opts.id ? { id: opts.id } : {}),
+      title: opts.title ?? "Info",
+      description,
+      color: "info",
+    });
+  };
+
   return {
     addToastError,
     addToastSuccess,
+    addToastInfo,
   };
 };
