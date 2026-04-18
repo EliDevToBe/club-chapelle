@@ -8,15 +8,22 @@ export type AuthServices = {
   password: PasswordHasher;
 };
 
+let authServices: AuthServices | null = null;
+
 export const createAuthServices = (options: {
   accessSecret: string;
   refreshSecret: string;
 }): AuthServices => {
-  return {
+  if (authServices) {
+    return authServices;
+  }
+
+  authServices = {
     jwt: new JsonWebTokenAuthService(
       options.accessSecret,
       options.refreshSecret,
     ),
     password: new Argon2PasswordHasher(),
   };
+  return authServices;
 };

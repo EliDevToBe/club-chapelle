@@ -17,7 +17,9 @@ import AuthFlowForm, {
 } from "~/components/auth/AuthFlowForm.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
+import { useAuthUser } from "~/composables/useAuthUser";
 import { useChapToast } from "~/composables/useChapToasts";
+import type { SessionUser } from "~~/shared/auth/session-user";
 
 definePageMeta({
   layout: "default",
@@ -25,6 +27,7 @@ definePageMeta({
 
 const route = useRoute();
 const { addToastError, addToastInfo } = useChapToast();
+const { setUser, user } = useAuthUser();
 
 const mode = ref<AuthFlowMode>("login");
 const loginPending = ref(false);
@@ -44,14 +47,18 @@ const onAuthSubmit = async (payload: AuthFlowSubmitPayload) => {
 
   loginPending.value = true;
   try {
-    await $fetch("/api/auth/login", {
-      method: "POST",
-      body: {
-        email: payload.email,
-        password: payload.password,
+    const response = await $fetch<{ ok: true; session: SessionUser }>(
+      "/api/auth/login",
+      {
+        method: "POST",
+        body: {
+          email: payload.email,
+          password: payload.password,
+        },
+        credentials: "include",
       },
-      credentials: "include",
-    });
+    );
+    setUser(response.session);
 
     const raw = route.query.redirect;
     const redirect =

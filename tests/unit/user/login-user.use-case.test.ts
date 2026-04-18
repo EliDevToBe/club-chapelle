@@ -42,6 +42,11 @@ describe("LoginUser", () => {
       ok: true,
       accessToken: "access-jwt",
       refreshToken: "refresh-jwt",
+      session: {
+        id: "u1",
+        name: null,
+        roles: ["member"],
+      },
     });
     expect(passwords.verify).toHaveBeenCalledWith("secret", "argon-hash");
     expect(jwt.signAccess).toHaveBeenCalledWith("u1");
