@@ -4,6 +4,8 @@ type AuthSessionResponse = {
   session: SessionUser | null;
 };
 
+let hydration: Promise<SessionUser | null> | null = null;
+
 export const useAuthUser = () => {
   const user = useState<SessionUser | null>("auth-user", () => null);
   const hydrated = useState<boolean>("auth-user-hydrated", () => false);
@@ -35,12 +37,20 @@ export const useAuthUser = () => {
     if (hydrated.value || user.value !== null) {
       return user.value;
     }
-    try {
-      return await fetchSession();
-    } catch {
-      setUser(null);
-      return null;
+
+    if (hydration) {
+      return hydration;
     }
+
+    hydration = (async () => {
+      try {
+        const session = await fetchSession();
+        return session;
+      } finally {
+        hydration = null;
+      }
+    })();
+    return hydration;
   };
 
   const login = async (email: string, password: string) => {
@@ -66,17 +76,12 @@ export const useAuthUser = () => {
     clearSession();
   };
 
-  if (import.meta.client) {
-    onMounted(() => {
-      void hydrateIfNeeded();
-    });
-  }
-
   return {
     user,
     isDeveloper,
     isAdmin,
     hydrated: computed(() => hydrated.value),
+    hydrateIfNeeded,
     fetchSession,
     setUser,
     clearSession,

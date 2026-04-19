@@ -26,7 +26,7 @@ definePageMeta({
 
 const route = useRoute();
 const { addToastError, addToastInfo, addToastSuccess } = useChapToast();
-const { login } = useAuthUser();
+const { login, user } = useAuthUser();
 
 const mode = ref<AuthFlowMode>("login");
 const loginPending = ref(false);
@@ -67,4 +67,10 @@ const onAuthSubmit = async (payload: AuthFlowSubmitPayload) => {
     loginPending.value = false;
   }
 };
+
+watch([user], () => {
+  if (user.value) {
+    navigateTo("/");
+  }
+});
 </script>
