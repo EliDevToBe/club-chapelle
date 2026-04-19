@@ -165,7 +165,8 @@ const login = () => {
     });
   } catch (error: unknown) {
     const issues = getZodIssues(error);
-    addToastError("Veuillez vérifier les champs du formulaire.", {
+    addToastError({
+      description: "Veuillez vérifier les champs du formulaire.",
       title: issues?.[0]?.message ?? "Saisie invalide",
       id: "login-form-error",
     });
@@ -179,7 +180,8 @@ const forgotPassword = () => {
     emit("submit", { kind: "forgotPassword", email: parsed.email });
   } catch (error: unknown) {
     const issues = getZodIssues(error);
-    addToastError("Veuillez vérifier les champs du formulaire.", {
+    addToastError({
+      description: "Veuillez vérifier les champs du formulaire.",
       title: issues?.[0]?.message ?? "Saisie invalide",
     });
   }
@@ -199,7 +201,8 @@ const register = () => {
     });
   } catch (error: unknown) {
     const issues = getZodIssues(error);
-    addToastError("Veuillez vérifier les champs du formulaire.", {
+    addToastError({
+      description: "Veuillez vérifier les champs du formulaire.",
       title: issues?.[0]?.message ?? "Saisie invalide",
     });
   }

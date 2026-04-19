@@ -8,6 +8,12 @@ export const useAuthUser = () => {
   const user = useState<SessionUser | null>("auth-user", () => null);
   const hydrated = useState<boolean>("auth-user-hydrated", () => false);
 
+  const isDeveloper = computed(() => user.value?.roles.includes("developer"));
+  const isAdmin = computed(() => {
+    if (isDeveloper.value) return true;
+    return user.value?.roles.includes("admin");
+  });
+
   const setUser = (sessionSnapshot: SessionUser | null) => {
     user.value = sessionSnapshot;
     hydrated.value = true;
@@ -37,6 +43,29 @@ export const useAuthUser = () => {
     }
   };
 
+  const login = async (email: string, password: string) => {
+    const response = await $fetch<{ ok: true; session: SessionUser }>(
+      "/api/auth/login",
+      {
+        method: "POST",
+        body: {
+          email: email,
+          password: password,
+        },
+        credentials: "include",
+      },
+    );
+    setUser(response.session);
+  };
+
+  const logout = async () => {
+    await $fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    clearSession();
+  };
+
   if (import.meta.client) {
     onMounted(() => {
       void hydrateIfNeeded();
@@ -45,9 +74,13 @@ export const useAuthUser = () => {
 
   return {
     user,
+    isDeveloper,
+    isAdmin,
     hydrated: computed(() => hydrated.value),
     fetchSession,
     setUser,
     clearSession,
+    login,
+    logout,
   };
 };

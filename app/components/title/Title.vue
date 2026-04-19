@@ -25,7 +25,7 @@ const ui = computed(() =>
     ? {
         secondaryLabel: "text-xs text-secondary-500  md:text-sm",
         mainLabel: "text-xl md:text-2xl text-primary-500",
-        rootWrapper: ["flex", "flex-col sm:flex-row sm:gap-1"],
+        rootWrapper: ["flex", "flex-col sm:flex-row sm:gap-1 pr-4.5"],
         textWrapper: "flex gap-1 items-baseline",
       }
     : {

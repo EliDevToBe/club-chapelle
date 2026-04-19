@@ -14,6 +14,5 @@ const toaster: ToasterProps = {
   disableSwipe: false,
   max: 2,
   progress: false,
-  duration: 3000,
 };
 </script>

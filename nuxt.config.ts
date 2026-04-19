@@ -30,6 +30,6 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    "/login": { redirect: "/work-in-progress" },
+    "/club": { redirect: "/work-in-progress" },
   },
 });

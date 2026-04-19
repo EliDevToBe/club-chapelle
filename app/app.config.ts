@@ -151,7 +151,7 @@ export default defineAppConfig({
           class: {
             base: [
               "text-secondary-500",
-              "hover:bg-secondary/10",
+              "hover:bg-secondary/10 hover:text-secondary-300",
               "active:bg-secondary/7 active:text-secondary-600",
               "focus:outline-none focus-visible:bg-secondary/10",
               "disabled:bg-transparent aria-disabled:bg-transparent",
