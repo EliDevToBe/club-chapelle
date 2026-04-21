@@ -12,7 +12,8 @@ describe("LoginUser", () => {
       findByEmailWithPasswordHash: vi.fn().mockResolvedValue({
         id: "u1",
         email: "a@b.c",
-        role: "member",
+        name: null,
+        roles: ["member"],
         authenticated: true,
         passwordHash: "argon-hash",
       }),
@@ -41,6 +42,11 @@ describe("LoginUser", () => {
       ok: true,
       accessToken: "access-jwt",
       refreshToken: "refresh-jwt",
+      session: {
+        id: "u1",
+        name: null,
+        roles: ["member"],
+      },
     });
     expect(passwords.verify).toHaveBeenCalledWith("secret", "argon-hash");
     expect(jwt.signAccess).toHaveBeenCalledWith("u1");
@@ -54,7 +60,8 @@ describe("LoginUser", () => {
       findByEmailWithPasswordHash: vi.fn().mockResolvedValue({
         id: "u1",
         email: "a@b.c",
-        role: "member",
+        name: null,
+        roles: ["member"],
         authenticated: false,
         passwordHash: "argon-hash",
       }),
@@ -75,7 +82,7 @@ describe("LoginUser", () => {
 
     const login = new LoginUser(users, passwords, jwt);
     const result = await login.login({ email: "a@b.c", password: "secret" });
-    expect(result).toEqual({ ok: false });
+    expect(result).toEqual({ ok: false, reason: "User is not authenticated" });
   });
 
   it("fails when password is wrong", async () => {
@@ -85,7 +92,8 @@ describe("LoginUser", () => {
       findByEmailWithPasswordHash: vi.fn().mockResolvedValue({
         id: "u1",
         email: "a@b.c",
-        role: "member",
+        name: null,
+        roles: ["member"],
         authenticated: true,
         passwordHash: "argon-hash",
       }),
@@ -106,6 +114,6 @@ describe("LoginUser", () => {
 
     const login = new LoginUser(users, passwords, jwt);
     const result = await login.login({ email: "a@b.c", password: "bad" });
-    expect(result).toEqual({ ok: false });
+    expect(result).toEqual({ ok: false, reason: "Invalid email or password" });
   });
 });

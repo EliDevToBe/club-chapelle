@@ -13,21 +13,24 @@ import { formatDateForDb } from "~~/shared/utils/dates";
 export const toUserDto = (user: User): UserDto => ({
   id: user.id,
   email: user.email,
-  role: user.role,
+  name: user.name,
+  roles: user.roles,
   authenticated: user.authenticated,
   created_at: formatDateForDb(user.createdAt),
 });
 
 export const toCreateUserInput = (dto: UserCreateDto): CreateUserInput => ({
   email: dto.email,
-  role: dto.role,
+  name: dto.name,
+  roles: dto.roles,
   authenticated: dto.authenticated,
   password: dto.password,
 });
 
 export const toUpdateUserInput = (dto: UserUpdateDto): UpdateUserInput => ({
   email: dto.email,
-  role: dto.role,
+  name: dto.name,
+  roles: dto.roles,
   authenticated: dto.authenticated,
   password: dto.password,
 });

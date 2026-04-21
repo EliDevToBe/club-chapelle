@@ -108,10 +108,11 @@ const onSubmit = async () => {
     const issues = getZodIssues(error);
     console.log(issues);
 
-    addToastError(
-      "Veuillez vérifier que tous les champs sont correctement remplis.",
-      { title: `${issues?.[0]?.message}` },
-    );
+    addToastError({
+      description:
+        "Veuillez vérifier que tous les champs sont correctement remplis.",
+      title: `${issues?.[0]?.message}`,
+    });
 
     return;
   }
@@ -127,14 +128,16 @@ const onSubmit = async () => {
     form.subject = "";
     form.message = "";
 
-    addToastSuccess(
-      "Merci pour votre message ! Nous vous répondrons dès que possible.",
-      { duration: 5000 },
-    );
+    addToastSuccess({
+      description:
+        "Merci pour votre message ! Nous vous répondrons dès que possible.",
+      duration: 5000,
+    });
   } catch (e: unknown) {
-    addToastError(
-      "Une erreur est survenue. Réessayez plus tard ou écrivez-nous directement par mail.",
-    );
+    addToastError({
+      description:
+        "Une erreur est survenue. Réessayez plus tard ou écrivez-nous directement par mail.",
+    });
   } finally {
     submitting.value = false;
   }

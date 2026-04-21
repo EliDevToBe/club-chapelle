@@ -17,7 +17,7 @@ import {
 export const toArcherDto = (archer: Archer): ArcherDto => ({
   id: archer.id,
   auth_user_id: archer.authUserId,
-  name: archer.name,
+  public_name: archer.publicName,
   created_at: formatDateForDb(archer.createdAt),
   offboarded_at: formatDateForDbOrNull(archer.offboardedAt),
 });
@@ -25,7 +25,7 @@ export const toArcherDto = (archer: Archer): ArcherDto => ({
 export const toCreateArcherInput = (
   dto: ArcherCreateDto,
 ): CreateArcherInput => ({
-  name: dto.name,
+  publicName: dto.public_name,
   authUserId: dto.auth_user_id,
   offboardedAt: parseDbDateStringOrNull(dto.offboarded_at),
 });
@@ -33,7 +33,7 @@ export const toCreateArcherInput = (
 export const toUpdateArcherInput = (
   dto: ArcherUpdateDto,
 ): UpdateArcherInput => ({
-  name: dto.name,
+  publicName: dto.public_name,
   authUserId: dto.auth_user_id,
   offboardedAt: parseDbDateStringOrNull(dto.offboarded_at),
 });

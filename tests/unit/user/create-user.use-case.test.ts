@@ -9,7 +9,8 @@ describe("CreateUser", () => {
     const expectedUser = {
       id: "u1",
       email: "hello@example.com",
-      role: "member" as const,
+      name: null as string | null,
+      roles: ["member"] as const,
       authenticated: false,
       createdAt,
     };
@@ -32,14 +33,14 @@ describe("CreateUser", () => {
     await expect(
       useCase.create({
         email: "hello@example.com",
-        role: "member",
+        roles: ["member"],
       }),
     ).resolves.toEqual(expectedUser);
 
     expect(repo.create).toHaveBeenCalledTimes(1);
     expect(repo.create).toHaveBeenCalledWith({
       email: "hello@example.com",
-      role: "member",
+      roles: ["member"],
     });
     expect(passwords.hash).not.toHaveBeenCalled();
   });
@@ -49,7 +50,8 @@ describe("CreateUser", () => {
     const expectedUser = {
       id: "u2",
       email: "pw@example.com",
-      role: "member" as const,
+      name: null as string | null,
+      roles: ["member"] as const,
       authenticated: true,
       createdAt,
     };
@@ -71,7 +73,7 @@ describe("CreateUser", () => {
     const useCase = new CreateUser(repo, passwords);
     await useCase.create({
       email: "pw@example.com",
-      role: "member",
+      roles: ["member"],
       authenticated: true,
       password: "plain",
     });
@@ -79,7 +81,7 @@ describe("CreateUser", () => {
     expect(passwords.hash).toHaveBeenCalledWith("plain");
     expect(repo.create).toHaveBeenCalledWith({
       email: "pw@example.com",
-      role: "member",
+      roles: ["member"],
       authenticated: true,
       password: "hashed:plain",
     });

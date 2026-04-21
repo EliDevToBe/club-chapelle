@@ -17,6 +17,7 @@ import AuthFlowForm, {
 } from "~/components/auth/AuthFlowForm.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
+import { useAuthUser } from "~/composables/useAuthUser";
 import { useChapToast } from "~/composables/useChapToasts";
 
 definePageMeta({
@@ -24,17 +25,20 @@ definePageMeta({
 });
 
 const route = useRoute();
-const { addToastError, addToastInfo } = useChapToast();
+const { addToastError, addToastInfo, addToastSuccess } = useChapToast();
+const { login, user } = useAuthUser();
 
 const mode = ref<AuthFlowMode>("login");
 const loginPending = ref(false);
 
 const onAuthSubmit = async (payload: AuthFlowSubmitPayload) => {
   if (payload.kind === "forgotPassword") {
-    addToastInfo(
-      "La réinitialisation du mot de passe par e-mail n'est pas encore activée.",
-      { title: "Bientôt disponible", id: "soon" },
-    );
+    addToastInfo({
+      id: "soon",
+      title: "Bientôt disponible",
+      description:
+        "La réinitialisation du mot de passe par e-mail n'est pas encore activée.",
+    });
     return;
   }
 
@@ -44,14 +48,7 @@ const onAuthSubmit = async (payload: AuthFlowSubmitPayload) => {
 
   loginPending.value = true;
   try {
-    await $fetch("/api/auth/login", {
-      method: "POST",
-      body: {
-        email: payload.email,
-        password: payload.password,
-      },
-      credentials: "include",
-    });
+    await login(payload.email, payload.password);
 
     const raw = route.query.redirect;
     const redirect =
@@ -60,12 +57,20 @@ const onAuthSubmit = async (payload: AuthFlowSubmitPayload) => {
         : "/";
 
     await navigateTo(redirect);
+    addToastSuccess({ title: "Connexion réussie" });
   } catch {
-    addToastError(
-      "E-mail ou mot de passe incorrect. Vérifiez vos identifiants ou réessayez plus tard.",
-    );
+    addToastError({
+      description:
+        "E-mail ou mot de passe incorrect. Vérifiez vos identifiants ou réessayez plus tard.",
+    });
   } finally {
     loginPending.value = false;
   }
 };
+
+watch([user], () => {
+  if (user.value) {
+    navigateTo("/");
+  }
+});
 </script>

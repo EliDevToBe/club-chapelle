@@ -3,7 +3,7 @@ export type ArcherId = string;
 
 export type Archer = {
   id: ArcherId;
-  name: string;
+  publicName: string;
   /** `auth_user.id` when linked; null before onboarding or after unlink. */
   authUserId: string | null;
   createdAt: Date;

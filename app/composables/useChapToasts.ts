@@ -1,40 +1,49 @@
 export const useChapToast = () => {
   const toast = useToast();
 
-  const addToastError = (
-    description: string,
-    opts: { title?: string; id?: string } = {},
-  ) => {
+  const addToastError = (opts: {
+    description: string;
+    title?: string;
+    id?: string;
+  }) => {
     return toast.add({
       ...(opts.id ? { id: opts.id } : {}),
       title: opts.title ?? "Oups !",
-      description,
+      description: opts.description,
       color: "error",
       duration: 5000,
     });
   };
 
   const addToastSuccess = (
-    description?: string,
-    opts: { title?: string; id?: string; duration?: number } = {},
+    opts: {
+      description?: string;
+      title?: string;
+      id?: string;
+      duration?: number;
+    } = {},
   ) => {
     return toast.add({
       ...(opts.id ? { id: opts.id } : {}),
       title: opts.title ?? "Opération réussie !",
-      description,
+      description: opts.description,
       color: "success",
+      duration: opts.duration ?? 2000,
     });
   };
 
-  const addToastInfo = (
-    description: string,
-    opts: { title?: string; id?: string; duration?: number } = {},
-  ) => {
+  const addToastInfo = (opts: {
+    description?: string;
+    title?: string;
+    id?: string;
+    duration?: number;
+  }) => {
     return toast.add({
       ...(opts.id ? { id: opts.id } : {}),
       title: opts.title ?? "Info",
-      description,
+      description: opts.description,
       color: "info",
+      duration: opts.duration ?? 2000,
     });
   };
 

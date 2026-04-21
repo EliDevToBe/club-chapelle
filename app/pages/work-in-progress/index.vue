@@ -1,23 +1,13 @@
 <template>
   <div class="relative isolate overflow-x-hidden">
-    <!-- <div
-      class="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
-      aria-hidden="true"
-    >
-      <span :class="[ui.watermark, 'mt-20 flex flex-col md:flex-row md:gap-8']">
-        <span>ARC</span>
-        <span>18</span>
-      </span>
-    </div> -->
+    <ContentPageWrapper class="relative z-10 h-full sm:min-h-dvh">
+      <ChapWatermark>
+        <span class="mt-20 flex flex-col md:flex-row md:gap-8">
+          <span>ARC</span>
+          <span>18</span>
+        </span>
+      </ChapWatermark>
 
-    <ChapWatermark>
-      <span class="mt-20 flex flex-col md:flex-row md:gap-8">
-        <span>ARC</span>
-        <span>18</span>
-      </span>
-    </ChapWatermark>
-
-    <ContentPageWrapper class="relative z-10 h-full">
       <ChapSection
         is-main-section
         title="Travaux en cours"

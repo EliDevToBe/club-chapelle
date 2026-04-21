@@ -6,7 +6,8 @@ const baseEvent = {
   context: {
     authUser: {
       id: "u1",
-      role: "member",
+      name: null as string | null,
+      roles: ["member"] as const,
       authenticated: true,
     },
   },
@@ -24,7 +25,22 @@ describe("requireRoles", () => {
         ...baseEvent.context,
         authUser: {
           ...baseEvent.context.authUser,
-          role: "manager",
+          roles: ["manager"],
+        },
+      },
+    } as unknown as H3Event;
+
+    expect(() => requireRoles(event, ["manager"])).not.toThrow();
+  });
+
+  it("allows access when any of multiple user roles matches allowedRoles", () => {
+    const event = {
+      ...baseEvent,
+      context: {
+        ...baseEvent.context,
+        authUser: {
+          ...baseEvent.context.authUser,
+          roles: ["member", "manager"],
         },
       },
     } as unknown as H3Event;
@@ -39,7 +55,7 @@ describe("requireRoles", () => {
         ...baseEvent.context,
         authUser: {
           ...baseEvent.context.authUser,
-          role: "admin",
+          roles: ["admin"],
         },
       },
     } as unknown as H3Event;
@@ -54,7 +70,7 @@ describe("requireRoles", () => {
         ...baseEvent.context,
         authUser: {
           ...baseEvent.context.authUser,
-          role: "admin",
+          roles: ["admin"],
         },
       },
     } as unknown as H3Event;
@@ -69,7 +85,7 @@ describe("requireRoles", () => {
         ...baseEvent.context,
         authUser: {
           ...baseEvent.context.authUser,
-          role: "developer",
+          roles: ["developer"],
         },
       },
     } as unknown as H3Event;
@@ -85,7 +101,7 @@ describe("requireRoles", () => {
         authUser: {
           ...baseEvent.context.authUser,
           id: "u3",
-          role: "admin",
+          roles: ["admin"],
           authenticated: false,
         },
       },
@@ -104,7 +120,7 @@ describe("requireRoles", () => {
         authUser: {
           ...baseEvent.context.authUser,
           id: "u4",
-          role: "member",
+          roles: ["member"],
           authenticated: true,
         },
       },

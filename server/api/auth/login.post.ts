@@ -39,10 +39,10 @@ export default defineEventHandler(async (event) => {
   if (!result.ok) {
     throw createError({
       statusCode: 401,
-      statusMessage: "Invalid email or password",
+      statusMessage: result.reason,
     });
   }
 
   setAuthSessionCookies(event, result.accessToken, result.refreshToken);
-  return { ok: true };
+  return { ok: true, session: result.session };
 });

@@ -1,10 +1,13 @@
 import type { NavigationMenuItem } from "@nuxt/ui";
+import { useAuthUser } from "./useAuthUser";
 
 export const useSiteNavItems = () => {
   const route = useRoute();
+  const { isAdmin } = useAuthUser();
 
-  const navItems = computed<NavigationMenuItem[]>(() => {
-    return [
+  const navItems = computed<NavigationMenuItem[][]>(() => {
+    const baseItems: NavigationMenuItem[] = [];
+    baseItems.push(
       {
         label: "Accueil",
         to: "/",
@@ -20,29 +23,24 @@ export const useSiteNavItems = () => {
         to: "/contact",
         active: route.path.startsWith("/contact"),
       },
-    ];
-  });
+      {},
+    );
 
-  const actionItems = computed<NavigationMenuItem[]>(() => {
-    return [
-      {
-        label: "Se connecter",
-        to: "/login",
-        active: route.path.startsWith("/login"),
-        class:
-          "text-secondary hover:text-secondary-300! active:text-secondary-600!",
-      },
-    ];
-  });
+    const adminItems: NavigationMenuItem[] = [];
 
-  /** Grouped lists render a separator between groups in vertical `UNavigationMenu` (mobile drawer). */
-  const drawerMenuItems = computed<NavigationMenuItem[][]>(() => [
-    [...navItems.value, {}],
-    actionItems.value,
-  ]);
+    if (isAdmin.value) {
+      adminItems.push({
+        label: "Admin",
+        to: "/club",
+        active: route.path.startsWith("/club"),
+      });
+    }
+
+    const finalItems = [baseItems, ...(isAdmin.value ? [adminItems] : [])];
+    return finalItems;
+  });
 
   return {
     navItems,
-    drawerMenuItems,
   };
 };

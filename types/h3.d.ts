@@ -4,7 +4,8 @@ declare module "h3" {
   interface H3EventContext {
     authUser?: {
       id: string;
-      role: RoleEnum;
+      name: string | null;
+      roles: RoleEnum[];
       authenticated: boolean;
     };
   }

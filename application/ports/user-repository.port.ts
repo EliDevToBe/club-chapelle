@@ -5,21 +5,24 @@ import type { RoleEnum } from "~~/shared/db-enums";
 export type UserAuthCredentials = {
   id: UserId;
   email: string;
-  role: RoleEnum;
+  name: string | null;
+  roles: RoleEnum[];
   authenticated: boolean;
   passwordHash: string | null;
 };
 
 export type CreateUserInput = {
   email: string;
-  role: RoleEnum;
+  name?: string | null;
+  roles: RoleEnum[];
   authenticated?: boolean;
   password?: string | null;
 };
 
 export type UpdateUserInput = {
   email?: string;
-  role?: RoleEnum;
+  name?: string | null;
+  roles?: RoleEnum[];
   authenticated?: boolean;
   password?: string | null;
 };

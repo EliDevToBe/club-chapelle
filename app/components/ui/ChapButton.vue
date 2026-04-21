@@ -28,7 +28,7 @@ const props = withDefaults(
     label: string;
     additionalClass?: string;
     loading?: boolean;
-    color?: "primary" | "secondary";
+    color?: "primary" | "secondary" | "error";
   }>(),
   {
     variant: "solid",

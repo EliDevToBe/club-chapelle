@@ -9,7 +9,7 @@ import { prismaClient } from "~~/infrastructure/persistence/prisma.client";
 
 const toDomain = (row: archer): Archer => ({
   id: row.id,
-  name: row.name,
+  publicName: row.public_name,
   authUserId: row.auth_user_id,
   createdAt: row.created_at,
   offboardedAt: row.offboarded_at,
@@ -19,7 +19,7 @@ export class PrismaArcherRepository implements ArcherRepository {
   public create = async (input: CreateArcherInput): Promise<Archer> => {
     const row = await prismaClient.archer.create({
       data: {
-        name: input.name,
+        public_name: input.publicName,
         auth_user_id: input.authUserId,
         offboarded_at: input.offboardedAt,
       },
@@ -52,7 +52,7 @@ export class PrismaArcherRepository implements ArcherRepository {
     const row = await prismaClient.archer.update({
       where: { id },
       data: {
-        name: input.name,
+        public_name: input.publicName,
         auth_user_id: input.authUserId,
         offboarded_at: input.offboardedAt,
       },

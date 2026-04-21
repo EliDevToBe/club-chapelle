@@ -78,27 +78,36 @@ enum role {
 model archer {
   id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   auth_user_id   String?         @db.Uuid
-  name           String
+  public_name    String
   created_at     DateTime        @default(now()) @db.Date
   offboarded_at  DateTime?       @db.Date
   auth_user      auth_user?      @relation(fields: [auth_user_id], references: [id])
   participations participation[]
 
-  @@unique([name])
+  @@unique([public_name])
   @@index([auth_user_id])
 }
 
 model auth_user {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String?
   email         String
   password      String?
-  role          role
-  created_at    DateTime @default(now()) @db.Date
-  authenticated Boolean  @default(false)
+  created_at    DateTime         @default(now()) @db.Date
+  authenticated Boolean          @default(false)
   archers       archer[]
   tokens        token[]
+  roles         auth_user_role[]
 
   @@unique([email])
+}
+
+model auth_user_role {
+  auth_user_id String    @db.Uuid
+  role         role      @default(member)
+  auth_user    auth_user @relation(fields: [auth_user_id], references: [id], onDelete: Cascade)
+
+  @@unique([auth_user_id, role])
 }
 
 model competition {
@@ -154,5 +163,5 @@ model token {
   created_at   DateTime   @default(now()) @db.Date
   expires_at   DateTime   @db.Date
   used_at      DateTime?  @db.Date
-  auth_user    auth_user  @relation(fields: [auth_user_id], references: [id])
+  auth_user    auth_user  @relation(fields: [auth_user_id], references: [id], onDelete: Cascade)
 }

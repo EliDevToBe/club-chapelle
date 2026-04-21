@@ -50,19 +50,24 @@ const main = async () => {
   await prisma.participation.deleteMany();
   await prisma.competition.deleteMany();
   await prisma.archer.deleteMany();
+  await prisma.token.deleteMany();
+  await prisma.auth_user_role.deleteMany();
   await prisma.auth_user.deleteMany();
 
   const authRows: { id: string; role: RoleEnum }[] = [];
   for (const spec of seedLinkedArchers) {
     const u = await prisma.auth_user.create({
       data: {
+        name: spec.public_name,
         email: spec.email,
         password: null,
-        role: spec.role,
         authenticated: true,
+        roles: {
+          create: { role: spec.role },
+        },
       },
     });
-    authRows.push(u);
+    authRows.push({ id: u.id, role: spec.role });
   }
 
   /**
@@ -92,14 +97,14 @@ const main = async () => {
 
     const inserted = await prisma.archer.create({
       data: {
-        name: spec.name,
+        public_name: spec.public_name,
         auth_user_id: auth.id,
       },
     });
 
     const id = inserted.id;
     if (!id) {
-      throw new Error(`Insert failed for archer ${spec.name}`);
+      throw new Error(`Insert failed for archer ${spec.public_name}`);
     }
     archerIds.push(id);
   }
@@ -107,7 +112,7 @@ const main = async () => {
   for (const name of seedUnlinkedArcherNames) {
     const inserted = await prisma.archer.create({
       data: {
-        name,
+        public_name: name,
       },
     });
 
