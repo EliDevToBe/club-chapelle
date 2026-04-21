@@ -38,7 +38,7 @@
           label="Se déconnecter"
           size="sm"
           variant="ghost"
-          color="secondary"
+          color="error"
           additional-class="min-h-0 h-fit!"
         />
       </div>
@@ -92,7 +92,7 @@ const actionItems = computed<NavigationMenuItem[]>(() => {
         });
       },
       class:
-        "cursor-pointer text-secondary-500 hover:text-secondary-300! active:text-secondary-600!",
+        "cursor-pointer text-error-500 hover:text-error-400! hover:bg-error/10 focus:bg-error/10 rounded-lg active:text-error-700!",
     });
   }
 

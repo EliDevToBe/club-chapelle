@@ -36,7 +36,8 @@ export const useSiteNavItems = () => {
       });
     }
 
-    return [baseItems, adminItems];
+    const finalItems = [baseItems, ...(isAdmin.value ? [adminItems] : [])];
+    return finalItems;
   });
 
   return {

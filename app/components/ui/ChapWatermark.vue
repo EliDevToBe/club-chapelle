@@ -12,7 +12,7 @@ defineProps<{
 }>();
 
 const ui = {
-  root: "pointer-events-none absolute inset-0 -z-1 flex items-center justify-center",
+  root: "pointer-events-none absolute inset-0 -z-1 overflow-hidden flex items-center justify-center",
   watermark: [
     "select-none font-bold tabular-nums leading-none tracking-tighter",
     "text-highlighted/[0.07] dark:text-highlighted/[0.08] blur-[2px]",
