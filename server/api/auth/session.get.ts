@@ -1,4 +1,5 @@
 import type { H3Event } from "h3";
+import { defineEventHandler } from "h3";
 import type { SessionUser } from "~~/shared/auth/session-user";
 
 export const resolveSessionFromEvent = (

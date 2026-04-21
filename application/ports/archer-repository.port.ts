@@ -1,13 +1,13 @@
 import type { Archer, ArcherId } from "~~/domain/archer/archer";
 
 export type CreateArcherInput = {
-  name: string;
+  publicName: string;
   authUserId?: string | null;
   offboardedAt?: Date | null;
 };
 
 export type UpdateArcherInput = {
-  name?: string;
+  publicName?: string;
   authUserId?: string | null;
   offboardedAt?: Date | null;
 };

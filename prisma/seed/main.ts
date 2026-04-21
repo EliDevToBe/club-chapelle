@@ -58,7 +58,7 @@ const main = async () => {
   for (const spec of seedLinkedArchers) {
     const u = await prisma.auth_user.create({
       data: {
-        name: spec.name,
+        name: spec.public_name,
         email: spec.email,
         password: null,
         authenticated: true,
@@ -97,14 +97,14 @@ const main = async () => {
 
     const inserted = await prisma.archer.create({
       data: {
-        public_name: spec.name,
+        public_name: spec.public_name,
         auth_user_id: auth.id,
       },
     });
 
     const id = inserted.id;
     if (!id) {
-      throw new Error(`Insert failed for archer ${spec.name}`);
+      throw new Error(`Insert failed for archer ${spec.public_name}`);
     }
     archerIds.push(id);
   }
