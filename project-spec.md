@@ -48,6 +48,8 @@ Three roles with **strict ordering**: **Admin > Manager > Member**.
 
 - A **higher** role **inherits** all permissions of **lower** roles unless an exception is explicitly stated (none below—Admin-only actions are listed separately).
 
+The **`developer`** value in the database and RBAC layer is a **technical** role for maintainers: it is **not** a club-facing permission tier in the matrix below. When authenticated, it is treated as **elevated** for route checks (see §3.3).
+
 ### 3.2 Permission matrix
 
 Capabilities are cumulative by level.
@@ -85,11 +87,14 @@ Capabilities are cumulative by level.
 
 ### 3.3 Technical session model (reference)
 
-This subsection documents how the **implemented** HTTP session works today (cookie-based JWTs, **no** extra database tables or enums for sessions).
+This subsection documents how the **implemented** HTTP session works today (**cookie-based JWTs**). There is **no** server-side **session** table: identity between requests is carried only in **HttpOnly** cookies. **User roles** are persisted separately in **`auth_user_role`** (a user may have **multiple** roles); that is **not** a session store.
 
 - **Password storage:** `auth_user.password` holds an **Argon2id** hash (library defaults). Plain passwords are never stored.
+- **Role storage:** `auth_user_role` links `auth_user` rows to `role` enum values. Authorisation in Nitro uses **explicit** allow-lists per route (`requireRoles`); **`developer`** bypasses product-role checks when authenticated (see §3.1). This does **not** implement automatic **inheritance** (Admin > Manager > Member) in code—that remains a product rule for v1.5 alignment ([project-roadmap.md](project-roadmap.md)).
 - **Tokens:** Two **HS256 JWT** families—**access** (20-minute lifetime) and **refresh** (7-day lifetime)—signed with **two different secrets** (`NUXT_AUTH_JWT_ACCESS_SECRET` and `NUXT_AUTH_JWT_REFRESH_SECRET`). Access and refresh are **not** distinguished by custom JWT header fields or by extra payload “type” claims; separation is by **signing secret** and by **which cookie** carries the string, so a refresh token cannot be verified as an access token.
 - **Cookies (HttpOnly):** `club-access` (access JWT) and `club-refresh` (refresh JWT). The browser should send both on same-origin API calls using **`credentials: 'include'`**.
+- **Client contract:** Any same-origin **`fetch`** / **`$fetch`** to **private** or **mutating** API routes (including login, logout, session, and protected handlers) must use **`credentials: 'include'`** so cookies are sent.
+- **Session snapshot for the client:** `GET /api/auth/session` returns `{ session: null }` when unauthenticated, or `{ session: { id, name, roles } }` when authenticated (aligned with `shared/auth/session-user.ts`). `POST /api/auth/login` responds with **`{ ok: true, session }`** after setting cookies, so the client can update UI without an extra round trip.
 - **Middleware (Nitro):** On `/api/**` routes (except `POST /api/auth/login`), the server verifies the access JWT from `club-access`, loads the user from the database by `sub`, and sets server **`event.context`** for RBAC. If access is missing or invalid but `club-refresh` verifies, the server issues a **new** access JWT, sets **`Set-Cookie`** for `club-access`, then continues with the same user resolution.
 - **Login / logout:** `POST /api/auth/login` validates email and password and sets both cookies. `POST /api/auth/logout` clears both cookies (no database session row to delete).
 - **Revocation limits:** Without server-side refresh/session storage, revoking **all** devices for a user is not automatic beyond password change or future token blocklists.
