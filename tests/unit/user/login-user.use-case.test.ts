@@ -82,7 +82,7 @@ describe("LoginUser", () => {
 
     const login = new LoginUser(users, passwords, jwt);
     const result = await login.login({ email: "a@b.c", password: "secret" });
-    expect(result).toEqual({ ok: false });
+    expect(result).toEqual({ ok: false, reason: "User is not authenticated" });
   });
 
   it("fails when password is wrong", async () => {
@@ -114,6 +114,6 @@ describe("LoginUser", () => {
 
     const login = new LoginUser(users, passwords, jwt);
     const result = await login.login({ email: "a@b.c", password: "bad" });
-    expect(result).toEqual({ ok: false });
+    expect(result).toEqual({ ok: false, reason: "Invalid email or password" });
   });
 });
