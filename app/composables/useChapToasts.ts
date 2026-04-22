@@ -28,7 +28,7 @@ export const useChapToast = () => {
       title: opts.title ?? "Opération réussie !",
       description: opts.description,
       color: "success",
-      duration: opts.duration ?? 2000,
+      duration: opts.duration ?? 3000,
     });
   };
 

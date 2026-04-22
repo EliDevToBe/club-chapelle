@@ -33,9 +33,10 @@ export class MailtrapTransactionalMailSender implements TransactionalMailPort {
   ): Promise<void> => {
     await this.client.send({
       template_uuid: input.templateId,
+      template_variables: input.variables,
       to: input.to,
       from: input.from,
-      subject: input.subject,
+      ...(input.replyTo !== undefined ? { reply_to: input.replyTo } : {}),
     });
   };
 }

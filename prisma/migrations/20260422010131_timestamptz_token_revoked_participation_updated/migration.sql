@@ -1,0 +1,46 @@
+-- AlterTable
+ALTER TABLE "archer"
+ALTER COLUMN "created_at"
+SET
+    DATA TYPE TIMESTAMPTZ,
+ALTER COLUMN "offboarded_at"
+SET
+    DATA TYPE TIMESTAMPTZ;
+
+-- AlterTable
+ALTER TABLE "auth_user"
+ALTER COLUMN "created_at"
+SET
+    DATA TYPE TIMESTAMPTZ;
+
+-- AlterTable
+ALTER TABLE "competition"
+ALTER COLUMN "created_at"
+SET
+    DATA TYPE TIMESTAMPTZ;
+
+-- AlterTable
+ALTER TABLE "file"
+ALTER COLUMN "created_at"
+SET
+    DATA TYPE TIMESTAMPTZ;
+
+-- AlterTable
+ALTER TABLE "participation"
+ADD COLUMN "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ALTER COLUMN "created_at"
+SET
+    DATA TYPE TIMESTAMPTZ;
+
+-- AlterTable
+ALTER TABLE "token"
+ADD COLUMN "revoked_at" TIMESTAMPTZ,
+ALTER COLUMN "created_at"
+SET
+    DATA TYPE TIMESTAMPTZ,
+ALTER COLUMN "expires_at"
+SET
+    DATA TYPE TIMESTAMPTZ,
+ALTER COLUMN "used_at"
+SET
+    DATA TYPE TIMESTAMPTZ;

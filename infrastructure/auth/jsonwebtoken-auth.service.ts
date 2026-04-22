@@ -2,8 +2,11 @@ import jwt from "jsonwebtoken";
 import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port";
 import {
   ACCESS_TOKEN_MAX_AGE_SECONDS,
+  FORGOT_PASSWORD_TOKEN_MAX_AGE_SECONDS,
   REFRESH_TOKEN_MAX_AGE_SECONDS,
 } from "~~/shared/auth/jwt-lifetimes";
+
+type AccessPayload = jwt.JwtPayload & { forgot_password?: boolean };
 
 const readSub = (payload: jwt.JwtPayload): string | null => {
   if (typeof payload.sub === "string" && payload.sub.length > 0) {
@@ -32,9 +35,19 @@ export class JsonWebTokenAuthService implements JwtAuthService {
     });
   };
 
+  public signForgotPasswordToken = (userId: string): string => {
+    return jwt.sign({ forgot_password: true }, this.accessSecret, {
+      subject: userId,
+      expiresIn: FORGOT_PASSWORD_TOKEN_MAX_AGE_SECONDS,
+    });
+  };
+
   public verifyAccess = (token: string): string | null => {
     try {
-      const payload = jwt.verify(token, this.accessSecret) as jwt.JwtPayload;
+      const payload = jwt.verify(token, this.accessSecret) as AccessPayload;
+      if (payload.forgot_password === true) {
+        return null;
+      }
       return readSub(payload);
     } catch {
       return null;

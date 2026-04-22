@@ -21,6 +21,12 @@ export default defineNuxtConfig({
       process.env.MAILTRAP_FROM_NAME ?? "Les Archers de la Chapelle",
     contactFormToEmail:
       process.env.CONTACT_FORM_TO_EMAIL ?? "archerschapelle@gmail.com",
+    /** Public site origin for password recovery links (no trailing slash). */
+    passwordResetOrigin:
+      process.env.PASSWORD_RESET_ORIGIN ?? "https://club-chapelle.vercel.app",
+    mailtrapForgotPasswordTemplateUuid:
+      process.env.MAILTRAP_FORGOT_PASSWORD_TEMPLATE_UUID ??
+      "4c226edb-5687-4870-88b4-aea6c6a572a8",
 
     public: {
       // Any public configuration here

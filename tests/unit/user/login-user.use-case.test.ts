@@ -9,6 +9,7 @@ describe("LoginUser", () => {
     const users: UserRepository = {
       create: vi.fn(),
       findById: vi.fn(),
+      findByEmailForPasswordReset: vi.fn(),
       findByEmailWithPasswordHash: vi.fn().mockResolvedValue({
         id: "u1",
         email: "a@b.c",
@@ -28,6 +29,7 @@ describe("LoginUser", () => {
     const jwt: JwtAuthService = {
       signAccess: vi.fn().mockReturnValue("access-jwt"),
       signRefresh: vi.fn().mockReturnValue("refresh-jwt"),
+      signForgotPasswordToken: vi.fn(),
       verifyAccess: vi.fn(),
       verifyRefresh: vi.fn(),
     };
@@ -57,6 +59,7 @@ describe("LoginUser", () => {
     const users: UserRepository = {
       create: vi.fn(),
       findById: vi.fn(),
+      findByEmailForPasswordReset: vi.fn(),
       findByEmailWithPasswordHash: vi.fn().mockResolvedValue({
         id: "u1",
         email: "a@b.c",
@@ -76,6 +79,7 @@ describe("LoginUser", () => {
     const jwt: JwtAuthService = {
       signAccess: vi.fn(),
       signRefresh: vi.fn(),
+      signForgotPasswordToken: vi.fn(),
       verifyAccess: vi.fn(),
       verifyRefresh: vi.fn(),
     };
@@ -89,6 +93,7 @@ describe("LoginUser", () => {
     const users: UserRepository = {
       create: vi.fn(),
       findById: vi.fn(),
+      findByEmailForPasswordReset: vi.fn(),
       findByEmailWithPasswordHash: vi.fn().mockResolvedValue({
         id: "u1",
         email: "a@b.c",
@@ -108,6 +113,7 @@ describe("LoginUser", () => {
     const jwt: JwtAuthService = {
       signAccess: vi.fn(),
       signRefresh: vi.fn(),
+      signForgotPasswordToken: vi.fn(),
       verifyAccess: vi.fn(),
       verifyRefresh: vi.fn(),
     };

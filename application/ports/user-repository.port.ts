@@ -27,12 +27,24 @@ export type UpdateUserInput = {
   password?: string | null;
 };
 
+/** Row for password-reset eligibility (same checks as login for “can sign in with password”). */
+export type UserPasswordResetLookup = {
+  id: UserId;
+  email: string;
+  name: string | null;
+  authenticated: boolean;
+  passwordHash: string | null;
+};
+
 export interface UserRepository {
   create: (input: CreateUserInput) => Promise<User>;
   findById: (id: UserId) => Promise<User | null>;
   findByEmailWithPasswordHash: (
     email: string,
   ) => Promise<UserAuthCredentials | null>;
+  findByEmailForPasswordReset: (
+    email: string,
+  ) => Promise<UserPasswordResetLookup | null>;
   findMany: () => Promise<User[]>;
   update: (id: UserId, input: UpdateUserInput) => Promise<User | null>;
   delete: (id: UserId) => Promise<boolean>;
