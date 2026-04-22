@@ -2,6 +2,7 @@ import type {
   CreateUserInput,
   UpdateUserInput,
   UserAuthCredentials,
+  UserPasswordResetLookup,
   UserRepository,
 } from "~~/application/ports/user-repository.port";
 import { sortRolesByOrder } from "~~/domain/user/role";
@@ -29,6 +30,16 @@ const toCredentials = (row: AuthUserWithRoles): UserAuthCredentials => ({
   email: row.email,
   name: row.name,
   roles: sortRolesByOrder(row.roles.map((r) => r.role)),
+  authenticated: row.authenticated,
+  passwordHash: row.password,
+});
+
+const toPasswordResetLookup = (
+  row: AuthUserWithRoles,
+): UserPasswordResetLookup => ({
+  id: row.id,
+  email: row.email,
+  name: row.name,
   authenticated: row.authenticated,
   passwordHash: row.password,
 });
@@ -78,6 +89,19 @@ export class PrismaUserRepository implements UserRepository {
       return null;
     }
     return toCredentials(row);
+  };
+
+  public findByEmailForPasswordReset = async (
+    email: string,
+  ): Promise<UserPasswordResetLookup | null> => {
+    const row = await prismaClient.auth_user.findFirst({
+      where: { email: { equals: email.trim(), mode: "insensitive" } },
+      include: rolesInclude,
+    });
+    if (!row) {
+      return null;
+    }
+    return toPasswordResetLookup(row);
   };
 
   public findMany = async (): Promise<User[]> => {

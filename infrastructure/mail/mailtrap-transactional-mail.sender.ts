@@ -11,6 +11,10 @@ export type MailtrapTransactionalMailConfig = {
   testInboxId?: number;
 };
 
+export const MAILTRAP_TEMPLATES_IDS = {
+  forgotPassword: "4c226edb-5687-4870-88b4-aea6c6a572a8",
+} as const;
+
 export class MailtrapTransactionalMailSender implements TransactionalMailPort {
   constructor(private readonly client: MailtrapClient) {}
 
@@ -33,9 +37,10 @@ export class MailtrapTransactionalMailSender implements TransactionalMailPort {
   ): Promise<void> => {
     await this.client.send({
       template_uuid: input.templateId,
+      template_variables: input.variables,
       to: input.to,
       from: input.from,
-      subject: input.subject,
+      ...(input.replyTo !== undefined ? { reply_to: input.replyTo } : {}),
     });
   };
 }

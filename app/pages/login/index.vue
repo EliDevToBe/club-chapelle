@@ -3,7 +3,7 @@
     <ChapSection class="place-self-center" is-main-section title="Connexion">
       <AuthFlowForm
         v-model:mode="mode"
-        :loading="loginPending"
+        :loading="authPending"
         @submit="onAuthSubmit"
       />
     </ChapSection>
@@ -29,16 +29,31 @@ const { addToastError, addToastInfo, addToastSuccess } = useChapToast();
 const { login, user } = useAuthUser();
 
 const mode = ref<AuthFlowMode>("login");
-const loginPending = ref(false);
+const authPending = ref(false);
 
 const onAuthSubmit = async (payload: AuthFlowSubmitPayload) => {
   if (payload.kind === "forgotPassword") {
-    addToastInfo({
-      id: "soon",
-      title: "Bientôt disponible",
-      description:
-        "La réinitialisation du mot de passe par e-mail n'est pas encore activée.",
-    });
+    authPending.value = true;
+    try {
+      await $fetch("/api/auth/forgot-password", {
+        method: "POST",
+        body: { email: payload.email },
+        credentials: "include",
+      });
+      addToastSuccess({
+        title: "Demande prise en compte",
+        description:
+          "Si un compte correspond à cette adresse, vous recevrez un e-mail avec un lien pour réinitialiser votre mot de passe.",
+      });
+      mode.value = "login";
+    } catch {
+      addToastError({
+        description:
+          "Impossible d'envoyer la demande pour le moment. Vérifiez l'adresse e-mail ou réessayez plus tard.",
+      });
+    } finally {
+      authPending.value = false;
+    }
     return;
   }
 
@@ -46,7 +61,7 @@ const onAuthSubmit = async (payload: AuthFlowSubmitPayload) => {
     return;
   }
 
-  loginPending.value = true;
+  authPending.value = true;
   try {
     await login(payload.email, payload.password);
 
@@ -64,7 +79,7 @@ const onAuthSubmit = async (payload: AuthFlowSubmitPayload) => {
         "E-mail ou mot de passe incorrect. Vérifiez vos identifiants ou réessayez plus tard.",
     });
   } finally {
-    loginPending.value = false;
+    authPending.value = false;
   }
 };
 

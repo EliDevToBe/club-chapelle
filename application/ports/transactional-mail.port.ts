@@ -21,7 +21,6 @@ export type SendTemplateEmailInput = {
   to: TransactionalMailAddress[];
   from: TransactionalMailAddress;
   replyTo?: TransactionalMailAddress;
-  subject: string;
 };
 
 export interface TransactionalMailPort {

@@ -30,4 +30,13 @@ describe("JsonWebTokenAuthService", () => {
     expect(svc.verifyAccess(access)).toBe("user-3");
     expect(svc.verifyRefresh(refresh)).toBe("user-3");
   });
+
+  it("does not verify a forgot-password JWT as an access session", () => {
+    const svc = new JsonWebTokenAuthService(
+      "access-secret-a",
+      "refresh-secret-b",
+    );
+    const forgot = svc.signForgotPasswordToken("user-4");
+    expect(svc.verifyAccess(forgot)).toBeNull();
+  });
 });
