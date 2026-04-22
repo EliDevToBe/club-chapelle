@@ -1,11 +1,11 @@
 import { createError } from "h3";
 import { authForgotPasswordFormSchema } from "~~/app/schemas/auth-flow.zod";
-import {
-  MAILTRAP_FORGOT_PASSWORD_TEMPLATE_ID_DEFAULT,
-  RequestForgotPassword,
-} from "~~/application/user/request-forgot-password.use-case";
+import { RequestForgotPassword } from "~~/application/user/request-forgot-password.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
-import { createMailtrapTransactionalMailSender } from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
+import {
+  createMailtrapTransactionalMailSender,
+  MAILTRAP_TEMPLATES_IDS,
+} from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 
 export default defineEventHandler(async (event) => {
@@ -76,11 +76,7 @@ export default defineEventHandler(async (event) => {
     testInboxId,
   });
 
-  const templateIdRaw = config.mailtrapForgotPasswordTemplateUuid as string;
-  const templateId =
-    templateIdRaw && templateIdRaw.length > 0
-      ? templateIdRaw
-      : MAILTRAP_FORGOT_PASSWORD_TEMPLATE_ID_DEFAULT;
+  const templateId = MAILTRAP_TEMPLATES_IDS.forgotPassword;
 
   const passwordResetOrigin = (config.passwordResetOrigin as string) || "";
 

@@ -15,7 +15,6 @@ describe("MailtrapTransactionalMailSender", () => {
       },
       to: [{ email: "sam@example.com", name: "Sam" }],
       from: { email: "noreply@example.com", name: "Club" },
-      subject: "Reset",
     });
 
     expect(send).toHaveBeenCalledWith(
@@ -26,7 +25,6 @@ describe("MailtrapTransactionalMailSender", () => {
           user_email: "sam@example.com",
           recovery_link: "https://example.com/reset-password?t=abc",
         },
-        subject: "Reset",
       }),
     );
   });

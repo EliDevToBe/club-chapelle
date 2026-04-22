@@ -24,9 +24,6 @@ export default defineNuxtConfig({
     /** Public site origin for password recovery links (no trailing slash). */
     passwordResetOrigin:
       process.env.PASSWORD_RESET_ORIGIN ?? "https://club-chapelle.vercel.app",
-    mailtrapForgotPasswordTemplateUuid:
-      process.env.MAILTRAP_FORGOT_PASSWORD_TEMPLATE_UUID ??
-      "4c226edb-5687-4870-88b4-aea6c6a572a8",
 
     public: {
       // Any public configuration here

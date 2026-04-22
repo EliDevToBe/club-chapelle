@@ -12,10 +12,6 @@ export type RequestForgotPasswordOptions = {
   sandbox: boolean;
 };
 
-/** Default Mailtrap template for forgot-password (override via runtime config). */
-export const MAILTRAP_FORGOT_PASSWORD_TEMPLATE_ID_DEFAULT =
-  "4c226edb-5687-4870-88b4-aea6c6a572a8";
-
 export class RequestForgotPassword {
   constructor(
     private readonly users: UserRepository,
