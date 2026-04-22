@@ -164,7 +164,7 @@ export default defineAppConfig({
           variant: "ghost",
           class: {
             base: [
-              "text-error-500",
+              "text-error-500 cursor-pointer",
               "hover:bg-error/10 hover:text-error-400",
               "active:bg-error/7 active:text-error-700",
               "focus:outline-none focus-visible:bg-error/10",
