@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  merge-develop-into-main:
+    name: Merge develop into main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge develop into main
+        run: |
+          git fetch origin main develop
+          git checkout main
+          git merge --no-ff origin/develop -m "chore(release): merge develop into main"
+          git push origin main
