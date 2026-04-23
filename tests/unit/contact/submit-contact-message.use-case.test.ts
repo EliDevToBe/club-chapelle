@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SubmitContactMessage } from "~~/application/contact/submit-contact-message.use-case";
 import type {
   SendTransactionalEmailInput,
@@ -6,6 +6,8 @@ import type {
 } from "~~/application/ports/transactional-mail.port";
 
 describe("SubmitContactMessage", () => {
+  let mail: TransactionalMailPort;
+
   const options = {
     toEmail: "club@example.com",
     fromEmail: "noreply@example.com",
@@ -13,11 +15,14 @@ describe("SubmitContactMessage", () => {
     sandbox: false,
   };
 
-  it("returns validation when name is empty", async () => {
-    const mail: TransactionalMailPort = {
+  beforeEach(() => {
+    mail = {
       sendTransactionalEmail: vi.fn(),
       sendTemplateEmail: vi.fn(),
     };
+  });
+
+  it("returns validation when name is empty", async () => {
     const submitContactMessage = new SubmitContactMessage(mail, options);
     const result = await submitContactMessage.submit({
       name: "   ",
@@ -30,10 +35,6 @@ describe("SubmitContactMessage", () => {
   });
 
   it("returns validation when email is invalid", async () => {
-    const mail: TransactionalMailPort = {
-      sendTransactionalEmail: vi.fn(),
-      sendTemplateEmail: vi.fn(),
-    };
     const submitContactMessage = new SubmitContactMessage(mail, options);
     const result = await submitContactMessage.submit({
       name: "Jean",
@@ -47,14 +48,11 @@ describe("SubmitContactMessage", () => {
 
   it("sends mail with kind contact and replyTo", async () => {
     let captured: SendTransactionalEmailInput | undefined;
-    const mail: TransactionalMailPort = {
-      sendTransactionalEmail: vi.fn(
-        async (input: SendTransactionalEmailInput) => {
-          captured = input;
-        },
-      ),
-      sendTemplateEmail: vi.fn(),
-    };
+    mail.sendTransactionalEmail = vi.fn(
+      async (input: SendTransactionalEmailInput) => {
+        captured = input;
+      },
+    );
     const submitContactMessage = new SubmitContactMessage(mail, options);
     const result = await submitContactMessage.submit({
       name: "Marie Dupont",
@@ -77,14 +75,11 @@ describe("SubmitContactMessage", () => {
 
   it("prefixes subject in sandbox mode", async () => {
     let captured: SendTransactionalEmailInput | undefined;
-    const mail: TransactionalMailPort = {
-      sendTransactionalEmail: vi.fn(
-        async (input: SendTransactionalEmailInput) => {
-          captured = input;
-        },
-      ),
-      sendTemplateEmail: vi.fn(),
-    };
+    mail.sendTransactionalEmail = vi.fn(
+      async (input: SendTransactionalEmailInput) => {
+        captured = input;
+      },
+    );
     const submitContactMessage = new SubmitContactMessage(mail, {
       ...options,
       sandbox: true,
@@ -99,12 +94,9 @@ describe("SubmitContactMessage", () => {
   });
 
   it("returns send_failed when mail throws", async () => {
-    const mail: TransactionalMailPort = {
-      sendTransactionalEmail: vi.fn(async () => {
-        throw new Error("network");
-      }),
-      sendTemplateEmail: vi.fn(),
-    };
+    mail.sendTransactionalEmail = vi.fn(async () => {
+      throw new Error("network");
+    });
     const submitContactMessage = new SubmitContactMessage(mail, options);
     const result = await submitContactMessage.submit({
       name: "Test",

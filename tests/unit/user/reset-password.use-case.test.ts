@@ -1,19 +1,15 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port";
-import type { PasswordResetPersistence } from "~~/application/ports/password-reset-persistence.port";
 import type { PasswordHasher } from "~~/application/ports/password-hasher.port";
+import type { PasswordResetPersistence } from "~~/application/ports/password-reset-persistence.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
 import { ResetPassword } from "~~/application/user/reset-password.use-case";
 
 describe("ResetPassword", () => {
-  const jwtBase: JwtAuthService = {
-    signAccess: vi.fn().mockReturnValue("access-jwt"),
-    signRefresh: vi.fn().mockReturnValue("refresh-jwt"),
-    signForgotPasswordToken: vi.fn(),
-    verifyForgotPasswordToken: vi.fn(),
-    verifyAccess: vi.fn(),
-    verifyRefresh: vi.fn(),
-  };
+  let users: UserRepository;
+  let passwords: PasswordHasher;
+  let jwt: JwtAuthService;
+  let persistence: PasswordResetPersistence;
 
   const rowEligible = {
     id: "u1",
@@ -32,8 +28,8 @@ describe("ResetPassword", () => {
     createdAt: new Date("2026-01-01"),
   };
 
-  it("fails when the recovery JWT is invalid", async () => {
-    const users: UserRepository = {
+  beforeEach(() => {
+    users = {
       create: vi.fn(),
       findById: vi.fn(),
       findByEmailWithPasswordHash: vi.fn(),
@@ -43,17 +39,25 @@ describe("ResetPassword", () => {
       update: vi.fn(),
       delete: vi.fn(),
     };
-    const passwords: PasswordHasher = {
+    passwords = {
       hash: vi.fn(),
       verify: vi.fn(),
     };
-    const jwt: JwtAuthService = {
-      ...jwtBase,
-      verifyForgotPasswordToken: vi.fn().mockReturnValue(null),
+    jwt = {
+      signAccess: vi.fn().mockReturnValue("access-jwt"),
+      signRefresh: vi.fn().mockReturnValue("refresh-jwt"),
+      signForgotPasswordToken: vi.fn(),
+      verifyForgotPasswordToken: vi.fn(),
+      verifyAccess: vi.fn(),
+      verifyRefresh: vi.fn(),
     };
-    const persistence: PasswordResetPersistence = {
+    persistence = {
       completeReset: vi.fn(),
     };
+  });
+
+  it("fails when the recovery JWT is invalid", async () => {
+    jwt.verifyForgotPasswordToken = vi.fn().mockReturnValue(null);
 
     const handler = new ResetPassword(users, passwords, jwt, persistence);
     const result = await handler.reset({
@@ -68,33 +72,14 @@ describe("ResetPassword", () => {
   });
 
   it("fails when the account is not eligible", async () => {
-    const users: UserRepository = {
-      create: vi.fn(),
-      findById: vi.fn(),
-      findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn(),
-      findForPasswordResetById: vi.fn().mockResolvedValue({
-        id: "u1",
-        email: "a@b.c",
-        name: null,
-        authenticated: false,
-        passwordHash: "hash",
-      }),
-      findMany: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-    };
-    const passwords: PasswordHasher = {
-      hash: vi.fn(),
-      verify: vi.fn(),
-    };
-    const jwt: JwtAuthService = {
-      ...jwtBase,
-      verifyForgotPasswordToken: vi.fn().mockReturnValue("u1"),
-    };
-    const persistence: PasswordResetPersistence = {
-      completeReset: vi.fn(),
-    };
+    users.findForPasswordResetById = vi.fn().mockResolvedValue({
+      id: "u1",
+      email: "a@b.c",
+      name: null,
+      authenticated: false,
+      passwordHash: "hash",
+    });
+    jwt.verifyForgotPasswordToken = vi.fn().mockReturnValue("u1");
 
     const handler = new ResetPassword(users, passwords, jwt, persistence);
     const result = await handler.reset({
@@ -108,27 +93,10 @@ describe("ResetPassword", () => {
   });
 
   it("fails when persistence does not apply both updates", async () => {
-    const users: UserRepository = {
-      create: vi.fn(),
-      findById: vi.fn(),
-      findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn(),
-      findForPasswordResetById: vi.fn().mockResolvedValue(rowEligible),
-      findMany: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-    };
-    const passwords: PasswordHasher = {
-      hash: vi.fn().mockResolvedValue("argon-new"),
-      verify: vi.fn(),
-    };
-    const jwt: JwtAuthService = {
-      ...jwtBase,
-      verifyForgotPasswordToken: vi.fn().mockReturnValue("u1"),
-    };
-    const persistence: PasswordResetPersistence = {
-      completeReset: vi.fn().mockResolvedValue(false),
-    };
+    users.findForPasswordResetById = vi.fn().mockResolvedValue(rowEligible);
+    passwords.hash = vi.fn().mockResolvedValue("argon-new");
+    jwt.verifyForgotPasswordToken = vi.fn().mockReturnValue("u1");
+    persistence.completeReset = vi.fn().mockResolvedValue(false);
 
     const handler = new ResetPassword(users, passwords, jwt, persistence);
     const result = await handler.reset({
@@ -147,27 +115,11 @@ describe("ResetPassword", () => {
   });
 
   it("returns session and tokens when reset succeeds", async () => {
-    const users: UserRepository = {
-      create: vi.fn(),
-      findById: vi.fn().mockResolvedValue(domainUser),
-      findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn(),
-      findForPasswordResetById: vi.fn().mockResolvedValue(rowEligible),
-      findMany: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-    };
-    const passwords: PasswordHasher = {
-      hash: vi.fn().mockResolvedValue("argon-new"),
-      verify: vi.fn(),
-    };
-    const jwt: JwtAuthService = {
-      ...jwtBase,
-      verifyForgotPasswordToken: vi.fn().mockReturnValue("u1"),
-    };
-    const persistence: PasswordResetPersistence = {
-      completeReset: vi.fn().mockResolvedValue(true),
-    };
+    users.findById = vi.fn().mockResolvedValue(domainUser);
+    users.findForPasswordResetById = vi.fn().mockResolvedValue(rowEligible);
+    passwords.hash = vi.fn().mockResolvedValue("argon-new");
+    jwt.verifyForgotPasswordToken = vi.fn().mockReturnValue("u1");
+    persistence.completeReset = vi.fn().mockResolvedValue(true);
 
     const handler = new ResetPassword(users, passwords, jwt, persistence);
     const result = await handler.reset({

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port";
 import type { User } from "~~/domain/user/user";
 import { resolveAuthContextFromCookies } from "~~/server/utils/resolve-auth-context";
@@ -12,26 +12,30 @@ const sampleUser: User = {
   createdAt: new Date("2026-01-01"),
 };
 
-const jwtNoop: JwtAuthService = {
-  signAccess: vi.fn(),
-  signRefresh: vi.fn(),
-  signForgotPasswordToken: vi.fn(),
-  verifyForgotPasswordToken: vi.fn(),
-  verifyAccess: vi.fn(),
-  verifyRefresh: vi.fn(),
-};
-
 describe("resolveAuthContextFromCookies", () => {
-  it("returns auth from a valid access token", async () => {
-    const jwt: JwtAuthService = {
-      ...jwtNoop,
-      verifyAccess: vi.fn().mockReturnValue("u1"),
+  let jwt: JwtAuthService;
+  let findUserById: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    jwt = {
+      signAccess: vi.fn(),
+      signRefresh: vi.fn(),
+      signForgotPasswordToken: vi.fn(),
+      verifyForgotPasswordToken: vi.fn(),
+      verifyAccess: vi.fn(),
+      verifyRefresh: vi.fn(),
     };
+    findUserById = vi.fn();
+  });
+
+  it("returns auth from a valid access token", async () => {
+    jwt.verifyAccess = vi.fn().mockReturnValue("u1");
+    findUserById = vi.fn().mockResolvedValue(sampleUser);
     const result = await resolveAuthContextFromCookies({
       accessToken: "access",
       refreshToken: "refresh",
       jwt,
-      findUserById: vi.fn().mockResolvedValue(sampleUser),
+      findUserById,
     });
     expect(result.authUser).toEqual({
       id: "u1",
@@ -44,17 +48,15 @@ describe("resolveAuthContextFromCookies", () => {
   });
 
   it("issues new access when access fails but refresh is valid", async () => {
-    const jwt: JwtAuthService = {
-      ...jwtNoop,
-      signAccess: vi.fn().mockReturnValue("new-access"),
-      verifyAccess: vi.fn().mockReturnValue(null),
-      verifyRefresh: vi.fn().mockReturnValue("u1"),
-    };
+    jwt.signAccess = vi.fn().mockReturnValue("new-access");
+    jwt.verifyAccess = vi.fn().mockReturnValue(null);
+    jwt.verifyRefresh = vi.fn().mockReturnValue("u1");
+    findUserById = vi.fn().mockResolvedValue(sampleUser);
     const result = await resolveAuthContextFromCookies({
       accessToken: "bad",
       refreshToken: "good-refresh",
       jwt,
-      findUserById: vi.fn().mockResolvedValue(sampleUser),
+      findUserById,
     });
     expect(result.authUser).toEqual({
       id: "u1",
@@ -70,34 +72,28 @@ describe("resolveAuthContextFromCookies", () => {
     const result = await resolveAuthContextFromCookies({
       accessToken: undefined,
       refreshToken: undefined,
-      jwt: jwtNoop,
-      findUserById: vi.fn(),
+      jwt,
+      findUserById,
     });
     expect(result).toEqual({ authUser: null, newAccessToken: null });
-    expect(jwtNoop.verifyAccess).not.toHaveBeenCalled();
-    expect(jwtNoop.verifyRefresh).not.toHaveBeenCalled();
+    expect(jwt.verifyAccess).not.toHaveBeenCalled();
+    expect(jwt.verifyRefresh).not.toHaveBeenCalled();
   });
 
   it("returns null when access token is invalid and there is no refresh cookie", async () => {
-    const jwt: JwtAuthService = {
-      ...jwtNoop,
-      verifyAccess: vi.fn().mockReturnValue(null),
-    };
+    jwt.verifyAccess = vi.fn().mockReturnValue(null);
     const result = await resolveAuthContextFromCookies({
       accessToken: "bad",
       refreshToken: undefined,
       jwt,
-      findUserById: vi.fn(),
+      findUserById,
     });
     expect(result).toEqual({ authUser: null, newAccessToken: null });
   });
 
   it("returns null when access verifies but user no longer exists", async () => {
-    const jwt: JwtAuthService = {
-      ...jwtNoop,
-      verifyAccess: vi.fn().mockReturnValue("u1"),
-    };
-    const findUserById = vi.fn().mockResolvedValue(null);
+    jwt.verifyAccess = vi.fn().mockReturnValue("u1");
+    findUserById = vi.fn().mockResolvedValue(null);
     const result = await resolveAuthContextFromCookies({
       accessToken: "access",
       refreshToken: undefined,
@@ -109,12 +105,9 @@ describe("resolveAuthContextFromCookies", () => {
   });
 
   it("returns null when refresh verifies but user no longer exists", async () => {
-    const jwt: JwtAuthService = {
-      ...jwtNoop,
-      verifyAccess: vi.fn().mockReturnValue(null),
-      verifyRefresh: vi.fn().mockReturnValue("u1"),
-    };
-    const findUserById = vi.fn().mockResolvedValue(null);
+    jwt.verifyAccess = vi.fn().mockReturnValue(null);
+    jwt.verifyRefresh = vi.fn().mockReturnValue("u1");
+    findUserById = vi.fn().mockResolvedValue(null);
     const result = await resolveAuthContextFromCookies({
       accessToken: undefined,
       refreshToken: "refresh",
@@ -126,31 +119,25 @@ describe("resolveAuthContextFromCookies", () => {
   });
 
   it("returns null when refresh token is present but invalid", async () => {
-    const jwt: JwtAuthService = {
-      ...jwtNoop,
-      verifyAccess: vi.fn().mockReturnValue(null),
-      verifyRefresh: vi.fn().mockReturnValue(null),
-    };
+    jwt.verifyAccess = vi.fn().mockReturnValue(null);
+    jwt.verifyRefresh = vi.fn().mockReturnValue(null);
     const result = await resolveAuthContextFromCookies({
       accessToken: undefined,
       refreshToken: "bad-refresh",
       jwt,
-      findUserById: vi.fn(),
+      findUserById,
     });
     expect(result).toEqual({ authUser: null, newAccessToken: null });
   });
 
   it("returns null when both tokens are present but both invalid", async () => {
-    const jwt: JwtAuthService = {
-      ...jwtNoop,
-      verifyAccess: vi.fn().mockReturnValue(null),
-      verifyRefresh: vi.fn().mockReturnValue(null),
-    };
+    jwt.verifyAccess = vi.fn().mockReturnValue(null);
+    jwt.verifyRefresh = vi.fn().mockReturnValue(null);
     const result = await resolveAuthContextFromCookies({
       accessToken: "bad-access",
       refreshToken: "bad-refresh",
       jwt,
-      findUserById: vi.fn(),
+      findUserById,
     });
     expect(result).toEqual({ authUser: null, newAccessToken: null });
   });
