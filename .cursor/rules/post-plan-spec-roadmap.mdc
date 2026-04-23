@@ -1,0 +1,32 @@
+---
+description: After executing a plan, reconcile project-spec and project-roadmap with what was delivered
+alwaysApply: true
+---
+
+# After a built plan: spec and roadmap
+
+When you have **finished implementing** work that followed a **plan** (built or step-by-step), **before** treating the task as complete:
+
+## 1. Decide if docs need changing
+
+Review **project-spec.md** and **project-roadmap.md** (repo root) in light of **what was actually shipped** (behaviour, scope, RBAC, domain boundaries, phases).
+
+Update them when any of this changed relative to those files:
+
+- Product rules, roles, flows, or non-goals
+- Phase scope, ordering, **checkboxes**, “current snapshot”, or “next” items
+- Anything a future reader would wrongly assume is still todo or still out of scope
+
+Skip doc edits only when the plan was purely internal refactor, copy, or tooling with **no** product or delivery-state impact.
+
+## 2. How to edit (source of truth)
+
+Follow **AGENTS.md**: normative rules live in **project-spec.md**; **project-roadmap.md** is delivery tracking. If they would disagree after your change, **project-spec.md wins**—then align the roadmap (or spec) in the **same** change.
+
+Edits should be **minimal**: adjust checklists, status lines, and sections that are now wrong; do **not** rewrite unrelated prose.
+
+## 3. Tie updates to the plan
+
+Mention implicitly in the edits *what landed* (e.g. tick the right roadmap items, add a short “done” note only if the file’s style already uses that). Do not paste the full plan into the spec; keep the repo docs readable.
+
+If README public goals shifted, update **README.md** only when that is warranted by the same delivery (optional; follow the same “would a reader be misled?” test).

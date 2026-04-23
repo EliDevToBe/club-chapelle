@@ -45,6 +45,9 @@ export interface UserRepository {
   findByEmailForPasswordReset: (
     email: string,
   ) => Promise<UserPasswordResetLookup | null>;
+  findForPasswordResetById: (
+    id: UserId,
+  ) => Promise<UserPasswordResetLookup | null>;
   findMany: () => Promise<User[]>;
   update: (id: UserId, input: UpdateUserInput) => Promise<User | null>;
   delete: (id: UserId) => Promise<boolean>;

@@ -104,6 +104,19 @@ export class PrismaUserRepository implements UserRepository {
     return toPasswordResetLookup(row);
   };
 
+  public findForPasswordResetById = async (
+    id: string,
+  ): Promise<UserPasswordResetLookup | null> => {
+    const row = await prismaClient.auth_user.findUnique({
+      where: { id },
+      include: rolesInclude,
+    });
+    if (!row) {
+      return null;
+    }
+    return toPasswordResetLookup(row);
+  };
+
   public findMany = async (): Promise<User[]> => {
     const rows = await prismaClient.auth_user.findMany({
       orderBy: { created_at: "desc" },

@@ -25,7 +25,7 @@ definePageMeta({
 });
 
 const route = useRoute();
-const { addToastError, addToastInfo, addToastSuccess } = useChapToast();
+const { addToastError, addToastSuccess } = useChapToast();
 const { login, user } = useAuthUser();
 
 const mode = ref<AuthFlowMode>("login");
@@ -61,26 +61,34 @@ const onAuthSubmit = async (payload: AuthFlowSubmitPayload) => {
     return;
   }
 
-  authPending.value = true;
-  try {
-    await login(payload.email, payload.password);
+  if (payload.kind === "login") {
+    authPending.value = true;
+    try {
+      await login(payload.email, payload.password);
 
-    const raw = route.query.redirect;
-    const redirect =
-      typeof raw === "string" && raw.startsWith("/") && !raw.startsWith("//")
-        ? raw
-        : "/";
+      const raw = route.query.redirect;
+      const redirect =
+        typeof raw === "string" && raw.startsWith("/") && !raw.startsWith("//")
+          ? raw
+          : "/";
 
-    await navigateTo(redirect);
-    addToastSuccess({ title: "Connexion réussie" });
-  } catch {
-    addToastError({
-      description:
-        "E-mail ou mot de passe incorrect. Vérifiez vos identifiants ou réessayez plus tard.",
-    });
-  } finally {
-    authPending.value = false;
+      await navigateTo(redirect);
+      addToastSuccess({ title: "Connexion réussie" });
+    } catch {
+      addToastError({
+        description:
+          "E-mail ou mot de passe incorrect. Vérifiez vos identifiants ou réessayez plus tard.",
+      });
+    } finally {
+      authPending.value = false;
+    }
+    return;
   }
+
+  addToastError({
+    description:
+      "Une erreur inattendue est survenue. Veuillez réessayer plus tard.",
+  });
 };
 
 watch([user], () => {

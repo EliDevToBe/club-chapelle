@@ -1,0 +1,68 @@
+---
+description: Prefer beforeEach test setup over repeating full mock object fields in each test
+globs: tests/**/*.test.ts
+alwaysApply: false
+---
+
+# Prefer `beforeEach` setup for test dependencies
+
+When writing or updating tests, initialise dependency fakes once in `beforeEach` and override only what each `it` needs.
+
+## Why
+
+- Reduces noise and repetition in each test.
+- Makes scenario-specific overrides easier to read.
+- Keeps default fixture shape consistent across the file.
+
+## Preferred pattern
+
+```ts
+let users: UserRepository;
+let jwt: JwtAuthService;
+
+beforeEach(() => {
+  users = {
+    create: vi.fn(),
+    findById: vi.fn(),
+    findByEmailWithPasswordHash: vi.fn().mockResolvedValue(defaultUser),
+    update: vi.fn(),
+    delete: vi.fn(),
+  };
+
+  jwt = {
+    signAccess: vi.fn().mockReturnValue("access-jwt"),
+    signRefresh: vi.fn().mockReturnValue("refresh-jwt"),
+    signForgotPasswordToken: vi.fn(),
+    verifyForgotPasswordToken: vi.fn(),
+    verifyAccess: vi.fn(),
+    verifyRefresh: vi.fn(),
+  };
+});
+
+it("fails when user is not authenticated", async () => {
+  users.findByEmailWithPasswordHash = vi.fn().mockResolvedValue({
+    ...defaultUser,
+    authenticated: false,
+  });
+  // test assertions...
+});
+```
+
+## Avoid
+
+Do not redefine large dependency objects in every `it` with many unchanged or empty fields.
+
+```ts
+it("some case", async () => {
+  const users = {
+    create: vi.fn(),
+    findById: vi.fn(),
+    findByEmailWithPasswordHash: vi.fn().mockResolvedValue(...),
+    findMany: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    // repeated again in each test...
+  };
+  // ...
+});
+```
