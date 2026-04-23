@@ -1,9 +1,30 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { PasswordHasher } from "~~/application/ports/password-hasher.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
 import { CreateUser } from "~~/application/user/create-user.use-case";
 
 describe("CreateUser", () => {
+  let repo: UserRepository;
+  let passwords: PasswordHasher;
+
+  beforeEach(() => {
+    repo = {
+      create: vi.fn(),
+      findById: vi.fn(),
+      findByEmailWithPasswordHash: vi.fn(),
+      findByEmailForPasswordReset: vi.fn(),
+      findForPasswordResetById: vi.fn(),
+      findMany: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    };
+
+    passwords = {
+      hash: vi.fn(async (p: string) => `hashed:${p}`),
+      verify: vi.fn(),
+    };
+  });
+
   it("delegates user creation to repository", async () => {
     const createdAt = new Date("2026-01-01T00:00:00.000Z");
     const expectedUser = {
@@ -15,20 +36,7 @@ describe("CreateUser", () => {
       createdAt,
     };
 
-    const repo: UserRepository = {
-      create: vi.fn().mockResolvedValue(expectedUser),
-      findById: vi.fn(),
-      findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn(),
-      findMany: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-    };
-
-    const passwords: PasswordHasher = {
-      hash: vi.fn(async (p: string) => `hashed:${p}`),
-      verify: vi.fn(),
-    };
+    repo.create = vi.fn().mockResolvedValue(expectedUser);
 
     const useCase = new CreateUser(repo, passwords);
     await expect(
@@ -57,20 +65,7 @@ describe("CreateUser", () => {
       createdAt,
     };
 
-    const repo: UserRepository = {
-      create: vi.fn().mockResolvedValue(expectedUser),
-      findById: vi.fn(),
-      findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn(),
-      findMany: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-    };
-
-    const passwords: PasswordHasher = {
-      hash: vi.fn(async (p: string) => `hashed:${p}`),
-      verify: vi.fn(),
-    };
+    repo.create = vi.fn().mockResolvedValue(expectedUser);
 
     const useCase = new CreateUser(repo, passwords);
     await useCase.create({

@@ -3,6 +3,7 @@ import {
   authForgotPasswordFormSchema,
   authInvitationRegisterFormSchema,
   authLoginFormSchema,
+  authResetPasswordBodySchema,
   passwordPolicySchema,
 } from "~~/app/schemas/auth-flow.zod";
 
@@ -108,6 +109,26 @@ describe("authInvitationRegisterFormSchema", () => {
     const r = authInvitationRegisterFormSchema.safeParse({
       password: "weak",
       confirmPassword: "weak",
+    });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("authResetPasswordBodySchema", () => {
+  it("accepts token and matching strong passwords", () => {
+    const r = authResetPasswordBodySchema.safeParse({
+      token: "jwt-value",
+      password: "Aa1!goodpass",
+      confirmPassword: "Aa1!goodpass",
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("rejects empty token", () => {
+    const r = authResetPasswordBodySchema.safeParse({
+      token: "",
+      password: "Aa1!goodpass",
+      confirmPassword: "Aa1!goodpass",
     });
     expect(r.success).toBe(false);
   });

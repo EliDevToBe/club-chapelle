@@ -42,6 +42,18 @@ export class JsonWebTokenAuthService implements JwtAuthService {
     });
   };
 
+  public verifyForgotPasswordToken = (token: string): string | null => {
+    try {
+      const payload = jwt.verify(token, this.accessSecret) as AccessPayload;
+      if (payload.forgot_password !== true) {
+        return null;
+      }
+      return readSub(payload);
+    } catch {
+      return null;
+    }
+  };
+
   public verifyAccess = (token: string): string | null => {
     try {
       const payload = jwt.verify(token, this.accessSecret) as AccessPayload;

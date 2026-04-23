@@ -1,9 +1,40 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port";
 import type { TokenRepository } from "~~/application/ports/token-repository.port";
 import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
 import { RequestForgotPassword } from "~~/application/user/request-forgot-password.use-case";
+
+let users: UserRepository;
+let tokens: TokenRepository;
+let jwt: JwtAuthService;
+let mail: TransactionalMailPort;
+
+beforeEach(() => {
+  users = {
+    create: vi.fn(),
+    findById: vi.fn(),
+    findByEmailWithPasswordHash: vi.fn(),
+    findByEmailForPasswordReset: vi.fn().mockResolvedValue(null),
+    findForPasswordResetById: vi.fn(),
+    findMany: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+  };
+  tokens = { issueToken: vi.fn() };
+  jwt = {
+    signAccess: vi.fn(),
+    signRefresh: vi.fn(),
+    signForgotPasswordToken: vi.fn(),
+    verifyForgotPasswordToken: vi.fn(),
+    verifyAccess: vi.fn(),
+    verifyRefresh: vi.fn(),
+  };
+  mail = {
+    sendTransactionalEmail: vi.fn(),
+    sendTemplateEmail: vi.fn(),
+  };
+});
 
 describe("RequestForgotPassword", () => {
   const options = {
@@ -15,28 +46,6 @@ describe("RequestForgotPassword", () => {
   };
 
   it("does nothing when the user is unknown", async () => {
-    const users: UserRepository = {
-      create: vi.fn(),
-      findById: vi.fn(),
-      findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn().mockResolvedValue(null),
-      findMany: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-    };
-    const tokens: TokenRepository = { issueToken: vi.fn() };
-    const jwt: JwtAuthService = {
-      signAccess: vi.fn(),
-      signRefresh: vi.fn(),
-      signForgotPasswordToken: vi.fn(),
-      verifyAccess: vi.fn(),
-      verifyRefresh: vi.fn(),
-    };
-    const mail: TransactionalMailPort = {
-      sendTransactionalEmail: vi.fn(),
-      sendTemplateEmail: vi.fn(),
-    };
-
     const handler = new RequestForgotPassword(
       users,
       tokens,
@@ -52,33 +61,15 @@ describe("RequestForgotPassword", () => {
   });
 
   it("issues a token and sends mail when the user can log in with a password", async () => {
-    const users: UserRepository = {
-      create: vi.fn(),
-      findById: vi.fn(),
-      findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn().mockResolvedValue({
-        id: "u1",
-        email: "a@b.c",
-        name: "Alex",
-        authenticated: true,
-        passwordHash: "hash",
-      }),
-      findMany: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-    };
-    const tokens: TokenRepository = { issueToken: vi.fn() };
-    const jwt: JwtAuthService = {
-      signAccess: vi.fn(),
-      signRefresh: vi.fn(),
-      signForgotPasswordToken: vi.fn().mockReturnValue("jwt-token"),
-      verifyAccess: vi.fn(),
-      verifyRefresh: vi.fn(),
-    };
-    const mail: TransactionalMailPort = {
-      sendTransactionalEmail: vi.fn(),
-      sendTemplateEmail: vi.fn(),
-    };
+    users.findByEmailForPasswordReset = vi.fn().mockResolvedValue({
+      id: "u1",
+      email: "a@b.c",
+      name: "Alex",
+      authenticated: true,
+      passwordHash: "hash",
+    });
+
+    jwt.signForgotPasswordToken = vi.fn().mockReturnValue("jwt-token");
 
     const handler = new RequestForgotPassword(
       users,
@@ -112,33 +103,13 @@ describe("RequestForgotPassword", () => {
   });
 
   it("skips when the account has no password", async () => {
-    const users: UserRepository = {
-      create: vi.fn(),
-      findById: vi.fn(),
-      findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn().mockResolvedValue({
-        id: "u1",
-        email: "a@b.c",
-        name: null,
-        authenticated: true,
-        passwordHash: null,
-      }),
-      findMany: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-    };
-    const tokens: TokenRepository = { issueToken: vi.fn() };
-    const jwt: JwtAuthService = {
-      signAccess: vi.fn(),
-      signRefresh: vi.fn(),
-      signForgotPasswordToken: vi.fn(),
-      verifyAccess: vi.fn(),
-      verifyRefresh: vi.fn(),
-    };
-    const mail: TransactionalMailPort = {
-      sendTransactionalEmail: vi.fn(),
-      sendTemplateEmail: vi.fn(),
-    };
+    users.findByEmailForPasswordReset = vi.fn().mockResolvedValue({
+      id: "u1",
+      email: "a@b.c",
+      name: null,
+      authenticated: true,
+      passwordHash: null,
+    });
 
     const handler = new RequestForgotPassword(
       users,

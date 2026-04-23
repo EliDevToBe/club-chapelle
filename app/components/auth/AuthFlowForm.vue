@@ -1,5 +1,5 @@
 <template>
-  <form :class="ui.form" @submit.prevent="onSubmit">
+  <UForm :class="ui.form" @submit.prevent="onSubmit">
     <!-- Email -->
     <template v-if="mode === 'login' || mode === 'forgotPassword'">
       <UFormField label="E-mail" name="email" required>
@@ -19,7 +19,13 @@
     </template>
 
     <!-- Password -->
-    <template v-if="mode === 'login' || mode === 'invitationRegister'">
+    <template
+      v-if="
+        mode === 'login' ||
+        mode === 'invitationRegister' ||
+        mode === 'resetPassword'
+      "
+    >
       <UFormField label="Mot de passe" name="password" required>
         <UInput
           v-model="form.password"
@@ -31,7 +37,7 @@
     </template>
 
     <!-- Confirm password -->
-    <template v-if="mode === 'invitationRegister'">
+    <template v-if="mode === 'invitationRegister' || mode === 'resetPassword'">
       <UFormField
         label="Confirmer le mot de passe"
         name="confirmPassword"
@@ -44,6 +50,28 @@
           :disabled="loading"
           :class="ui.formInput"
         />
+        <div class="mt-2">
+          <UProgress
+            size="sm"
+            :model-value="successfulRequirements"
+            :max="requirements.length"
+            :ui="{ base: 'rounded-b-none!', indicator: 'bg-success-600!' }"
+          />
+          <UCard :ui="{ body: 'p-3!', root: 'rounded-t-xs!' }">
+            <ul class="flex flex-col gap-1 md:gap-2">
+              <ChapListItem
+                v-for="requirement in requirements"
+                :key="requirement.label"
+              >
+                <span
+                  :class="requirement.value ? 'text-success-600' : 'text-muted'"
+                >
+                  {{ requirement.label }}
+                </span>
+              </ChapListItem>
+            </ul>
+          </UCard>
+        </div>
       </UFormField>
     </template>
 
@@ -82,15 +110,15 @@
           color="primary"
           :loading="loading"
           :label="modeData[mode].submitText"
-          class="w-full sm:w-auto md:w-35"
+          class="w-full sm:w-auto px-4"
         />
       </div>
     </div>
-  </form>
+  </UForm>
 
   <ChapWatermark>
-    <img class="opacity-5 size-230" aria-hidden="true" src="/club-logo.svg"
-  /></ChapWatermark>
+    <img class="opacity-5 size-230" aria-hidden="true" src="/club-logo.svg" />
+  </ChapWatermark>
 </template>
 
 <script setup lang="ts">
@@ -102,15 +130,25 @@ import {
   authInvitationRegisterFormSchema,
   authLoginFormSchema,
 } from "~/schemas/auth-flow.zod";
+import ChapListItem from "../ui/ChapListItem.vue";
 import ChapWatermark from "../ui/ChapWatermark.vue";
 
-export type AuthFlowMode = "login" | "invitationRegister" | "forgotPassword";
+export type AuthFlowMode =
+  | "login"
+  | "invitationRegister"
+  | "forgotPassword"
+  | "resetPassword";
 
 export type AuthFlowSubmitPayload =
   | { kind: "login"; email: string; password: string }
   | { kind: "forgotPassword"; email: string }
   | {
       kind: "invitationRegister";
+      password: string;
+      confirmPassword: string;
+    }
+  | {
+      kind: "resetPassword";
       password: string;
       confirmPassword: string;
     };
@@ -150,6 +188,26 @@ const form = reactive({
   password: "",
   confirmPassword: "",
 });
+const successfulRequirements = computed(
+  () => requirements.value.filter((requirement) => requirement.value).length,
+);
+
+const requirements = computed(() => [
+  { label: "Au moins un chiffre", value: /[0-9]/.test(form.password) },
+  { label: "Au moins 8 caractères", value: form.password.length >= 8 },
+  { label: "Au moins une majuscule", value: /[A-Z]/.test(form.password) },
+  {
+    label: "Au moins un caractère spécial",
+    value: /[^A-Za-z0-9]/.test(form.password),
+  },
+  {
+    label: "Les mots de passe correspondent",
+    value:
+      form.password.length &&
+      form.confirmPassword.length &&
+      form.password === form.confirmPassword,
+  },
+]);
 
 const login = () => {
   const body = {
@@ -208,6 +266,27 @@ const register = () => {
   }
 };
 
+const resetPassword = () => {
+  const body = {
+    password: form.password,
+    confirmPassword: form.confirmPassword,
+  };
+  try {
+    const parsed = authInvitationRegisterFormSchema.parse(body);
+    emit("submit", {
+      kind: "resetPassword",
+      password: parsed.password,
+      confirmPassword: parsed.confirmPassword,
+    });
+  } catch (error: unknown) {
+    const issues = getZodIssues(error);
+    addToastError({
+      description: "Veuillez vérifier les champs du formulaire.",
+      title: issues?.[0]?.message ?? "Saisie invalide",
+    });
+  }
+};
+
 const modeData: Record<AuthFlowMode, ModeData> = {
   login: {
     submitText: "Se connecter",
@@ -220,6 +299,10 @@ const modeData: Record<AuthFlowMode, ModeData> = {
   invitationRegister: {
     submitText: "Enregistrer",
     submit: register,
+  },
+  resetPassword: {
+    submitText: "Valider",
+    submit: resetPassword,
   },
 };
 

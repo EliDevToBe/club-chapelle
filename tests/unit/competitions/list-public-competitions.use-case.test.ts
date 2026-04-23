@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ListPublicCompetitions } from "~~/application/competitions/list-public-competitions.use-case";
 import type { CompetitionRepository } from "~~/application/ports/competition-repository.port";
 import type { Competition } from "~~/domain/competitions/competition";
@@ -19,15 +19,21 @@ const sampleCompetition = (): Competition => ({
 });
 
 describe("ListPublicCompetitions", () => {
-  it("delegates to the competition repository", async () => {
-    const rows = [sampleCompetition()];
-    const repo: CompetitionRepository = {
+  let repo: CompetitionRepository;
+
+  beforeEach(() => {
+    repo = {
       create: vi.fn(),
       findById: vi.fn(),
-      findMany: vi.fn().mockResolvedValue(rows),
+      findMany: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
     };
+  });
+
+  it("delegates to the competition repository", async () => {
+    const rows = [sampleCompetition()];
+    repo.findMany = vi.fn().mockResolvedValue(rows);
     const useCase = new ListPublicCompetitions(repo);
     await expect(useCase.findPublic()).resolves.toEqual(rows);
     expect(repo.findMany).toHaveBeenCalledTimes(1);
