@@ -75,6 +75,16 @@ enum role {
   developer
 }
 
+model website_config {
+  name       String
+  settings   Json
+  created_at DateTime @default(now()) @db.Timestamptz
+  updated_at DateTime @default(now()) @db.Timestamptz
+
+  @@unique([name])
+  @@index([name])
+}
+
 model archer {
   id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   auth_user_id   String?         @db.Uuid
