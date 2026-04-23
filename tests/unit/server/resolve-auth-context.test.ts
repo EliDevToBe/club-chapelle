@@ -16,6 +16,7 @@ const jwtNoop: JwtAuthService = {
   signAccess: vi.fn(),
   signRefresh: vi.fn(),
   signForgotPasswordToken: vi.fn(),
+  verifyForgotPasswordToken: vi.fn(),
   verifyAccess: vi.fn(),
   verifyRefresh: vi.fn(),
 };

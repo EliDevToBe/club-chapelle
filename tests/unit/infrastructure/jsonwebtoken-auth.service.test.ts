@@ -39,4 +39,22 @@ describe("JsonWebTokenAuthService", () => {
     const forgot = svc.signForgotPasswordToken("user-4");
     expect(svc.verifyAccess(forgot)).toBeNull();
   });
+
+  it("round-trips a forgot-password JWT via verifyForgotPasswordToken", () => {
+    const svc = new JsonWebTokenAuthService(
+      "access-secret-a",
+      "refresh-secret-b",
+    );
+    const forgot = svc.signForgotPasswordToken("user-5");
+    expect(svc.verifyForgotPasswordToken(forgot)).toBe("user-5");
+  });
+
+  it("does not verify an access JWT as a forgot-password recovery token", () => {
+    const svc = new JsonWebTokenAuthService(
+      "access-secret-a",
+      "refresh-secret-b",
+    );
+    const access = svc.signAccess("user-6");
+    expect(svc.verifyForgotPasswordToken(access)).toBeNull();
+  });
 });

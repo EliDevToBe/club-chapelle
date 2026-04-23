@@ -8,12 +8,12 @@ const emailField = z
 /** Password strength for invitation / set-password flows (after trim). */
 export const passwordPolicySchema = z
   .string()
+  .regex(/[0-9]/, {
+    message: "Le mot de passe doit contenir au moins un chiffre",
+  })
   .min(8, { message: "Le mot de passe doit contenir au moins 8 caractères" })
   .regex(/[A-Z]/, {
     message: "Le mot de passe doit contenir au moins une majuscule",
-  })
-  .regex(/[0-9]/, {
-    message: "Le mot de passe doit contenir au moins un chiffre",
   })
   .regex(/[^A-Za-z0-9]/, {
     message: "Le mot de passe doit contenir au moins un caractère spécial",
@@ -43,7 +43,24 @@ export const authInvitationRegisterFormSchema = z
     confirmPassword: z.string().transform((s) => s.trim()),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Les mots de passe ne correspondent pas.",
+    message: "Les mots de passe doivent correspondre",
+    path: ["confirmPassword"],
+  });
+
+/** Forgot-password completion: recovery token + strong password + confirmation. */
+export const authResetPasswordBodySchema = z
+  .object({
+    token: z
+      .string()
+      .min(1, { message: "Le lien de réinitialisation est invalide." }),
+    password: z
+      .string()
+      .transform((s) => s.trim())
+      .pipe(passwordPolicySchema),
+    confirmPassword: z.string().transform((s) => s.trim()),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Les mots de passe doivent correspondre",
     path: ["confirmPassword"],
   });
 
@@ -54,4 +71,7 @@ export type AuthForgotPasswordFormValues = z.output<
 >;
 export type AuthInvitationRegisterFormValues = z.output<
   typeof authInvitationRegisterFormSchema
+>;
+export type AuthResetPasswordBodyValues = z.output<
+  typeof authResetPasswordBodySchema
 >;

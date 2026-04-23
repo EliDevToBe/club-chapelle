@@ -7,6 +7,11 @@ export interface JwtAuthService {
    * (`verifyAccess` rejects tokens carrying the forgot-password claim).
    */
   signForgotPasswordToken: (userId: string) => string;
+  /**
+   * Validates a recovery JWT (`forgot_password` claim). Returns user id (`sub`)
+   * or `null` if invalid, expired, or not a forgot-password token.
+   */
+  verifyForgotPasswordToken: (token: string) => string | null;
   /** Returns user id (`sub`) or `null` if invalid or expired. */
   verifyAccess: (token: string) => string | null;
   /** Returns user id (`sub`) or `null` if invalid or expired. */
