@@ -1,6 +1,7 @@
 import type {
   HomepageCarouselSettingsDto,
   WebsiteGalleryImageDto,
+  WebsiteGalleryInfos,
 } from "~~/shared/website/website-config.dto";
 
 type GalleryResponse = {
@@ -59,6 +60,12 @@ export const usePictureManagement = () => {
       },
     );
 
+  const getStorageInfo = async (): Promise<WebsiteGalleryInfos> => {
+    return $fetch("/api/admin/website/gallery/infos", {
+      credentials: "include",
+    });
+  };
+
   return {
     galleryData,
     isLoadingGallery,
@@ -71,5 +78,7 @@ export const usePictureManagement = () => {
     refreshCarouselConfig,
 
     publicCarouselConfigData,
+
+    getStorageInfo,
   };
 };

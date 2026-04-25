@@ -254,5 +254,11 @@ export default defineAppConfig({
         },
       },
     },
+
+    progress: {
+      slots: {
+        root: "gap-0",
+      },
+    },
   },
 });

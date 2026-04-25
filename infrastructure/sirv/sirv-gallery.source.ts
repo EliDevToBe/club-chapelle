@@ -2,9 +2,13 @@ import {
   type FileInfo,
   type FolderContents,
   SirvClient,
+  type StorageInfo,
 } from "@sirv/rest-api-js";
 import type { WebsiteGallerySource } from "~~/application/ports/website-gallery-source.port";
-import type { WebsiteGalleryImageDto } from "~~/shared/website/website-config.dto";
+import type {
+  WebsiteGalleryImageDto,
+  WebsiteGalleryInfos,
+} from "~~/shared/website/website-config.dto";
 
 const normaliseDomain = (cdnDomain: string): string => {
   return cdnDomain
@@ -96,6 +100,22 @@ export class SirvGallerySource implements WebsiteGallerySource {
           0
         );
       });
+  };
+
+  public getStorageInfo = async (): Promise<WebsiteGalleryInfos> => {
+    await this.ensureConnected();
+    const infos = (await this.sirvClient.getStorageInfo()) as StorageInfo & {
+      plan: number;
+    };
+
+    console.log(infos);
+
+    return {
+      allowance: infos.plan,
+      used: infos.used,
+      files: infos.files,
+      burstable: infos.burstable,
+    };
   };
 
   private ensureConnected = async (): Promise<void> => {

@@ -28,3 +28,10 @@ export type HomepageCarouselSettingsDto = {
 export type WebsiteGalleryImageDto = HomepageCarouselItemDto & {
   path: string;
 };
+
+export type WebsiteGalleryInfos = {
+  allowance: number;
+  used: number;
+  files: number;
+  burstable?: number;
+};
