@@ -26,6 +26,9 @@ const { getStorageInfoMock, SirvGallerySourceMock, useRuntimeConfigMock } =
 vi.mock("~~/infrastructure/sirv/sirv-gallery.source", () => ({
   SirvGallerySource: SirvGallerySourceMock,
 }));
+vi.mock("nitropack/runtime", () => ({
+  useRuntimeConfig: useRuntimeConfigMock,
+}));
 
 let getAdminGalleryInfos: (event: H3Event) => Promise<unknown>;
 
@@ -42,7 +45,6 @@ const adminEvent = {
 
 beforeAll(async () => {
   vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
-  vi.stubGlobal("useRuntimeConfig", useRuntimeConfigMock);
   vi.stubGlobal("requireRoles", requireRoles);
   vi.stubGlobal("createError", createError);
   const mod = await import("~~/server/api/admin/website/gallery/infos.get");
