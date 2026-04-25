@@ -129,6 +129,7 @@ const onSubmit = async () => {
     form.message = "";
 
     addToastSuccess({
+      title: "Message envoyé",
       description:
         "Merci pour votre message ! Nous vous répondrons dès que possible.",
       duration: 5000,
