@@ -30,3 +30,11 @@ Give Les Archers de La Chapelle a **single, trustworthy picture** of club life o
 ## What comes later
 
 Advanced features—such as automatically **listening** to French archery federation listings for new “mandat”-style entries, or **AI-assisted** suggestions to enrich the competition pool—are planned **after** the core site and back-office are solid. Details and phased delivery are in **[project-spec.md](project-spec.md)**.
+
+## Release and deployment flow
+
+- Feature work targets `develop` through pull requests.
+- Production promotion is done through a release pull request from `develop` to `main` (created by `.github/workflows/release.yml`).
+- Direct pushes to `main` should be blocked by branch protection.
+- Required checks on the release PR should include CI from `.github/workflows/ci.yml`.
+- Database deployment runs from `.github/workflows/cd-database.yml` on `main` only when Prisma files changed in the pushed range (or on manual dispatch).
