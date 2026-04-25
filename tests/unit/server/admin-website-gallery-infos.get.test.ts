@@ -1,6 +1,14 @@
 import type { H3Event } from "h3";
 import { createError } from "h3";
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { requireRoles } from "~~/server/utils/rbac";
 
 const { getStorageInfoMock, SirvGallerySourceMock, useRuntimeConfigMock } =

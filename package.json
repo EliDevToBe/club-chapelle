@@ -41,6 +41,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "check": "biome check",
+    "check:fix": "biome check --fix",
     "check:ts": "nuxt typecheck",
     "check:schema": "npx prisma validate && npx prisma format --check",
     "fix:schema": "npx prisma format",
