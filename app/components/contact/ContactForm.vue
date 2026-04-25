@@ -106,7 +106,6 @@ const onSubmit = async () => {
     contactFormSchema.parse(body);
   } catch (error) {
     const issues = getZodIssues(error);
-    console.log(issues);
 
     addToastError({
       description:
@@ -129,6 +128,7 @@ const onSubmit = async () => {
     form.message = "";
 
     addToastSuccess({
+      title: "Message envoyé",
       description:
         "Merci pour votre message ! Nous vous répondrons dès que possible.",
       duration: 5000,

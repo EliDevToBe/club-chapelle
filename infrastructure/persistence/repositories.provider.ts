@@ -4,6 +4,7 @@ import { PrismaParticipationRepository } from "./participations/prisma-participa
 import { PrismaPasswordResetPersistence } from "./password-reset/prisma-password-reset.persistence";
 import { PrismaTokenRepository } from "./token/prisma-token.repository";
 import { PrismaUserRepository } from "./user/prisma-user.repository";
+import { PrismaWebsiteConfigRepository } from "./website/prisma-website-config.repository";
 
 const createRepositories = () => ({
   userRepository: new PrismaUserRepository(),
@@ -12,6 +13,7 @@ const createRepositories = () => ({
   archerRepository: new PrismaArcherRepository(),
   competitionRepository: new PrismaCompetitionRepository(),
   participationRepository: new PrismaParticipationRepository(),
+  websiteConfigRepository: new PrismaWebsiteConfigRepository(),
 });
 
 export type Repositories = ReturnType<typeof createRepositories>;

@@ -69,17 +69,17 @@ Later phases assume earlier ones are **actually** complete (not only partially).
 _Order: persistence and authenticated Admin surfaces before exposing mutations; then wire the public carousel._
 
 - [ ] **Persistence:** store uploaded image metadata (and binary or object storage reference) in line with product choice; `file` in Prisma is a starting point—extend if you need carousel membership, ordering, or visibility.
-- [ ] **Admin authentication** sufficient to protect gallery routes (can be the first slice of full login delivery; must satisfy §3.2 for who may upload).
+- [x] ✅ **Admin authentication** sufficient to protect gallery routes (can be the first slice of full login delivery; must satisfy §3.2 for who may upload).
 - [ ] **Admin-only API** (or server actions) for **upload** with validation (size, type, rate limits as appropriate).
-- [ ] **Admin-only API** for **curating the landing carousel** (which stored images appear, and **order** if required by design).
-- [ ] **Public read path** for the landing carousel that reads the **curated** set (no reliance on hard-coded arrays in the carousel component for production).
+- [x] ✅ **Admin-only API** for **curating the landing carousel** (which stored images appear, and **order** if required by design).
+- [x] ✅ **Public read path** for the landing carousel that reads the **curated** set (no reliance on hard-coded arrays in the carousel component for production).
 - [ ] **Security:** no unauthorised upload or curation; no leakage of non-public assets if you introduce draft/unpublished states; align with project-spec §9.
 
 ### MVP exit criteria (self-check)
 
 - [x] ✅ A visitor can submit the **contact form** (name, email, subject, message) from `/contact` and staff receive or can act on the message per your chosen delivery mechanism.
-- [ ] A visitor sees the **same** public areas as today, but the **carousel** reflects **club-managed** content.
-- [ ] Only **Admin** (per matrix; see §3.2) can change gallery content.
+- [x] ✅ A visitor sees the **same** public areas as today, but the **carousel** reflects **club-managed** content.
+- [x] ✅ Only **Admin** (per matrix; see §3.2) can change gallery content.
 
 ---
 
@@ -178,6 +178,7 @@ _Can ship after v2 or be pulled earlier if the club prioritises fee follow-up._
 
 | Date       | Change                                                                 |
 | ---------- | ---------------------------------------------------------------------- |
+| 2026-04-23 | MVP gallery admin: new **`/admin`** website panel with Sirv `/chapelle` preview selection, admin-only carousel curation API (`website_config`), and public carousel now reading remote config with fallback images. |
 | 2026-04-23 | **v0.5**: forgot-password mail + **`/reset-password`** completion (session); snapshot updated (transactional mail beyond contact form only where listed). |
 | 2026-04-22 | **v0.5**: **Logout** (header + `POST /api/auth/logout`), **`GET /api/auth/session`** / **`useAuthUser`**, **initial `/club` route protection**; snapshot reflects **`auth_user_role`** and explicit RBAC + **`developer`** bypass; tick front-end **`credentials: 'include'`** doc (normative **§3.3**). |
 | 2026-04-17 | **v0.5**: **Login** page (`/login`, `credentials: 'include'`); tick **Fix navigation** (link now resolves); snapshot updated. |

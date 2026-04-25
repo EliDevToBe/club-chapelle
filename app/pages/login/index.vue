@@ -35,7 +35,7 @@ const onAuthSubmit = async (payload: AuthFlowSubmitPayload) => {
   if (payload.kind === "forgotPassword") {
     authPending.value = true;
     try {
-      await $fetch("/api/auth/forgot-password", {
+      $fetch("/api/auth/forgot-password", {
         method: "POST",
         body: { email: payload.email },
         credentials: "include",

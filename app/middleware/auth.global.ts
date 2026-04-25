@@ -3,16 +3,34 @@ import { useAuthUser } from "~/composables/useAuthUser";
 export default defineNuxtRouteMiddleware(async (to, _from) => {
   const { user, isAdmin } = useAuthUser();
 
-  const adminRoutes = ["/club"];
+  const adminRoutes = ["/admin"];
   const authRequiredRoutes = [...adminRoutes];
+  const preventAuthRoutes = ["/login", "/reset-password"];
+
+  const isAdminRoute =
+    adminRoutes.includes(to.path) ||
+    adminRoutes.some((route) => to.path.startsWith(`${route}/`));
+
+  const isAuthRequiredRoute =
+    authRequiredRoutes.includes(to.path) ||
+    authRequiredRoutes.some((route) => to.path.startsWith(`${route}/`));
+
+  const isPreventAuthRoute =
+    preventAuthRoutes.includes(to.path) ||
+    preventAuthRoutes.some((route) => to.path.startsWith(`${route}/`));
+
+  // Prevent auth user from accessing key public routes
+  if (user.value && isPreventAuthRoute) {
+    return navigateTo("/");
+  }
 
   // Global auth required routes
-  if (!user.value && authRequiredRoutes.includes(to.path)) {
+  if (!user.value && isAuthRequiredRoute) {
     return navigateTo("/");
   }
 
   // Admin routes require admin role
-  if (!isAdmin.value && adminRoutes.includes(to.path)) {
+  if (!isAdmin.value && isAdminRoute) {
     return navigateTo("/");
   }
 });
