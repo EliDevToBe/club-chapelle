@@ -4,13 +4,42 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "prisma/**"
-      - "./prisma.config.ts"
   workflow_dispatch:
 
 jobs:
+  detect-prisma-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has_prisma_changes: ${{ steps.filter.outputs.has_prisma_changes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect Prisma-related changes in push
+        id: filter
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "has_prisma_changes=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          CHANGED_FILES=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")
+          echo "$CHANGED_FILES"
+
+          HAS_PRISMA_CHANGES=false
+          while IFS= read -r file; do
+            if [[ "$file" == prisma/* ]] || [[ "$file" == "prisma.config.ts" ]]; then
+              HAS_PRISMA_CHANGES=true
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+
+          echo "has_prisma_changes=$HAS_PRISMA_CHANGES" >> "$GITHUB_OUTPUT"
+
   deploy:
+    needs: detect-prisma-changes
+    if: needs.detect-prisma-changes.outputs.has_prisma_changes == 'true'
     runs-on: ubuntu-latest
     services:
       postgres:
