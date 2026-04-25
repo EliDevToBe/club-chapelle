@@ -108,8 +108,6 @@ export class SirvGallerySource implements WebsiteGallerySource {
       plan: number;
     };
 
-    console.log(infos);
-
     return {
       allowance: infos.plan,
       used: infos.used,

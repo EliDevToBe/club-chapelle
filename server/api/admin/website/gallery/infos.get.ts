@@ -1,5 +1,8 @@
+import { createError, defineEventHandler } from "h3";
+import { useRuntimeConfig } from "nitropack/runtime";
 import { GetWebsiteGalleryInfos } from "~~/application/website/get-website-gallery-infos.use-case";
 import { SirvGallerySource } from "~~/infrastructure/sirv/sirv-gallery.source";
+import { requireRoles } from "~~/server/utils/rbac";
 
 export default defineEventHandler(async (event) => {
   requireRoles(event, ["admin"]);

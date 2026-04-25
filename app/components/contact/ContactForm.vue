@@ -106,7 +106,6 @@ const onSubmit = async () => {
     contactFormSchema.parse(body);
   } catch (error) {
     const issues = getZodIssues(error);
-    console.log(issues);
 
     addToastError({
       description:
