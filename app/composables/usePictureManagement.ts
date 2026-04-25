@@ -49,17 +49,6 @@ export const usePictureManagement = () => {
     },
   );
 
-  const { data: publicCarouselConfigData } =
-    useAsyncData<HomepageCarouselConfigResponse>(
-      "homepage-carousel-config",
-      async () => {
-        return $fetch("/api/website-config/homepage-carousel");
-      },
-      {
-        default: () => ({ settings: { data: [] } }),
-      },
-    );
-
   const getStorageInfo = async (): Promise<WebsiteGalleryInfos> => {
     return $fetch("/api/admin/website/gallery/infos", {
       credentials: "include",
@@ -76,8 +65,6 @@ export const usePictureManagement = () => {
     isLoadingCarouselConfig,
     carouselConfigFetchError,
     refreshCarouselConfig,
-
-    publicCarouselConfigData,
 
     getStorageInfo,
   };

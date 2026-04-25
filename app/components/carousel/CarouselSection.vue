@@ -25,9 +25,9 @@
 
 <script setup lang="ts">
 import ChapSection from "~/components/ui/ChapSection.vue";
-import { usePictureManagement } from "~/composables/usePictureManagement";
+import { usePublicWebsiteConfig } from "~/composables/usePublicWebsiteConfig";
 
-const { publicCarouselConfigData } = usePictureManagement();
+const { publicCarouselConfigData } = usePublicWebsiteConfig();
 
 type CarouselSlide = {
   src: string;
