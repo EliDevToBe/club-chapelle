@@ -31,8 +31,8 @@ export const useSiteNavItems = () => {
     if (isAdmin.value) {
       adminItems.push({
         label: "Admin",
-        to: "/club",
-        active: route.path.startsWith("/club"),
+        to: "/admin",
+        active: route.path.startsWith("/admin"),
       });
     }
 

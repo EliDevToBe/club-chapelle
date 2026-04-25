@@ -72,7 +72,7 @@ export default defineAppConfig({
     button: {
       slots: {
         base: [
-          "justify-center rounded-lg font-medium inline-flex items-center disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabled:opacity-75 aria-disabled:opacity-75",
+          "cursor-pointer justify-center rounded-lg font-medium inline-flex items-center disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabled:opacity-75 aria-disabled:opacity-75",
           "transition-colors",
         ],
       },
@@ -99,11 +99,21 @@ export default defineAppConfig({
           variant: "solid",
           class: {
             base: [
-              "text-inverted bg-secondary-500",
+              "cursor-pointer text-inverted bg-secondary-500",
               "hover:bg-secondary",
               "active:bg-secondary-600",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary",
               "disabled:bg-secondary aria-disabled:bg-secondary",
+            ],
+          },
+        },
+        {
+          color: "secondary",
+          variant: "outline",
+          class: {
+            base: [
+              "cursor-pointer",
+              "active:bg-secondary/7 active:text-secondary-600",
             ],
           },
         },

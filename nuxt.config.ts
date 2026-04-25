@@ -22,8 +22,12 @@ export default defineNuxtConfig({
     contactFormToEmail:
       process.env.CONTACT_FORM_TO_EMAIL ?? "archerschapelle@gmail.com",
     /** Public site origin for password recovery links (no trailing slash). */
-    passwordResetOrigin:
-      process.env.PASSWORD_RESET_ORIGIN ?? "https://club-chapelle.vercel.app",
+    passwordResetOrigin: process.env.PASSWORD_RESET_ORIGIN,
+
+    sirvApiClientId: process.env.SIRV_API_CLIENT_ID,
+    sirvApiClientSecret: process.env.SIRV_API_CLIENT_SECRET,
+    sirvCdnDomain: process.env.SIRV_CDN_DOMAIN,
+    sirvDirectory: process.env.SIRV_DIRECTORY,
 
     public: {
       // Any public configuration here
@@ -33,6 +37,6 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    "/club": { redirect: "/work-in-progress" },
+    // Club routes are now handled by the auth middleware
   },
 });

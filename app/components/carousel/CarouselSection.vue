@@ -25,6 +25,9 @@
 
 <script setup lang="ts">
 import ChapSection from "~/components/ui/ChapSection.vue";
+import { usePictureManagement } from "~/composables/usePictureManagement";
+
+const { publicCarouselConfigData } = usePictureManagement();
 
 type CarouselSlide = {
   src: string;
@@ -42,7 +45,7 @@ const isCarouselSlide = (value: unknown): value is CarouselSlide => {
   );
 };
 
-const carouselItems: CarouselSlide[] = [
+const fallbackCarouselItems: CarouselSlide[] = [
   {
     src: "https://images.unsplash.com/photo-1686445921828-d9c22e714f24?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "Archer tenant un arc classique en extérieur",
@@ -60,6 +63,39 @@ const carouselItems: CarouselSlide[] = [
     alt: "Archer visant à l'extérieur",
   },
 ];
+
+const carouselItems = computed<CarouselSlide[]>(() => {
+  const remoteItems = publicCarouselConfigData.value?.settings.data ?? [];
+  if (remoteItems.length === 0) {
+    return fallbackCarouselItems;
+  }
+
+  const parsedItems = remoteItems
+    .map((item): CarouselSlide | null => {
+      if (
+        typeof item.url !== "string" ||
+        item.url.trim().length === 0 ||
+        typeof item.label !== "string" ||
+        item.label.trim().length === 0
+      ) {
+        return null;
+      }
+
+      return {
+        src: item.url,
+        alt: item.label,
+      };
+    })
+    .filter((item): item is CarouselSlide => {
+      return item !== null;
+    });
+
+  if (parsedItems.length === 0) {
+    return fallbackCarouselItems;
+  }
+
+  return parsedItems;
+});
 </script>
 
 <style scoped lang=""></style>
