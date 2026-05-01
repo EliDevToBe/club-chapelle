@@ -58,12 +58,16 @@ export const toHomepageCarouselSettings = (
       const width = asNumber(entry.width);
       const height = asNumber(entry.height);
       const mtime = asString(entry.mtime);
-      const path = asString(entry.path);
-      const mimetype =
-        asString(entry.mimetype) ??
-        `image/${path?.split(".").at(-1)?.toLowerCase()}`;
+      const mimetype = asString(entry.mimetype);
 
-      if (!label || !url || !previewUrl || width === null || height === null) {
+      if (
+        !label ||
+        !url ||
+        !previewUrl ||
+        width === null ||
+        height === null ||
+        !mimetype
+      ) {
         return null;
       }
 
