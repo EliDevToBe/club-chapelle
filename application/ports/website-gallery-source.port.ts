@@ -1,4 +1,5 @@
 import type {
+  WebsiteGalleryDeleteItemResultDto,
   WebsiteGalleryImageDto,
   WebsiteGalleryInfos,
   WebsiteGalleryUploadItemResultDto,
@@ -24,4 +25,8 @@ export interface WebsiteGallerySource {
     fromPath: string,
     newName: string,
   ) => Promise<WebsiteGalleryImageDto>;
+  deleteImages: (
+    directory: string,
+    paths: string[],
+  ) => Promise<WebsiteGalleryDeleteItemResultDto[]>;
 }

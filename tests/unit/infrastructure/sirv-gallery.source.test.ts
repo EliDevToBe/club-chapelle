@@ -225,4 +225,80 @@ describe("SirvGallerySource", () => {
     );
     expect(image.path).toBe("/chapelle/arc_renamed.jpg");
   });
+
+  it("deletes images through Sirv API and returns per-item results", async () => {
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        statusText: "OK",
+        json: vi.fn().mockResolvedValue({ token: "sirv-token" }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        statusText: "OK",
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+      });
+
+    const source = createSource();
+
+    const results = await source.deleteImages("/chapelle", [
+      "/chapelle/arc.jpg",
+      "/chapelle/missing.jpg",
+    ]);
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "https://api.sirv.com/v2/token",
+      expect.objectContaining({
+        method: "POST",
+      }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      expect.any(URL),
+      expect.objectContaining({
+        method: "POST",
+        headers: {
+          Authorization: "Bearer sirv-token",
+        },
+      }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      3,
+      expect.any(URL),
+      expect.objectContaining({
+        method: "POST",
+      }),
+    );
+
+    const firstDeleteUrl = fetchMock.mock.calls[1]?.[0];
+    const secondDeleteUrl = fetchMock.mock.calls[2]?.[0];
+    expect(firstDeleteUrl).toBeInstanceOf(URL);
+    expect((firstDeleteUrl as URL).pathname).toBe("/v2/files/delete");
+    expect((firstDeleteUrl as URL).searchParams.get("filename")).toBe(
+      "/chapelle/arc.jpg",
+    );
+    expect(secondDeleteUrl).toBeInstanceOf(URL);
+    expect((secondDeleteUrl as URL).searchParams.get("filename")).toBe(
+      "/chapelle/missing.jpg",
+    );
+    expect(results).toEqual([
+      {
+        path: "/chapelle/arc.jpg",
+        success: true,
+      },
+      {
+        path: "/chapelle/missing.jpg",
+        success: false,
+        error: "Sirv delete failed: 404 Not Found",
+      },
+    ]);
+  });
 });

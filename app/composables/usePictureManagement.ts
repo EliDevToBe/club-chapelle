@@ -1,5 +1,6 @@
 import type {
   HomepageCarouselSettingsDto,
+  WebsiteGalleryDeleteItemResultDto,
   WebsiteGalleryImageDto,
   WebsiteGalleryInfos,
   WebsiteGalleryUploadItemResultDto,
@@ -19,6 +20,12 @@ type GalleryUploadResponse = {
 
 type GalleryRenameResponse = {
   image: WebsiteGalleryImageDto;
+};
+
+type GalleryDeleteResponse = {
+  results: WebsiteGalleryDeleteItemResultDto[];
+  carouselConfigUpdated: boolean;
+  removedFromCarouselCount: number;
 };
 
 export const usePictureManagement = () => {
@@ -104,6 +111,24 @@ export const usePictureManagement = () => {
     return response;
   };
 
+  const deletePictures = async (
+    paths: string[],
+  ): Promise<GalleryDeleteResponse> => {
+    const response = await $fetch<GalleryDeleteResponse>(
+      "/api/admin/website/gallery/delete",
+      {
+        method: "DELETE",
+        body: {
+          paths,
+        },
+        credentials: "include",
+      },
+    );
+    await Promise.all([refreshGallery(), refreshCarouselConfig()]);
+
+    return response;
+  };
+
   return {
     galleryData,
     isLoadingGallery,
@@ -118,5 +143,6 @@ export const usePictureManagement = () => {
     getStorageInfo,
     uploadPictures,
     renamePicture,
+    deletePictures,
   };
 };

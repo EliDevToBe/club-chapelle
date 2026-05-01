@@ -17,7 +17,7 @@
       <ChapConfirmModal
         :title="`Suppression des photos (${selectedImages.length})`"
         description="Êtes-vous sûr de vouloir supprimer ces photos ?"
-        @on-confirm="console.log('suppression')"
+        @on-confirm="deleteSelection"
       >
         <UButton
           v-if="selectedImages.length > 0"
@@ -189,6 +189,7 @@ const {
   refreshCarouselConfig,
   uploadPictures,
   renamePicture,
+  deletePictures,
 } = usePictureManagement();
 
 const isSaving = ref(false);
@@ -396,6 +397,31 @@ const saveSelection = async (): Promise<void> => {
     addToastError({
       title: "Échec de sauvegarde",
       description: "La configuration du carrousel n'a pas pu être enregistrée.",
+    });
+  } finally {
+    isSaving.value = false;
+  }
+};
+
+const deleteSelection = async (): Promise<void> => {
+  isSaving.value = true;
+
+  const paths = selectedUrls.value.map((url) => {
+    const decodedUrl = decodeURIComponent(url);
+    return decodedUrl.split("/").at(-1) ?? decodedUrl;
+  });
+
+  try {
+    const { removedFromCarouselCount } = await deletePictures(paths);
+
+    addToastSuccess({
+      title: `${removedFromCarouselCount} photos supprimée(s)`,
+    });
+  } catch (error) {
+    console.error(error);
+    addToastError({
+      title: "Échec de la suppression",
+      description: "Les photos n'ont pas pu être supprimées.",
     });
   } finally {
     isSaving.value = false;

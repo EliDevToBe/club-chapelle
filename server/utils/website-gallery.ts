@@ -6,6 +6,10 @@ type RenameGalleryImageBody = {
   newName?: unknown;
 };
 
+type DeleteGalleryImagesBody = {
+  paths?: unknown;
+};
+
 export const parseGalleryUploadParts = (
   parts: MultiPartData[] | undefined,
 ): WebsiteGalleryUploadInput[] => {
@@ -52,4 +56,34 @@ export const parseRenameGalleryImageBody = (
   }
 
   return { path, newName };
+};
+
+export const parseDeleteGalleryImagesBody = (
+  body: DeleteGalleryImagesBody | null | undefined,
+): { paths: string[] } => {
+  const rawPaths = Array.isArray(body?.paths) ? body.paths : null;
+
+  if (!rawPaths) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid request body",
+    });
+  }
+
+  const paths = [...new Set(rawPaths)]
+    .map((entry) => {
+      return typeof entry === "string" ? entry.trim() : "";
+    })
+    .filter((entry) => {
+      return entry.length > 0;
+    });
+
+  if (paths.length === 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid request body",
+    });
+  }
+
+  return { paths };
 };

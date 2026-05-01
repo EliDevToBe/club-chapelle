@@ -10,6 +10,7 @@ import type {
   WebsiteGalleryUploadInput,
 } from "~~/application/ports/website-gallery-source.port";
 import type {
+  WebsiteGalleryDeleteItemResultDto,
   WebsiteGalleryImageDto,
   WebsiteGalleryInfos,
   WebsiteGalleryUploadItemResultDto,
@@ -200,8 +201,6 @@ export class SirvGallerySource implements WebsiteGallerySource {
     const safeDirectory = normaliseDirectory(directory);
     const results: WebsiteGalleryUploadItemResultDto[] = [];
 
-    console.log(files);
-
     for (const file of files) {
       const safeName = normaliseFilename(file.filename);
       if (safeName.length === 0) {
@@ -319,6 +318,68 @@ export class SirvGallerySource implements WebsiteGallerySource {
     }
 
     return this.readImageByPath(targetPath, safeDirectory);
+  };
+
+  public deleteImages = async (
+    directory: string,
+    paths: string[],
+  ): Promise<WebsiteGalleryDeleteItemResultDto[]> => {
+    await this.ensureConnected();
+    const safeDirectory = normaliseDirectory(directory);
+    const token = await this.getToken();
+    const results: WebsiteGalleryDeleteItemResultDto[] = [];
+
+    for (const path of paths) {
+      const trimmedPath = path.trim();
+      if (trimmedPath.length === 0) {
+        results.push({
+          path,
+          success: false,
+          error: "Invalid image path",
+        });
+        continue;
+      }
+
+      const targetPath = trimmedPath.startsWith("/")
+        ? trimmedPath
+        : `${safeDirectory}/${trimmedPath}`.replace(/\/+/g, "/");
+      const apiUrl = new URL(`${this.baseApiUrl}/files/delete`);
+      apiUrl.searchParams.set("filename", targetPath);
+
+      try {
+        const deleteResponse = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!deleteResponse.ok) {
+          throw new Error(
+            `Sirv delete failed: ${deleteResponse.status} ${deleteResponse.statusText}`,
+          );
+        }
+
+        results.push({
+          path: targetPath,
+          success: true,
+        });
+      } catch (error) {
+        if (error instanceof SirvApiError) {
+          console.error("API Error:", error.message);
+          console.error("Status:", error.statusCode);
+          console.error("Code:", error.errorCode);
+        }
+        console.error("[SirvGallerySource] Delete failed:", error);
+
+        results.push({
+          path: targetPath,
+          success: false,
+          error: error instanceof Error ? error.message : "Delete failed",
+        });
+      }
+    }
+
+    return results;
   };
 
   private ensureConnected = async (): Promise<void> => {

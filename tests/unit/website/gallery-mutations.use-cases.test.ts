@@ -3,6 +3,7 @@ import type {
   WebsiteGallerySource,
   WebsiteGalleryUploadInput,
 } from "~~/application/ports/website-gallery-source.port";
+import { DeleteWebsiteGalleryImages } from "~~/application/website/delete-website-gallery-images.use-case";
 import { RenameWebsiteGalleryImage } from "~~/application/website/rename-website-gallery-image.use-case";
 import { UploadWebsiteGalleryImages } from "~~/application/website/upload-website-gallery-images.use-case";
 
@@ -15,6 +16,7 @@ describe("Gallery mutation use cases", () => {
       getStorageInfo: vi.fn(),
       uploadImages: vi.fn(),
       renameImage: vi.fn(),
+      deleteImages: vi.fn(),
     };
   });
 
@@ -74,5 +76,32 @@ describe("Gallery mutation use cases", () => {
       "/chapelle/old-name.jpg",
       "new-name",
     );
+  });
+
+  it("deletes images in a directory", async () => {
+    const expected = [
+      {
+        path: "/chapelle/new-name.jpg",
+        success: true,
+      },
+      {
+        path: "/chapelle/missing.jpg",
+        success: false,
+        error: "Not found",
+      },
+    ];
+    source.deleteImages = vi.fn().mockResolvedValue(expected);
+
+    const deleteWebsiteGalleryImages = new DeleteWebsiteGalleryImages(source);
+    await expect(
+      deleteWebsiteGalleryImages.deleteInDirectory("/chapelle", [
+        "/chapelle/new-name.jpg",
+        "/chapelle/missing.jpg",
+      ]),
+    ).resolves.toEqual(expected);
+    expect(source.deleteImages).toHaveBeenCalledWith("/chapelle", [
+      "/chapelle/new-name.jpg",
+      "/chapelle/missing.jpg",
+    ]);
   });
 });

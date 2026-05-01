@@ -1,5 +1,13 @@
 import type { H3Event } from "h3";
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 const {
   useRuntimeConfigMock,
@@ -7,10 +15,16 @@ const {
   readBodyMock,
   uploadImagesMock,
   renameImageMock,
+  deleteImagesMock,
+  findByKeyMock,
+  upsertMock,
   SirvGallerySourceMock,
 } = vi.hoisted(() => {
   const uploadImages = vi.fn();
   const renameImage = vi.fn();
+  const deleteImages = vi.fn();
+  const findByKey = vi.fn();
+  const upsert = vi.fn();
 
   return {
     useRuntimeConfigMock: vi.fn(),
@@ -18,9 +32,13 @@ const {
     readBodyMock: vi.fn(),
     uploadImagesMock: uploadImages,
     renameImageMock: renameImage,
+    deleteImagesMock: deleteImages,
+    findByKeyMock: findByKey,
+    upsertMock: upsert,
     SirvGallerySourceMock: vi.fn().mockImplementation(() => ({
       uploadImages,
       renameImage,
+      deleteImages,
     })),
   };
 });
@@ -43,8 +61,18 @@ vi.mock("~~/infrastructure/sirv/sirv-gallery.source", () => ({
   SirvGallerySource: SirvGallerySourceMock,
 }));
 
+vi.mock("~~/infrastructure/persistence/repositories.provider", () => ({
+  getRepositories: vi.fn().mockImplementation(() => ({
+    websiteConfigRepository: {
+      findByKey: findByKeyMock,
+      upsert: upsertMock,
+    },
+  })),
+}));
+
 let uploadGalleryImagesHandler: (event: H3Event) => Promise<unknown>;
 let renameGalleryImageHandler: (event: H3Event) => Promise<unknown>;
+let deleteGalleryImagesHandler: (event: H3Event) => Promise<unknown>;
 
 const adminEvent = {
   context: {
@@ -58,10 +86,24 @@ const adminEvent = {
 } as unknown as H3Event;
 
 beforeAll(async () => {
-  const uploadMod = await import("~~/server/api/admin/website/gallery/upload.post");
-  const renameMod = await import("~~/server/api/admin/website/gallery/rename.patch");
-  uploadGalleryImagesHandler = uploadMod.default as (event: H3Event) => Promise<unknown>;
-  renameGalleryImageHandler = renameMod.default as (event: H3Event) => Promise<unknown>;
+  const uploadMod = await import(
+    "~~/server/api/admin/website/gallery/upload.post"
+  );
+  const renameMod = await import(
+    "~~/server/api/admin/website/gallery/rename.patch"
+  );
+  const deleteMod = await import(
+    "~~/server/api/admin/website/gallery/delete.delete"
+  );
+  uploadGalleryImagesHandler = uploadMod.default as (
+    event: H3Event,
+  ) => Promise<unknown>;
+  renameGalleryImageHandler = renameMod.default as (
+    event: H3Event,
+  ) => Promise<unknown>;
+  deleteGalleryImagesHandler = deleteMod.default as (
+    event: H3Event,
+  ) => Promise<unknown>;
 });
 
 afterAll(() => {
@@ -96,6 +138,7 @@ beforeEach(() => {
         label: "Arc",
         url: "https://cdn.example.com/chapelle/arc.jpg",
         preview_url: "https://cdn.example.com/chapelle/arc.jpg?w=240&h=160",
+        mimetype: "image/jpg",
         width: 240,
         height: 160,
         mtime: null,
@@ -110,6 +153,47 @@ beforeEach(() => {
     width: 240,
     height: 160,
     mtime: null,
+  });
+  deleteImagesMock.mockResolvedValue([
+    {
+      path: "/chapelle/arc.jpg",
+      success: true,
+    },
+  ]);
+  findByKeyMock.mockResolvedValue({
+    id: "cfg-homepage-carousel",
+    key: "homepageCarousel",
+    settings: {
+      data: [
+        {
+          label: "Arc",
+          url: "https://cdn.example.com/chapelle/arc.jpg",
+          preview_url: "https://cdn.example.com/chapelle/arc.jpg?w=240&h=160",
+          mimetype: "image/jpg",
+          width: 240,
+          height: 160,
+          mtime: null,
+        },
+        {
+          label: "Other",
+          url: "https://cdn.example.com/chapelle/other.jpg",
+          preview_url: "https://cdn.example.com/chapelle/other.jpg?w=240&h=160",
+          mimetype: "image/jpg",
+          width: 240,
+          height: 160,
+          mtime: null,
+        },
+      ],
+    },
+    createdAt: new Date("2026-04-01T00:00:00.000Z"),
+    updatedAt: new Date("2026-04-02T00:00:00.000Z"),
+  });
+  upsertMock.mockResolvedValue({
+    id: "cfg-homepage-carousel",
+    key: "homepageCarousel",
+    settings: { data: [] },
+    createdAt: new Date("2026-04-01T00:00:00.000Z"),
+    updatedAt: new Date("2026-04-02T00:00:00.000Z"),
   });
   SirvGallerySourceMock.mockClear();
 });
@@ -126,8 +210,8 @@ describe("Admin gallery upload and rename endpoints", () => {
             path: "/chapelle/arc.jpg",
             label: "Arc",
             url: "https://cdn.example.com/chapelle/arc.jpg",
-            preview_url:
-              "https://cdn.example.com/chapelle/arc.jpg?w=240&h=160",
+            preview_url: "https://cdn.example.com/chapelle/arc.jpg?w=240&h=160",
+            mimetype: "image/jpg",
             width: 240,
             height: 160,
             mtime: null,
@@ -160,7 +244,8 @@ describe("Admin gallery upload and rename endpoints", () => {
         path: "/chapelle/arc-renamed.jpg",
         label: "Arc Renamed",
         url: "https://cdn.example.com/chapelle/arc-renamed.jpg",
-        preview_url: "https://cdn.example.com/chapelle/arc-renamed.jpg?w=240&h=160",
+        preview_url:
+          "https://cdn.example.com/chapelle/arc-renamed.jpg?w=240&h=160",
         width: 240,
         height: 160,
         mtime: null,
@@ -181,9 +266,54 @@ describe("Admin gallery upload and rename endpoints", () => {
     });
   });
 
+  it("deletes gallery images and cleans homepage carousel", async () => {
+    readBodyMock.mockResolvedValue({
+      paths: ["/chapelle/arc.jpg"],
+    });
+
+    const result = await deleteGalleryImagesHandler(adminEvent);
+    expect(result).toEqual({
+      results: [
+        {
+          path: "/chapelle/arc.jpg",
+          success: true,
+        },
+      ],
+      carouselConfigUpdated: true,
+      removedFromCarouselCount: 1,
+    });
+    expect(deleteImagesMock).toHaveBeenCalledWith("/chapelle", [
+      "/chapelle/arc.jpg",
+    ]);
+    expect(upsertMock).toHaveBeenCalledWith("homepage_carousel", {
+      data: [
+        {
+          label: "Other",
+          url: "https://cdn.example.com/chapelle/other.jpg",
+          preview_url: "https://cdn.example.com/chapelle/other.jpg?w=240&h=160",
+          width: 240,
+          height: 160,
+          mtime: null,
+          mimetype: "image/jpg",
+        },
+      ],
+    });
+  });
+
+  it("rejects invalid delete body", async () => {
+    readBodyMock.mockResolvedValue({ paths: [] });
+    await expect(deleteGalleryImagesHandler(adminEvent)).rejects.toMatchObject({
+      statusCode: 400,
+      statusMessage: "Invalid request body",
+    });
+  });
+
   it("requires authentication", async () => {
     const event = { context: {} } as unknown as H3Event;
     await expect(uploadGalleryImagesHandler(event)).rejects.toMatchObject({
+      statusCode: 401,
+    });
+    await expect(deleteGalleryImagesHandler(event)).rejects.toMatchObject({
       statusCode: 401,
     });
   });

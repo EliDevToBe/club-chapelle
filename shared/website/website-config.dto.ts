@@ -43,3 +43,9 @@ export type WebsiteGalleryUploadItemResultDto = {
   image: WebsiteGalleryImageDto | null;
   error?: string;
 };
+
+export type WebsiteGalleryDeleteItemResultDto = {
+  path: string;
+  success: boolean;
+  error?: string;
+};
