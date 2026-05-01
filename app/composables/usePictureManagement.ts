@@ -1,7 +1,9 @@
 import type {
   HomepageCarouselSettingsDto,
+  WebsiteGalleryDeleteItemResultDto,
   WebsiteGalleryImageDto,
   WebsiteGalleryInfos,
+  WebsiteGalleryUploadItemResultDto,
 } from "~~/shared/website/website-config.dto";
 
 type GalleryResponse = {
@@ -10,6 +12,20 @@ type GalleryResponse = {
 
 type HomepageCarouselConfigResponse = {
   settings: HomepageCarouselSettingsDto;
+};
+
+type GalleryUploadResponse = {
+  results: WebsiteGalleryUploadItemResultDto[];
+};
+
+type GalleryRenameResponse = {
+  image: WebsiteGalleryImageDto;
+};
+
+type GalleryDeleteResponse = {
+  results: WebsiteGalleryDeleteItemResultDto[];
+  carouselConfigUpdated: boolean;
+  removedFromCarouselCount: number;
 };
 
 export const usePictureManagement = () => {
@@ -55,6 +71,64 @@ export const usePictureManagement = () => {
     });
   };
 
+  const uploadPictures = async (
+    files: File[],
+  ): Promise<GalleryUploadResponse> => {
+    const formData = new FormData();
+    for (const file of files) {
+      formData.append("files", file, file.name);
+    }
+
+    const response = await $fetch<GalleryUploadResponse>(
+      "/api/admin/website/gallery/upload",
+      {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      },
+    );
+    await refreshGallery();
+
+    return response;
+  };
+
+  const renamePicture = async (
+    path: string,
+    newName: string,
+  ): Promise<GalleryRenameResponse> => {
+    const response = await $fetch<GalleryRenameResponse>(
+      "/api/admin/website/gallery/rename",
+      {
+        method: "PATCH",
+        body: {
+          path,
+          newName,
+        },
+        credentials: "include",
+      },
+    );
+
+    return response;
+  };
+
+  const deletePictures = async (
+    paths: string[],
+  ): Promise<GalleryDeleteResponse> => {
+    const response = await $fetch<GalleryDeleteResponse>(
+      "/api/admin/website/gallery/delete",
+      {
+        method: "DELETE",
+        body: {
+          paths,
+        },
+        credentials: "include",
+      },
+    );
+    await Promise.all([refreshGallery(), refreshCarouselConfig()]);
+
+    return response;
+  };
+
   return {
     galleryData,
     isLoadingGallery,
@@ -67,5 +141,8 @@ export const usePictureManagement = () => {
     refreshCarouselConfig,
 
     getStorageInfo,
+    uploadPictures,
+    renamePicture,
+    deletePictures,
   };
 };

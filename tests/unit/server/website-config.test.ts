@@ -29,6 +29,7 @@ describe("parseHomepageCarouselPatchBody", () => {
               width: 240,
               height: 160,
               mtime: "2026-01-01T00:00:00.000Z",
+              mimetype: "image/jpeg",
             },
           ],
         },
@@ -43,6 +44,7 @@ describe("parseHomepageCarouselPatchBody", () => {
           width: 240,
           height: 160,
           mtime: "2026-01-01T00:00:00.000Z",
+          mimetype: "image/jpeg",
         },
       ],
     });
