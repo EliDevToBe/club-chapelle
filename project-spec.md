@@ -29,7 +29,7 @@ This document describes goals, functional requirements, role permissions, domain
 
 **Media**
 
-- **MVP — landing gallery:** an **Admin** can **upload** pictures and **choose which uploaded images appear** on the public **landing** carousel (including **order** if the product requires it). Visitors see only that **curated** set on the carousel—no reliance on hard-coded placeholder assets in production. **Authenticated Admin** routes and APIs are required for upload and curation; apply **§3.2** (role checks on every sensitive path). Broader club galleries or **Manager** upload rights may come later; **MVP** scope is **Admin-only** for this workflow.
+- **MVP — landing gallery:** an **Admin** can **upload** pictures and **choose which uploaded images appear** on the public **landing** carousel (including **order** if the product requires it). Visitors see only that **curated** set on the carousel—no reliance on hard-coded placeholder assets in production. **Authenticated Admin** routes and APIs are required for upload and curation; apply **§3.2** (role checks on every sensitive path). For now, landing-gallery images are stored in configured CDN/object storage and referenced via JSON website config for carousel curation; Prisma `file` is intended for other assets (for example competition PDFs and related documents). Broader club galleries or **Manager** upload rights may come later; **MVP** scope is **Admin-only** for this workflow.
 - **Beyond MVP:** additional club-managed visuals, other pages, or **Manager** participation in uploads remain **implementation details** to decide after MVP.
 
 **Social**

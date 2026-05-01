@@ -5,7 +5,7 @@
 
 This file is a **checkable build roadmap** for humans and agents: when behaviour lands in `main`, update tasks in the **same change** as the feature where practical. **Incomplete:** `- [ ]` only. **Complete:** tick the Markdown checkbox, then a **space**, then **✅** (U+2705, white heavy check mark)—same line, **only** when done; never add **✅** to open tasks.
 
-**Last reviewed:** 2026-04-23 (repository snapshot below).
+**Last reviewed:** 2026-05-01 (repository snapshot below).
 
 ---
 
@@ -20,7 +20,7 @@ This file is a **checkable build roadmap** for humans and agents: when behaviour
 
 ## Current snapshot (repository vs roadmap)
 
-The **public** Nuxt shell is in place (landing, infos, **contact** with a **contact form**: name, email, subject, message; client validation, `POST /api/contact`, and transactional mail via Mailtrap when runtime mail settings and `contactFormToEmail` are configured—see `.env.example`). French-oriented navigation; Instagram and Facebook URLs from runtime config. **JWT cookie auth** per project-spec §3.3: **`/login`** posts to `POST /api/auth/login` with **`credentials: 'include'`** and receives a **session** snapshot; **`GET /api/auth/session`** feeds the **`useAuthUser`** composable for UI gating; the site header calls **`POST /api/auth/logout`** to sign out. **Initial route protection** redirects unauthenticated visitors away from **`/club`**. User **roles** live in the **`auth_user_role`** joint table (**multiple roles** per user); Nitro handlers use **`requireRoles`** with **explicit** role lists and a **`developer`** bypass—**not** the **inherited** Admin > Manager > Member model in project-spec §3.1. The landing **carousel** is implemented with **static** placeholder images, not an **Admin-uploaded, curated** set backed by storage APIs. **Core back-office data** (archers, competitions, participations, users) has **DDD-shaped** use cases, Prisma models, and **protected** Nitro handlers using `requireRoles` in `server/utils/rbac.ts`. **Listing participations** via API is **Admin-only** today, not yet scoped to a Member’s own rows per §3.2. **Transactional mail** is wired for the **contact form**, **forgot-password** (`POST /api/auth/forgot-password`, Mailtrap template), and recovery links targeting **`/reset-password?t=…`** with **completion** via **`POST /api/auth/reset-password`** (sets session cookies). Other **invitation** / **fee-reminder**-style mail and broader workflows in later phases remain **not** implemented. **Invitations**, **revoke/unlink**, **promote/demote**, **calendars**, **Competition Listener**, and **AI-assisted** discovery are **not** implemented in the application layer (aside from schema/token enums where present).
+The **public** Nuxt shell is in place (landing, infos, **contact** with a **contact form**: name, email, subject, message; client validation, `POST /api/contact`, and transactional mail via Mailtrap when runtime mail settings and `contactFormToEmail` are configured—see `.env.example`). French-oriented navigation; Instagram and Facebook URLs from runtime config. **JWT cookie auth** per project-spec §3.3: **`/login`** posts to `POST /api/auth/login` with **`credentials: 'include'`** and receives a **session** snapshot; **`GET /api/auth/session`** feeds the **`useAuthUser`** composable for UI gating; the site header calls **`POST /api/auth/logout`** to sign out. **Initial route protection** redirects unauthenticated visitors away from **`/club`**. User **roles** live in the **`auth_user_role`** joint table (**multiple roles** per user); Nitro handlers use **`requireRoles`** with **explicit** role lists and a **`developer`** bypass—**not** the **inherited** Admin > Manager > Member model in project-spec §3.1. The landing **carousel** now reads an **Admin-curated** set from `website_config`; gallery images are stored in configured CDN/object storage (Sirv), and Admin can upload, rename, and delete images from the **`/admin`** picture management surface and related APIs. Prisma **`file`** is reserved for other assets (for example competition PDFs and related documents), not per-image landing-gallery storage. **Core back-office data** (archers, competitions, participations, users) has **DDD-shaped** use cases, Prisma models, and **protected** Nitro handlers using `requireRoles` in `server/utils/rbac.ts`. **Listing participations** via API is **Admin-only** today, not yet scoped to a Member’s own rows per §3.2. **Transactional mail** is wired for the **contact form**, **forgot-password** (`POST /api/auth/forgot-password`, Mailtrap template), and recovery links targeting **`/reset-password?t=…`** with **completion** via **`POST /api/auth/reset-password`** (sets session cookies). Other **invitation** / **fee-reminder**-style mail and broader workflows in later phases remain **not** implemented. **Invitations**, **revoke/unlink**, **promote/demote**, **calendars**, **Competition Listener**, and **AI-assisted** discovery are **not** implemented in the application layer (aside from schema/token enums where present).
 
 ---
 
@@ -68,12 +68,12 @@ Later phases assume earlier ones are **actually** complete (not only partially).
 
 _Order: persistence and authenticated Admin surfaces before exposing mutations; then wire the public carousel._
 
-- [ ] **Persistence:** store uploaded image metadata (and binary or object storage reference) in line with product choice; `file` in Prisma is a starting point—extend if you need carousel membership, ordering, or visibility.
+- [x] ✅ **Persistence:** landing-gallery binaries live in configured CDN/object storage, while carousel curation lives in JSON website config; Prisma `file` is for other assets (for example competition PDFs and related documents).
 - [x] ✅ **Admin authentication** sufficient to protect gallery routes (can be the first slice of full login delivery; must satisfy §3.2 for who may upload).
-- [ ] **Admin-only API** (or server actions) for **upload** with validation (size, type, rate limits as appropriate).
+- [x] ✅ **Admin-only API** (or server actions) for **upload** with validation (size, type, rate limits as appropriate).
 - [x] ✅ **Admin-only API** for **curating the landing carousel** (which stored images appear, and **order** if required by design).
 - [x] ✅ **Public read path** for the landing carousel that reads the **curated** set (no reliance on hard-coded arrays in the carousel component for production).
-- [ ] **Security:** no unauthorised upload or curation; no leakage of non-public assets if you introduce draft/unpublished states; align with project-spec §9.
+- [ ] **Security hardening:** keep tightening upload validation (size, type, and rate limits) and any future draft/non-public asset controls; role-based authorisation for upload/curation is in place and must remain aligned with project-spec §9.
 
 ### MVP exit criteria (self-check)
 
@@ -178,6 +178,7 @@ _Can ship after v2 or be pulled earlier if the club prioritises fee follow-up._
 
 | Date       | Change                                                                 |
 | ---------- | ---------------------------------------------------------------------- |
+| 2026-05-01 | MVP gallery docs alignment: snapshot now reflects CDN/object-storage-backed gallery management (upload/rename/delete), `website_config` carousel curation, and clarified Prisma `file` scope for non-gallery assets (e.g. competition PDFs). |
 | 2026-04-23 | MVP gallery admin: new **`/admin`** website panel with Sirv `/chapelle` preview selection, admin-only carousel curation API (`website_config`), and public carousel now reading remote config with fallback images. |
 | 2026-04-23 | **v0.5**: forgot-password mail + **`/reset-password`** completion (session); snapshot updated (transactional mail beyond contact form only where listed). |
 | 2026-04-22 | **v0.5**: **Logout** (header + `POST /api/auth/logout`), **`GET /api/auth/session`** / **`useAuthUser`**, **initial `/club` route protection**; snapshot reflects **`auth_user_role`** and explicit RBAC + **`developer`** bypass; tick front-end **`credentials: 'include'`** doc (normative **§3.3**). |
