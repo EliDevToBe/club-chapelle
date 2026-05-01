@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { WebsiteConfigRepository } from "~~/application/ports/website-config-repository.port";
 import type {
   WebsiteGallerySource,
   WebsiteGalleryUploadInput,
@@ -9,6 +10,28 @@ import { UploadWebsiteGalleryImages } from "~~/application/website/upload-websit
 
 describe("Gallery mutation use cases", () => {
   let source: WebsiteGallerySource;
+  let websiteConfigRepository: WebsiteConfigRepository;
+
+  const dataSettings = [
+    {
+      label: "Old Name",
+      url: "https://cdn.example.com/chapelle/old-name.jpg",
+      preview_url: "https://cdn.example.com/chapelle/old-name.jpg?w=240&h=160",
+      mimetype: "image/jpg",
+      width: 240,
+      height: 160,
+      mtime: null,
+    },
+    {
+      label: "Other",
+      url: "https://cdn.example.com/chapelle/other.jpg",
+      preview_url: "https://cdn.example.com/chapelle/other.jpg?w=240&h=160",
+      mimetype: "image/jpg",
+      width: 240,
+      height: 160,
+      mtime: null,
+    },
+  ];
 
   beforeEach(() => {
     source = {
@@ -17,6 +40,10 @@ describe("Gallery mutation use cases", () => {
       uploadImages: vi.fn(),
       renameImage: vi.fn(),
       deleteImages: vi.fn(),
+    };
+    websiteConfigRepository = {
+      findByKey: vi.fn().mockResolvedValue(null),
+      upsert: vi.fn(),
     };
   });
 
@@ -63,7 +90,10 @@ describe("Gallery mutation use cases", () => {
     };
     source.renameImage = vi.fn().mockResolvedValue(expected);
 
-    const renameWebsiteGalleryImage = new RenameWebsiteGalleryImage(source);
+    const renameWebsiteGalleryImage = new RenameWebsiteGalleryImage(
+      source,
+      websiteConfigRepository,
+    );
     await expect(
       renameWebsiteGalleryImage.renameInDirectory(
         "/chapelle",
@@ -75,6 +105,59 @@ describe("Gallery mutation use cases", () => {
       "/chapelle",
       "/chapelle/old-name.jpg",
       "new-name",
+    );
+    expect(websiteConfigRepository.upsert).not.toHaveBeenCalled();
+  });
+
+  it("renames an image and updates homepage carousel when config exists", async () => {
+    const expected = {
+      path: "/chapelle/new-name.jpg",
+      label: "New Name",
+      url: "https://cdn.example.com/chapelle/new-name.jpg",
+      preview_url: "https://cdn.example.com/chapelle/new-name.jpg?w=240&h=160",
+      mimetype: "image/jpg",
+      width: 240,
+      height: 160,
+      mtime: null,
+    };
+    source.renameImage = vi.fn().mockResolvedValue(expected);
+    websiteConfigRepository.findByKey = vi.fn().mockResolvedValue({
+      key: "homepage_carousel",
+      settings: {
+        data: dataSettings,
+      },
+      createdAt: new Date("2026-01-01T00:00:00.000Z"),
+      updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+    });
+
+    const renameWebsiteGalleryImage = new RenameWebsiteGalleryImage(
+      source,
+      websiteConfigRepository,
+    );
+    await expect(
+      renameWebsiteGalleryImage.renameInDirectory(
+        "/chapelle",
+        "/chapelle/old-name.jpg",
+        "new-name",
+      ),
+    ).resolves.toEqual(expected);
+    expect(websiteConfigRepository.upsert).toHaveBeenCalledWith(
+      "homepage_carousel",
+      {
+        data: [
+          {
+            label: "New Name",
+            url: "https://cdn.example.com/chapelle/new-name.jpg",
+            preview_url:
+              "https://cdn.example.com/chapelle/new-name.jpg?w=240&h=160",
+            mimetype: "image/jpg",
+            width: 240,
+            height: 160,
+            mtime: null,
+          },
+          dataSettings[1],
+        ],
+      },
     );
   });
 
