@@ -33,10 +33,19 @@ export type UpdateCompetitionInput = {
   seasonYear?: number;
 };
 
+/** Calendar bounds for browse overlap (`YYYY-MM-DD` or null = unbounded on that side). */
+export type CompetitionBrowseDateFilter = {
+  startDateYmd: string | null;
+  endDateYmd: string | null;
+};
+
 export interface CompetitionRepository {
   create: (input: CreateCompetitionInput) => Promise<Competition>;
   findById: (id: CompetitionId) => Promise<Competition | null>;
   findMany: () => Promise<Competition[]>;
+  findManyForListing: (
+    filter: CompetitionBrowseDateFilter,
+  ) => Promise<Competition[]>;
   update: (
     id: CompetitionId,
     input: UpdateCompetitionInput,

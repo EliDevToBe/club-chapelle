@@ -25,9 +25,22 @@ export const useAuthUser = () => {
     setUser(null);
   };
 
+  /**
+   * Fetches the current session snapshot for both SSR and client navigation.
+   *
+   * On SSR, we forward the incoming `cookie` header to the same-origin
+   * `/api/auth/session` endpoint so route middleware can resolve auth state
+   * before redirect guards run (avoids auth flicker on deep links).
+   * This does not expose cookies to the browser or third parties.
+   */
   const fetchSession = async () => {
+    const headers = import.meta.server
+      ? useRequestHeaders(["cookie"])
+      : undefined;
+
     const response = await $fetch<AuthSessionResponse>("/api/auth/session", {
       credentials: "include",
+      headers,
     });
     setUser(response.session);
     return response.session;
