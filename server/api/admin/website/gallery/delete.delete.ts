@@ -1,15 +1,14 @@
 import { createError, defineEventHandler, readBody } from "h3";
 import { useRuntimeConfig } from "nitropack/runtime";
-import { DeleteWebsiteGalleryImages } from "~~/application/website/delete-website-gallery-images.use-case";
+import {
+  type DeleteGalleryImagesBody,
+  DeleteWebsiteGalleryImages,
+} from "~~/application/website/delete-website-gallery-images.use-case";
 import { RemoveGalleryImagesFromHomepageCarousel } from "~~/application/website/remove-gallery-images-from-homepage-carousel.use-case";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { SirvGallerySource } from "~~/infrastructure/sirv/sirv-gallery.source";
 import { requireRoles } from "~~/server/utils/rbac";
 import { parseDeleteGalleryImagesBody } from "~~/server/utils/website-gallery";
-
-type DeleteGalleryImagesBody = {
-  paths?: unknown;
-};
 
 export default defineEventHandler(async (event) => {
   requireRoles(event, ["admin"]);
@@ -28,7 +27,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<DeleteGalleryImagesBody>(event);
-  const { paths } = parseDeleteGalleryImagesBody(body);
+  const { filenames } = parseDeleteGalleryImagesBody(body);
   const sirvGallerySource = new SirvGallerySource({
     clientId,
     clientSecret,
@@ -39,7 +38,7 @@ export default defineEventHandler(async (event) => {
   );
   const results = await deleteWebsiteGalleryImagesHandler.deleteInDirectory(
     directory,
-    paths,
+    filenames,
   );
 
   const deletedPaths = new Set(
@@ -55,14 +54,13 @@ export default defineEventHandler(async (event) => {
   const repos = getRepositories();
   const removeGalleryImagesFromHomepageCarouselHandler =
     new RemoveGalleryImagesFromHomepageCarousel(repos.websiteConfigRepository);
-  const { carouselConfigUpdated, removedFromCarouselCount } =
-    await removeGalleryImagesFromHomepageCarouselHandler.removeByPaths([
-      ...deletedPaths,
-    ]);
+
+  await removeGalleryImagesFromHomepageCarouselHandler.removeByPaths([
+    ...deletedPaths,
+  ]);
 
   return {
     results,
-    carouselConfigUpdated,
-    removedFromCarouselCount,
+    deletedCount: deletedPaths.size,
   };
 });

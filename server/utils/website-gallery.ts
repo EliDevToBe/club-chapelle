@@ -1,13 +1,10 @@
 import { createError, type MultiPartData } from "h3";
 import type { WebsiteGalleryUploadInput } from "~~/application/ports/website-gallery-source.port";
+import type { DeleteGalleryImagesBody } from "~~/application/website/delete-website-gallery-images.use-case";
 
 type RenameGalleryImageBody = {
   path?: unknown;
   newName?: unknown;
-};
-
-type DeleteGalleryImagesBody = {
-  paths?: unknown;
 };
 
 export const parseGalleryUploadParts = (
@@ -60,17 +57,17 @@ export const parseRenameGalleryImageBody = (
 
 export const parseDeleteGalleryImagesBody = (
   body: DeleteGalleryImagesBody | null | undefined,
-): { paths: string[] } => {
-  const rawPaths = Array.isArray(body?.paths) ? body.paths : null;
+): { filenames: string[] } => {
+  const rawFilenames = Array.isArray(body?.filenames) ? body.filenames : null;
 
-  if (!rawPaths) {
+  if (!rawFilenames) {
     throw createError({
       statusCode: 400,
       statusMessage: "Invalid request body",
     });
   }
 
-  const paths = [...new Set(rawPaths)]
+  const filenames = [...new Set(rawFilenames)]
     .map((entry) => {
       return typeof entry === "string" ? entry.trim() : "";
     })
@@ -78,12 +75,12 @@ export const parseDeleteGalleryImagesBody = (
       return entry.length > 0;
     });
 
-  if (paths.length === 0) {
+  if (filenames.length === 0) {
     throw createError({
       statusCode: 400,
       statusMessage: "Invalid request body",
     });
   }
 
-  return { paths };
+  return { filenames };
 };

@@ -81,15 +81,14 @@
     </div>
 
     <div v-else :class="ui.pictureWrapper">
-      <button
+      <div
         v-for="image in galleryImages"
         :key="image.path"
-        type="button"
         :class="[
           ui.itemButton,
           isSelected(image.url) ? ui.selectedClasses : ui.unselectedClasses,
         ]"
-        @click="toggleSelection(image.url)"
+        @click.prevent.stop="toggleSelection(image.url)"
       >
         <div class="flex justify-center group relative">
           <span
@@ -141,7 +140,7 @@
             @click="toggleNameEditing(image.path)"
           />
         </div>
-      </button>
+      </div>
     </div>
 
     <p class="text-sm text-muted">
@@ -338,29 +337,35 @@ const renameImage = async (path: string, newName: string): Promise<void> => {
   }
 
   renamingPath.value = path;
+  const cleanedNewName = newName.trim().toLowerCase().replace(/ /g, "_");
   selectedUrls.value = selectedUrls.value.filter((url) => url !== path);
 
   try {
     await renamePicture(path, newName);
 
+    const directory = path.split("/").at(1);
+    const extension = path.split(".").at(-1);
+    const newPath = `/${directory}/${cleanedNewName}.${extension}`;
+
     /**
      * Only for reactivity update
      */
+    let newUrl: URL;
     galleryImages.value = galleryImages.value.map((image) => {
       if (image.path === path) {
-        const uppercasedNewName = newName
-          .toLowerCase()
-          .replace(/^\w/, (char) => char.toUpperCase());
-        const lowercasedNewName = newName.toLowerCase();
+        const uppercasedNewName = cleanedNewName
+          .replace(/^\w/, (char) => char.toUpperCase())
+          .replace(/_/g, " ");
+
+        const originalUrl = new URL(image.url);
+        newUrl = new URL(originalUrl.origin);
+        newUrl.pathname = newPath;
 
         const updatedImage = {
           ...image,
           label: uppercasedNewName,
-          path: image.path.replace(
-            image.label.toLowerCase(),
-            lowercasedNewName,
-          ),
-          url: image.url.replace(image.label.toLowerCase(), lowercasedNewName),
+          path: newPath,
+          url: newUrl.toString(),
         };
 
         return updatedImage;
@@ -369,11 +374,19 @@ const renameImage = async (path: string, newName: string): Promise<void> => {
       return image;
     });
 
+    selectedUrls.value = selectedUrls.value.map((url) => {
+      if (new URL(url).pathname === path && newUrl) {
+        return newUrl.toString();
+      }
+      return url;
+    });
+
     addToastSuccess({
       title: "Image renommée",
       description: "Le nouveau nom a bien été appliqué.",
     });
-  } catch (_error) {
+  } catch (error) {
+    console.error(error);
     addToastError({
       title: "Échec du renommage",
       description: "Le fichier n'a pas pu être renommé.",
@@ -393,7 +406,8 @@ const saveSelection = async (): Promise<void> => {
       title: "Configuration enregistrée",
       description: "Le carrousel du site utilisera cette sélection.",
     });
-  } catch (_error) {
+  } catch (error) {
+    console.error(error);
     addToastError({
       title: "Échec de sauvegarde",
       description: "La configuration du carrousel n'a pas pu être enregistrée.",
@@ -412,10 +426,10 @@ const deleteSelection = async (): Promise<void> => {
   });
 
   try {
-    const { removedFromCarouselCount } = await deletePictures(paths);
+    const { deletedCount } = await deletePictures(paths);
 
     addToastSuccess({
-      title: `${removedFromCarouselCount} photos supprimée(s)`,
+      title: `${deletedCount} photos supprimée(s)`,
     });
   } catch (error) {
     console.error(error);

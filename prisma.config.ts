@@ -8,6 +8,6 @@ export default defineConfig({
   },
   datasource: {
     // Prefer DIRECT_URL for Migrate. Use pooled DATABASE_URL at runtime via the driver adapter.
-    url: process.env.DIRECT_URL ?? process.env.DATABASE_URL,
+    url: process.env.DATABASE_URL ?? process.env.DIRECT_URL,
   },
 });
