@@ -1,6 +1,7 @@
 import { createError, defineEventHandler, readBody } from "h3";
 import { useRuntimeConfig } from "nitropack/runtime";
 import { RenameWebsiteGalleryImage } from "~~/application/website/rename-website-gallery-image.use-case";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { SirvGallerySource } from "~~/infrastructure/sirv/sirv-gallery.source";
 import { requireRoles } from "~~/server/utils/rbac";
 import { parseRenameGalleryImageBody } from "~~/server/utils/website-gallery";
@@ -13,6 +14,7 @@ export default defineEventHandler(async (event) => {
   const clientSecret = config.sirvApiClientSecret;
   const cdnDomain = config.sirvCdnDomain;
   const directory = config.sirvDirectory;
+  const repos = getRepositories();
 
   if (!clientId || !clientSecret || !cdnDomain || !directory) {
     throw createError({
@@ -30,6 +32,7 @@ export default defineEventHandler(async (event) => {
   });
   const renameWebsiteGalleryImageHandler = new RenameWebsiteGalleryImage(
     sirvGallerySource,
+    repos.websiteConfigRepository,
   );
   const image = await renameWebsiteGalleryImageHandler.renameInDirectory(
     directory,

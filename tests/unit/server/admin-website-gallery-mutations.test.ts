@@ -268,7 +268,7 @@ describe("Admin gallery upload and rename endpoints", () => {
 
   it("deletes gallery images and cleans homepage carousel", async () => {
     readBodyMock.mockResolvedValue({
-      paths: ["/chapelle/arc.jpg"],
+      filenames: ["/chapelle/arc.jpg"],
     });
 
     const result = await deleteGalleryImagesHandler(adminEvent);
@@ -279,8 +279,7 @@ describe("Admin gallery upload and rename endpoints", () => {
           success: true,
         },
       ],
-      carouselConfigUpdated: true,
-      removedFromCarouselCount: 1,
+      deletedCount: 1,
     });
     expect(deleteImagesMock).toHaveBeenCalledWith("/chapelle", [
       "/chapelle/arc.jpg",
@@ -301,7 +300,7 @@ describe("Admin gallery upload and rename endpoints", () => {
   });
 
   it("rejects invalid delete body", async () => {
-    readBodyMock.mockResolvedValue({ paths: [] });
+    readBodyMock.mockResolvedValue({ filenames: [] });
     await expect(deleteGalleryImagesHandler(adminEvent)).rejects.toMatchObject({
       statusCode: 400,
       statusMessage: "Invalid request body",
