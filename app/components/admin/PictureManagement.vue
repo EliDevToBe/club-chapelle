@@ -426,10 +426,10 @@ const deleteSelection = async (): Promise<void> => {
   });
 
   try {
-    const { removedFromCarouselCount } = await deletePictures(paths);
+    const { deletedCount } = await deletePictures(paths);
 
     addToastSuccess({
-      title: `${removedFromCarouselCount} photos supprimée(s)`,
+      title: `${deletedCount} photos supprimée(s)`,
     });
   } catch (error) {
     console.error(error);

@@ -24,8 +24,7 @@ type GalleryRenameResponse = {
 
 type GalleryDeleteResponse = {
   results: WebsiteGalleryDeleteItemResultDto[];
-  carouselConfigUpdated: boolean;
-  removedFromCarouselCount: number;
+  deletedCount: number;
 };
 
 export const usePictureManagement = () => {
@@ -112,14 +111,14 @@ export const usePictureManagement = () => {
   };
 
   const deletePictures = async (
-    paths: string[],
+    filenames: string[],
   ): Promise<GalleryDeleteResponse> => {
     const response = await $fetch<GalleryDeleteResponse>(
       "/api/admin/website/gallery/delete",
       {
         method: "DELETE",
         body: {
-          paths,
+          filenames,
         },
         credentials: "include",
       },

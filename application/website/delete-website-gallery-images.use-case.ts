@@ -1,6 +1,10 @@
 import type { WebsiteGallerySource } from "~~/application/ports/website-gallery-source.port";
 import type { WebsiteGalleryDeleteItemResultDto } from "~~/shared/website/website-config.dto";
 
+export type DeleteGalleryImagesBody = {
+  filenames?: unknown;
+};
+
 export class DeleteWebsiteGalleryImages {
   constructor(private readonly source: WebsiteGallerySource) {}
 
