@@ -33,9 +33,18 @@
         icon="i-ph-upload-duotone"
         color="secondary"
         label="Upload"
-        :loading="isSaving"
-        :disabled="isSaving || galleryImages.length === 0"
-        @click="console.log('upload')"
+        :loading="isUploading"
+        :disabled="isMutating"
+        @click="triggerUploadPicker"
+      />
+
+      <input
+        ref="uploadInputRef"
+        type="file"
+        class="hidden"
+        multiple
+        accept="image/*"
+        @change="onFilesPicked"
       />
 
       <template #secondary>
@@ -74,7 +83,7 @@
     <div v-else :class="ui.pictureWrapper">
       <button
         v-for="image in galleryImages"
-        :key="image.url"
+        :key="image.path"
         type="button"
         :class="[
           ui.itemButton,
@@ -82,7 +91,12 @@
         ]"
         @click="toggleSelection(image.url)"
       >
-        <div class="flex justify-center">
+        <div class="flex justify-center group relative">
+          <span
+            class="hidden group-hover:block absolute top-2 left-2 text-sm text-primary-600"
+            >{{ `${image.mimetype.split("/").at(-1)?.toUpperCase()}` }}</span
+          >
+
           <img
             :src="image.preview_url"
             :alt="image.label"
@@ -92,15 +106,39 @@
             loading="lazy"
             decoding="async"
           />
-        </div>
-        <div class="flex items-center justify-between px-3 py-2">
-          <span class="text-sm font-medium text-highlighted">{{
-            normalizeText(image.label, 23)
-          }}</span>
+
           <UIcon
             v-if="isSelected(image.url)"
             name="i-ph-check-circle-duotone"
-            class="size-5 text-primary"
+            class="size-5 text-primary absolute top-2 right-2"
+          />
+        </div>
+
+        <div
+          @click.stop
+          class="flex items-center gap-1 justify-between px-3 py-2"
+        >
+          <ChapEditableLabel
+            :is-editing="editingPath === image.path"
+            :editing-label="image.label"
+            :label="normalizeText(image.label, 24)"
+            size="sm"
+            @update:label="
+              (event) => {
+                editingPath = null;
+                renameImage(image.path, event);
+              }
+            "
+          />
+
+          <UButton
+            size="sm"
+            variant="ghost"
+            color="secondary"
+            icon="i-lucide-pencil-line"
+            :loading="renamingPath === image.path"
+            :disabled="isMutating"
+            @click="toggleNameEditing(image.path)"
           />
         </div>
       </button>
@@ -116,8 +154,8 @@
 import Banner from "~/components/banner/Banner.vue";
 import ChapAccordionContentAction from "~/components/ui/ChapAccordionContentAction.vue";
 import ChapAccordionContentWrapper from "~/components/ui/ChapAccordionContentWrapper.vue";
-import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapConfirmModal from "~/components/ui/ChapConfirmModal.vue";
+import ChapEditableLabel from "~/components/ui/ChapEditableLabel.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { usePictureManagement } from "~/composables/usePictureManagement";
 import { useWebsiteConfig } from "~/composables/useWebsiteConfig";
@@ -149,17 +187,34 @@ const {
   isLoadingCarouselConfig,
   carouselConfigFetchError,
   refreshCarouselConfig,
+  uploadPictures,
+  renamePicture,
 } = usePictureManagement();
 
 const isSaving = ref(false);
+const isUploading = ref(false);
+const renamingPath = ref<string | null>(null);
+const editingPath = ref<string | null>(null);
 const selectedUrls = ref<string[]>([]);
+const uploadInputRef = ref<HTMLInputElement | null>(null);
 
-const galleryImages = computed<WebsiteGalleryImageDto[]>(() => {
-  return galleryData.value?.images ?? [];
-});
+const galleryImages = ref<WebsiteGalleryImageDto[]>([]);
+watch(
+  () => galleryData.value?.images,
+  (images) => {
+    galleryImages.value = images ?? [];
+  },
+  {
+    immediate: true,
+  },
+);
 
 const isLoadingInitial = computed(() => {
   return isLoadingGallery.value || isLoadingCarouselConfig.value;
+});
+
+const isMutating = computed(() => {
+  return isSaving.value || isUploading.value || renamingPath.value !== null;
 });
 
 watch(
@@ -198,6 +253,7 @@ const toggleSelection = (url: string): void => {
 
 const selectedImages = computed<HomepageCarouselItemDto[]>(() => {
   const selectedSet = new Set(selectedUrls.value);
+
   return galleryImages.value
     .filter((image) => selectedSet.has(image.url))
     .map((image) => {
@@ -208,12 +264,122 @@ const selectedImages = computed<HomepageCarouselItemDto[]>(() => {
         width: image.width,
         height: image.height,
         mtime: image.mtime,
+        mimetype: image.mimetype,
       };
     });
 });
 
 const refreshAll = async (): Promise<void> => {
+  editingPath.value = null;
   await Promise.all([refreshGallery(), refreshCarouselConfig()]);
+};
+
+const triggerUploadPicker = (): void => {
+  uploadInputRef.value?.click();
+};
+
+const onFilesPicked = async (event: Event): Promise<void> => {
+  event.preventDefault();
+
+  const input = event.target as HTMLInputElement | null;
+  const files = input?.files ? Array.from(input.files) : [];
+  if (files.length === 0) {
+    return;
+  }
+
+  isUploading.value = true;
+  try {
+    const response = await uploadPictures(files);
+    const failedCount = response.results.filter((item) => !item.success).length;
+    const successCount = response.results.length - failedCount;
+
+    if (successCount > 0) {
+      addToastSuccess({
+        title: "Images envoyées",
+        description: `${successCount} image(s) envoyée(s) avec succès.`,
+      });
+    }
+
+    if (failedCount > 0) {
+      addToastError({
+        title: "Envoi partiel",
+        description: `${failedCount} image(s) n'ont pas pu être envoyées.`,
+      });
+    }
+  } catch (_error) {
+    addToastError({
+      title: "Échec de l'envoi",
+      description: "L'upload des images a échoué.",
+    });
+  } finally {
+    isUploading.value = false;
+    if (input) {
+      input.value = "";
+    }
+  }
+};
+
+const toggleNameEditing = (path: string): void => {
+  if (editingPath.value === path) {
+    editingPath.value = null;
+    return;
+  }
+
+  editingPath.value = path;
+};
+
+const renameImage = async (path: string, newName: string): Promise<void> => {
+  const originalName = galleryImages.value.find(
+    (image) => image.path === path,
+  )?.label;
+  if (originalName === newName) {
+    return;
+  }
+
+  renamingPath.value = path;
+  selectedUrls.value = selectedUrls.value.filter((url) => url !== path);
+
+  try {
+    await renamePicture(path, newName);
+
+    /**
+     * Only for reactivity update
+     */
+    galleryImages.value = galleryImages.value.map((image) => {
+      if (image.path === path) {
+        const uppercasedNewName = newName
+          .toLowerCase()
+          .replace(/^\w/, (char) => char.toUpperCase());
+        const lowercasedNewName = newName.toLowerCase();
+
+        const updatedImage = {
+          ...image,
+          label: uppercasedNewName,
+          path: image.path.replace(
+            image.label.toLowerCase(),
+            lowercasedNewName,
+          ),
+          url: image.url.replace(image.label.toLowerCase(), lowercasedNewName),
+        };
+
+        return updatedImage;
+      }
+
+      return image;
+    });
+
+    addToastSuccess({
+      title: "Image renommée",
+      description: "Le nouveau nom a bien été appliqué.",
+    });
+  } catch (_error) {
+    addToastError({
+      title: "Échec du renommage",
+      description: "Le fichier n'a pas pu être renommé.",
+    });
+  } finally {
+    renamingPath.value = null;
+  }
 };
 
 const saveSelection = async (): Promise<void> => {

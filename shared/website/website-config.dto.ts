@@ -19,6 +19,7 @@ export type HomepageCarouselItemDto = {
   width: number;
   height: number;
   mtime: string | null;
+  mimetype: string;
 };
 
 export type HomepageCarouselSettingsDto = {
@@ -34,4 +35,11 @@ export type WebsiteGalleryInfos = {
   used: number;
   files: number;
   burstable?: number;
+};
+
+export type WebsiteGalleryUploadItemResultDto = {
+  filename: string;
+  success: boolean;
+  image: WebsiteGalleryImageDto | null;
+  error?: string;
 };

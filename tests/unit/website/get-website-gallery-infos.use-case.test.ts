@@ -9,6 +9,8 @@ describe("GetWebsiteGalleryInfos", () => {
     source = {
       listImagesInDirectory: vi.fn(),
       getStorageInfo: vi.fn(),
+      uploadImages: vi.fn(),
+      renameImage: vi.fn(),
     };
   });
 
