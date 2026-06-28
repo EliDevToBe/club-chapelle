@@ -155,32 +155,17 @@
       </div>
     </ChapSection>
 
-    <UModal
-      v-model:open="addArcherModalOpen"
-      title="Ajouter un archer"
-      description="Sélectionnez un archer existant. L’inscription sera branchée plus tard."
-    >
-      <template #body>
-        <div class="space-y-4 p-4">
-          <UInputMenu
-            v-model="selectedArcherId"
-            :items="archerSelectItems"
-            value-key="value"
-            placeholder="Rechercher un archer…"
-            class="w-full"
-            icon="i-ph-magnifying-glass-duotone"
-            :loading="archersLoadPending"
-          />
-          <UButton
-            variant="outline"
-            label="Créer un archer"
-            icon="i-ph-user-plus-duotone"
-            block
-            @click="onStubCreateArcher"
-          />
-        </div>
-      </template>
-    </UModal>
+    <template #body>
+      <div class="space-y-4 p-4">
+        <ChapInputMenu
+          v-model="selectedArcherId"
+          :items="archerSelectItems"
+          :is-loading="archersLoadPending"
+          create-item-label="Créer l'archer·ère"
+          create-item="always"
+        />
+      </div>
+    </template>
   </ContentPageWrapper>
 </template>
 
@@ -189,9 +174,14 @@ import { CalendarDate } from "@internationalized/date";
 import { watchDebounced } from "@vueuse/core";
 import { nextTick } from "vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
+import ChapButton from "~/components/ui/ChapButton.vue";
+import ChapInput from "~/components/ui/ChapInput.vue";
+import ChapInputDate from "~/components/ui/ChapInputDate.vue";
+import ChapInputMenu from "~/components/ui/ChapInputMenu.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 import { useAuthUser } from "~/composables/useAuthUser";
 import { useChapToast } from "~/composables/useChapToasts";
+import { calendarDateToYmd, YmdToCalendarDate } from "~/utils";
 import type { ArcherDto } from "~~/shared/archer/archer.dto";
 import type { CompetitionListingDto } from "~~/shared/competitions/competition-listing.dto";
 import type {
@@ -211,12 +201,12 @@ type CompetitionsFilters = {
   start?: string;
   end?: string;
   q?: string;
-  mine?: string;
+  mine?: "true";
 };
 
 const route = useRoute();
 const router = useRouter();
-const { hydrateIfNeeded, user, isAdmin } = useAuthUser();
+const { hydrateIfNeeded, isAdmin } = useAuthUser();
 const { addToastInfo } = useChapToast();
 
 const competitions = ref<CompetitionListingDto[]>([]);
@@ -225,28 +215,25 @@ const errorMessage = ref<string | null>(null);
 
 const filter = reactive<CompetitionsFilters>({});
 
-const filterStart = shallowRef<CalendarDate | undefined>(
-  new CalendarDate(
-    new Date().getFullYear(),
-    new Date().getMonth() + 1,
-    new Date().getDate(),
-  ),
-);
+const filterStart = shallowRef<CalendarDate | undefined>();
+
 const filterEnd = shallowRef<CalendarDate | undefined>(undefined);
 
 watch([filterStart, filterEnd], () => {
   if (filterStart.value) {
-    console.log("filterStart", filterStart.value);
-
     filter.start = calendarDateToYmd(filterStart.value);
+  } else {
+    filter.start = undefined;
   }
 
   if (filterEnd.value) {
     filter.end = calendarDateToYmd(filterEnd.value);
+  } else {
+    filter.end = undefined;
   }
 });
 
-let syncingFromRoute = false;
+const syncingFromRoute = ref(false);
 const readyForRouteFetch = ref(false);
 
 const expandedCompetitionIds = ref<Set<string>>(new Set());
@@ -275,30 +262,37 @@ const todayYmdLocal = (): string => {
   return `${y}-${m}-${d}`;
 };
 
-const calendarDateToYmd = (date?: CalendarDate): string | undefined => {
-  if (!date) return undefined;
-  return `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`;
+const isDateValid = (date: string | undefined): boolean => {
+  if (!date) return false;
+
+  return true;
 };
 
 const buildQueryFromRefs = (): CompetitionsFilters => {
-  const q: CompetitionsFilters = {};
+  const queryFilters: CompetitionsFilters = {};
 
   if (filter.start !== "") {
-    q.start = filter.start;
+    queryFilters.start = filter.start;
   }
   if (filter.end !== "") {
-    q.end = filter.end;
-  }
-  const trimmed = filter.q?.trim();
-  if (trimmed !== "") {
-    q.q = trimmed;
-  }
-  if (filter.mine) {
-    q.mine = "true";
+    queryFilters.end = filter.end;
   }
 
-  return q;
+  const trimmed = filter.q?.trim();
+  if (trimmed) {
+    queryFilters.q = trimmed;
+  } else if (!trimmed) {
+    queryFilters.q = undefined;
+  }
+
+  if (filter.mine) {
+    queryFilters.mine = "true";
+  }
+
+  return queryFilters;
 };
+
+const FILTER_QUERY_KEYS = new Set<string>(["start", "end", "q", "mine"]);
 
 const normaliseRouteQuery = (
   raw: Record<string, unknown>,
@@ -307,16 +301,21 @@ const normaliseRouteQuery = (
 
   for (const [key, value] of Object.entries(raw)) {
     if (value === undefined || value === null || value === "") continue;
+    if (!FILTER_QUERY_KEYS.has(key)) continue;
 
-    if (key in out) {
-      if (key === "mine") {
+    const stringValue = Array.isArray(value) ? String(value[0]) : String(value);
+
+    // Explicitly handle mine key to avoid type errors
+    if (key === "mine") {
+      if (stringValue === "true") {
         out.mine = "true";
-      } else {
-        out[key as keyof CompetitionsFilters] = Array.isArray(value)
-          ? String(value[0])
-          : String(value);
       }
+      continue;
     }
+
+    out[key as "start" | "end" | "q"] = Array.isArray(value)
+      ? String(value[0])
+      : String(value);
   }
   return out;
 };
@@ -351,25 +350,30 @@ const applyRefsToRouter = async () => {
 };
 
 const syncRouteToRefs = () => {
-  syncingFromRoute = true;
+  syncingFromRoute.value = true;
 
   const q = route.query;
   filter.start = typeof q.start === "string" && q.start !== "" ? q.start : "";
+  filterStart.value = filter.start
+    ? YmdToCalendarDate(filter.start)
+    : undefined;
 
   filter.end = typeof q.end === "string" && q.end !== "" ? q.end : "";
+  filterEnd.value = filter.end ? YmdToCalendarDate(filter.end) : undefined;
 
   filter.q = typeof q.q === "string" ? q.q : "";
 
   filter.mine = q.mine === "true" ? "true" : undefined;
 
   void nextTick(() => {
-    syncingFromRoute = false;
+    syncingFromRoute.value = false;
   });
 };
 
 const fetchCompetitions = async () => {
   pending.value = true;
   errorMessage.value = null;
+
   try {
     const response = await $fetch<{ competitions: CompetitionListingDto[] }>(
       "/api/competitions",
@@ -509,19 +513,6 @@ const onStubCreateCompetition = () => {
   void navigateTo("/admin");
 };
 
-const onStubCreateArcher = () => {
-  const competitionId = addArcherForCompetitionId.value;
-  addArcherModalOpen.value = false;
-  addToastInfo({
-    title: "À venir",
-    description:
-      competitionId === null
-        ? "La création d’archer sera disponible depuis l’administration."
-        : `La création d’archer et l’inscription à la compétition seront branchées (compétition ${competitionId}).`,
-  });
-  void navigateTo("/admin");
-};
-
 const loadArchersForModal = async () => {
   archersLoadPending.value = true;
   try {
@@ -543,8 +534,6 @@ const openAddArcherModal = async (competitionId: string) => {
   await loadArchersForModal();
 };
 
-let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
-
 watch(
   () => route.query,
   () => {
@@ -558,11 +547,12 @@ watch(
 );
 
 watch(
-  () => filter,
+  () => [filter.start, filter.end, filter.mine],
   () => {
-    if (syncingFromRoute) {
+    if (syncingFromRoute.value) {
       return;
     }
+
     void applyRefsToRouter();
   },
   { deep: true },
@@ -571,7 +561,7 @@ watch(
 watchDebounced(
   () => filter.q,
   () => {
-    if (syncingFromRoute) {
+    if (syncingFromRoute.value) {
       return;
     }
 
@@ -586,8 +576,10 @@ onMounted(async () => {
 
   readyForRouteFetch.value = false;
 
+  const routeQuery = route.query;
+
   const hasStart =
-    typeof route.query.start === "string" && route.query.start !== "";
+    typeof routeQuery.start === "string" && routeQuery.start !== "";
 
   if (!hasStart) {
     await router.replace({
