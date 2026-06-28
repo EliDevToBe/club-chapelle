@@ -54,7 +54,7 @@
       <div v-else-if="errorMessage" class="text-error text-sm">
         {{ errorMessage }}
       </div>
-      <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 items-start">
         <CompetitionCard
           v-for="comp in competitions"
           :key="comp.id"

@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { useElementHover } from "@vueuse/core";
+import { onClickOutside, useElementHover } from "@vueuse/core";
 import { useAuthUser } from "~/composables/useAuthUser";
 import {
   translateCompetitionCategory,
@@ -179,6 +179,13 @@ const loadArchersForModal = async () => {
     archersLoadPending.value = false;
   }
 };
+
+onClickOutside(cardRef, () => {
+  if (!showDetails.value) {
+    return;
+  }
+  showDetails.value = false;
+});
 </script>
 
 <style scoped lang=""></style>
