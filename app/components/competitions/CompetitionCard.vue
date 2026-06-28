@@ -49,12 +49,15 @@
         v-else
         size="sm"
         variant="link"
+        :data-state="showDetails ? 'open' : 'closed'"
         :label="showDetails ? 'Masquer' : 'Détails'"
-        :trailing-icon="
-          showDetails ? 'i-ph-caret-down-duotone' : 'i-ph-caret-right-duotone'
-        "
-        class="px-0"
+        :trailing-icon="'i-ph-caret-right-duotone'"
+        class="group px-0"
         @click="toggleExpanded()"
+        :ui="{
+          trailingIcon:
+            'transition-transform duration-200 group-data-[state=open]:rotate-90',
+        }"
       />
 
       <UButton
