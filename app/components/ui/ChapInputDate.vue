@@ -19,7 +19,7 @@
 
     <template #trailing v-if="calendarDate">
       <UButton
-        color="neutral"
+        color="secondary"
         variant="link"
         size="sm"
         icon="i-ph-x-bold"
