@@ -24,7 +24,7 @@ export const translateDistance: Record<DistanceEnum, string> = {
   m60: "60 m",
   m70: "70 m",
   beginner: "Débutant·e",
-  other: "Autre",
+  other: "Autre distance",
 } as const;
 
 export const translatePaymentStatus: Record<PaymentStatusEnum, string> = {
