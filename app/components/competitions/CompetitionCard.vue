@@ -26,8 +26,34 @@
       </div>
     </template>
 
-    <div v-if="isAdmin" class="flex justify-end">
+    <div class="flex justify-between items-center">
+      <p
+        v-if="competition.participations.length === 0"
+        class="text-secondary-500 text-sm"
+      >
+        Aucune participation enregistrée.
+      </p>
+
       <UButton
+        v-else
+        size="sm"
+        variant="link"
+        :label="
+          expandedCompetitionIds.has(competition.id)
+            ? 'Masquer les participants'
+            : 'Voir les participants'
+        "
+        :trailing-icon="
+          expandedCompetitionIds.has(competition.id)
+            ? 'i-ph-caret-up-duotone'
+            : 'i-ph-caret-down-duotone'
+        "
+        class="px-0"
+        @click="toggleExpanded(competition.id)"
+      />
+
+      <UButton
+        v-if="isAdmin"
         size="xs"
         variant="soft"
         label="Ajouter un archer"
@@ -36,66 +62,17 @@
       />
     </div>
 
-    <UButton
-      size="sm"
-      variant="link"
-      :label="
-        expandedCompetitionIds.has(competition.id)
-          ? 'Masquer les participations'
-          : 'Voir les participations'
-      "
-      :trailing-icon="
-        expandedCompetitionIds.has(competition.id)
-          ? 'i-ph-caret-up-duotone'
-          : 'i-ph-caret-down-duotone'
-      "
-      class="px-0"
-      @click="toggleExpanded(competition.id)"
-    />
-
     <div
       v-if="expandedCompetitionIds.has(competition.id)"
       class="space-y-4 border-t border-default pt-3"
     >
-      <div
-        v-for="group in groupParticipationsByArcher(competition.participations)"
-        :key="group.archerId"
-        class="space-y-2"
-      >
-        <p class="text-sm font-medium text-highlighted">
-          {{ group.publicName }}
-        </p>
-        <ul class="space-y-2 border-l-2 border-muted pl-3">
-          <li
-            v-for="row in group.rows"
-            :key="row.id"
-            class="flex flex-wrap items-center gap-2 text-sm"
-          >
-            <span class="text-muted">{{
-              translateDistance[row.distance]
-            }}</span>
-            <span v-if="row.target" class="text-muted">
-              · {{ translateTarget[row.target] }}
-            </span>
-            <template v-if="row.registration_status !== null">
-              <UBadge size="xs" variant="subtle" color="neutral">
-                {{ translateRegistrationStatus[row.registration_status] }}
-              </UBadge>
-            </template>
-            <template v-if="row.payment_status !== null">
-              <UBadge size="xs" variant="subtle" color="warning">
-                {{ translatePaymentStatus[row.payment_status] }}
-              </UBadge>
-            </template>
-          </li>
-        </ul>
-      </div>
-      <p
-        v-if="competition.participations.length === 0"
-        class="text-muted text-sm"
-      >
-        Aucune participation enregistrée.
-      </p>
+      <CompetitionParticipant
+        v-for="archer in groupParticipationsByArcher(
+          competition.participations,
+        )"
+        :key="archer.archerId"
+        :archer="archer"
+      />
     </div>
   </UCard>
 </template>
@@ -113,16 +90,12 @@ import {
 import type { ArcherDto } from "~~/shared/archer/archer.dto";
 import type { CompetitionListingDto } from "~~/shared/competitions/competition-listing.dto";
 import type { CompetitionCategoryEnum } from "~~/shared/db-enums";
+import type { ArcherWithParticipations } from "./CompetitionParticipant.vue";
+import CompetitionParticipant from "./CompetitionParticipant.vue";
 
 defineProps<{
   competition: CompetitionListingDto;
 }>();
-
-type ArcherGroup = {
-  archerId: string;
-  publicName: string;
-  rows: CompetitionListingDto["participations"];
-};
 
 const { isAdmin } = useAuthUser();
 
@@ -143,7 +116,7 @@ const categoryIcon = (category: CompetitionCategoryEnum): string => {
 
 const groupParticipationsByArcher = (
   rows: CompetitionListingDto["participations"],
-): ArcherGroup[] => {
+): ArcherWithParticipations[] => {
   const map = new Map<string, CompetitionListingDto["participations"]>();
   for (const row of rows) {
     const list = map.get(row.archer_id) ?? [];
