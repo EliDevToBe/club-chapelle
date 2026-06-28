@@ -7,11 +7,11 @@
     <ul :class="ui.participationWrapper">
       <li v-for="row in archer.rows" :key="row.id" :class="ui.participation">
         <span class="text-muted"
-          >• {{ translateDistance[row.distance] }}
+          >•&nbsp;{{ translateDistance[row.distance] }}
 
           <!-- Target -->
           <span v-if="row.target" class="text-muted">
-            • {{ translateTarget[row.target] }}
+            •&nbsp;{{ translateTarget[row.target] }}
           </span>
         </span>
 
