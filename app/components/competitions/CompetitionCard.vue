@@ -17,10 +17,10 @@
         </div>
         <div class="flex flex-wrap gap-1.5">
           <UBadge size="sm" variant="subtle" color="neutral">
-            {{ categoryLabel(competition.category) }}
+            {{ translateCompetitionCategory[competition.category] }}
           </UBadge>
           <UBadge size="sm" variant="subtle" color="neutral">
-            {{ typeLabel(competition.type) }}
+            {{ translateCompetitionType[competition.type] }}
           </UBadge>
         </div>
       </div>
@@ -71,18 +71,20 @@
             :key="row.id"
             class="flex flex-wrap items-center gap-2 text-sm"
           >
-            <span class="text-muted">{{ distanceLabel(row.distance) }}</span>
+            <span class="text-muted">{{
+              translateDistance[row.distance]
+            }}</span>
             <span v-if="row.target" class="text-muted">
-              · {{ targetLabel(row.target) }}
+              · {{ translateTarget[row.target] }}
             </span>
             <template v-if="row.registration_status !== null">
               <UBadge size="xs" variant="subtle" color="neutral">
-                {{ registrationLabel(row.registration_status) }}
+                {{ translateRegistrationStatus[row.registration_status] }}
               </UBadge>
             </template>
             <template v-if="row.payment_status !== null">
               <UBadge size="xs" variant="subtle" color="warning">
-                {{ paymentLabel(row.payment_status) }}
+                {{ translatePaymentStatus[row.payment_status] }}
               </UBadge>
             </template>
           </li>
@@ -100,16 +102,17 @@
 
 <script setup lang="ts">
 import { useAuthUser } from "~/composables/useAuthUser";
+import {
+  translateCompetitionCategory,
+  translateCompetitionType,
+  translateDistance,
+  translatePaymentStatus,
+  translateRegistrationStatus,
+  translateTarget,
+} from "~/utils/translate";
 import type { ArcherDto } from "~~/shared/archer/archer.dto";
 import type { CompetitionListingDto } from "~~/shared/competitions/competition-listing.dto";
-import type {
-  CompetitionCategoryEnum,
-  CompetitionTypeEnum,
-  DistanceEnum,
-  PaymentStatusEnum,
-  RegistrationStatusEnum,
-  TargetEnum,
-} from "~~/shared/db-enums";
+import type { CompetitionCategoryEnum } from "~~/shared/db-enums";
 
 defineProps<{
   competition: CompetitionListingDto;
@@ -136,45 +139,6 @@ const categoryIcon = (category: CompetitionCategoryEnum): string => {
     return "i-ph-house-duotone";
   }
   return "i-ph-mountains-duotone";
-};
-const categoryLabel = (category: CompetitionCategoryEnum): string => {
-  if (category === "indoor") {
-    return "Salle";
-  }
-  return "Extérieur";
-};
-
-const registrationLabel = (r: RegistrationStatusEnum): string => {
-  const map: Record<RegistrationStatusEnum, string> = {
-    to_register: "À inscrire",
-    pending: "En attente",
-    waiting_list: "Liste d’attente",
-    registered: "Inscrit·e",
-    cancelled: "Annulé·e",
-  };
-  return map[r];
-};
-
-const distanceLabel = (d: DistanceEnum): string => {
-  const map: Record<DistanceEnum, string> = {
-    m18: "18 m",
-    m50: "50 m",
-    m60: "60 m",
-    m70: "70 m",
-    beginner: "Débutant·e",
-    other: "Autre",
-  };
-  return map[d];
-};
-
-const paymentLabel = (p: PaymentStatusEnum): string => {
-  const map: Record<PaymentStatusEnum, string> = {
-    to_pay: "À payer",
-    pending_reimbursement: "Remboursement",
-    paid: "Payé",
-    cancelled: "Annulé",
-  };
-  return map[p];
 };
 
 const groupParticipationsByArcher = (
@@ -218,24 +182,6 @@ const toggleExpanded = (id: string) => {
     next.add(id);
   }
   expandedCompetitionIds.value = next;
-};
-
-const typeLabel = (type: CompetitionTypeEnum): string => {
-  const map: Record<CompetitionTypeEnum, string> = {
-    olympic: "Olympique",
-    beursault: "Beursault",
-    field: "Field",
-    nature: "Nature",
-    d3: "D3",
-  };
-  return map[type];
-};
-
-const targetLabel = (target: TargetEnum): string => {
-  if (target === "trispot") {
-    return "Trispot";
-  }
-  return "Spot 40";
 };
 
 const openAddArcherModal = async (competitionId: string) => {
