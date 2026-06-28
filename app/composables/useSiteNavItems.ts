@@ -3,7 +3,7 @@ import { useAuthUser } from "./useAuthUser";
 
 export const useSiteNavItems = () => {
   const route = useRoute();
-  const { isAdmin } = useAuthUser();
+  const { isAdmin, user } = useAuthUser();
 
   const navItems = computed<NavigationMenuItem[][]>(() => {
     const baseItems: NavigationMenuItem[] = [];
@@ -23,8 +23,18 @@ export const useSiteNavItems = () => {
         to: "/contact",
         active: route.path.startsWith("/contact"),
       },
-      {},
     );
+
+    if (user.value) {
+      baseItems.push({
+        label: "Compétitions",
+        to: "/competitions",
+        active: route.path.startsWith("/competitions"),
+      });
+    }
+
+    // This serves as a spacer between the base items and the admin items
+    baseItems.push({});
 
     const adminItems: NavigationMenuItem[] = [];
 

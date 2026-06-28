@@ -1,10 +1,11 @@
 import { useAuthUser } from "~/composables/useAuthUser";
 
 export default defineNuxtRouteMiddleware(async (to, _from) => {
-  const { user, isAdmin } = useAuthUser();
+  const { user, isAdmin, hydrateIfNeeded } = useAuthUser();
 
   const adminRoutes = ["/admin"];
-  const authRequiredRoutes = [...adminRoutes];
+  const needAuthRoutes = ["/competitions"];
+  const authRequiredRoutes = [...adminRoutes, ...needAuthRoutes];
   const preventAuthRoutes = ["/login", "/reset-password"];
 
   const isAdminRoute =
@@ -18,6 +19,14 @@ export default defineNuxtRouteMiddleware(async (to, _from) => {
   const isPreventAuthRoute =
     preventAuthRoutes.includes(to.path) ||
     preventAuthRoutes.some((route) => to.path.startsWith(`${route}/`));
+
+  if (isAuthRequiredRoute || isAdminRoute || isPreventAuthRoute) {
+    try {
+      await hydrateIfNeeded();
+    } catch {
+      // Continue as unauthenticated
+    }
+  }
 
   // Prevent auth user from accessing key public routes
   if (user.value && isPreventAuthRoute) {

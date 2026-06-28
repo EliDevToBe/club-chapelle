@@ -1,5 +1,5 @@
 <template>
-  <UApp :toaster="toaster">
+  <UApp :locale="fr" :toaster="toaster">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
@@ -8,6 +8,7 @@
 
 <script setup lang="ts">
 import type { ToasterProps } from "@nuxt/ui";
+import { fr } from "@nuxt/ui/locale";
 import { useAuthUser } from "./composables/useAuthUser";
 
 const toaster: ToasterProps = {
