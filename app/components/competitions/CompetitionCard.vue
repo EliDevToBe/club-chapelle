@@ -49,16 +49,12 @@
         v-else
         size="sm"
         variant="link"
-        :label="
-          expandedCompetitionIds.has(competition.id) ? 'Masquer' : 'Détails'
-        "
+        :label="showDetails ? 'Masquer' : 'Détails'"
         :trailing-icon="
-          expandedCompetitionIds.has(competition.id)
-            ? 'i-ph-caret-up-duotone'
-            : 'i-ph-caret-down-duotone'
+          showDetails ? 'i-ph-caret-down-duotone' : 'i-ph-caret-right-duotone'
         "
         class="px-0"
-        @click="toggleExpanded(competition.id)"
+        @click="toggleExpanded()"
       />
 
       <UButton
@@ -72,7 +68,7 @@
     </div>
 
     <div
-      v-if="expandedCompetitionIds.has(competition.id)"
+      v-if="showDetails"
       class="flex flex-col gap-3 border-t border-default pt-3"
     >
       <CompetitionParticipant
@@ -104,17 +100,21 @@ defineProps<{
   competition: CompetitionListingDto;
 }>();
 
+defineEmits<{
+  toggleExpanded: [];
+}>();
+
 const { isAdmin } = useAuthUser();
 const cardRef = useTemplateRef<HTMLDivElement>("cardRef");
 const isHovered = useElementHover(cardRef);
 
-const expandedCompetitionIds = ref<Set<string>>(new Set());
 const addArcherForCompetitionId = ref<string | null>(null);
 const selectedArcherId = ref<string | undefined>(undefined);
 const archersInCompetition = ref<ArcherDto[]>([]);
 
 const archersLoadPending = ref(false);
 const addArcherModalOpen = ref(false);
+const showDetails = ref(false);
 
 const categoryIcon = (category: CompetitionCategoryEnum): string => {
   if (category === "indoor") {
@@ -156,14 +156,8 @@ const formatDateRangeFr = (start: string, end: string): string => {
   return `${fmt.format(a)} — ${fmt.format(b)}`;
 };
 
-const toggleExpanded = (id: string) => {
-  const next = new Set(expandedCompetitionIds.value);
-  if (next.has(id)) {
-    next.delete(id);
-  } else {
-    next.add(id);
-  }
-  expandedCompetitionIds.value = next;
+const toggleExpanded = () => {
+  showDetails.value = !showDetails.value;
 };
 
 const openAddArcherModal = async (competitionId: string) => {

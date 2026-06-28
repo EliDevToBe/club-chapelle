@@ -62,7 +62,8 @@ const ui = {
   root: "rounded-md flex flex-col gap-1 p-2",
   name: "text-sm font-medium text-highlighted!",
   participationWrapper: "pl-1 flex flex-col gap-2",
-  participation: "grid lg:grid-cols-2 gap-2 items-center text-sm ",
+  participation:
+    "grid sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-2 items-center text-sm ",
   badgeWrapper: "flex flex-nowrap gap-1.5",
 };
 </script>
