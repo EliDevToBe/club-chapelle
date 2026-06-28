@@ -23,11 +23,12 @@
           <ChapInputDate v-model="filterEnd" />
         </UFormField>
         <UFormField label="Recherche" class="min-w-0 flex-1">
-          <UInput
+          <ChapInput
             v-model="filter.q"
-            placeholder="Nom de compétition ou d’archer·e…"
+            placeholder="Nom de compétition ou d’archer·ère ..."
             icon="i-ph-magnifying-glass-duotone"
             class="w-full"
+            clearable
           />
         </UFormField>
         <UFormField label="Filtrer">

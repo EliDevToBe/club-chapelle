@@ -1,6 +1,6 @@
 <template>
   <UInput v-model="model" :placeholder="placeholder" :icon="icon" :class>
-    <template #trailing v-if="removable && !!model">
+    <template #trailing v-if="clearable && !!model">
       <UButton
         icon="i-ph-x-bold"
         variant="link"
@@ -17,7 +17,7 @@ defineProps<{
   placeholder?: string;
   icon?: string;
   class?: string;
-  removable?: boolean;
+  clearable?: boolean;
 }>();
 
 const model = defineModel<string>();
