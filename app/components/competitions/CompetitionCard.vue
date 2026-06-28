@@ -10,10 +10,13 @@
             :name="categoryIcon(competition.category)"
             class="size-5 shrink-0 text-primary"
           />
-          <span>{{
-            formatDateRangeFr(competition.start_date, competition.end_date)
-          }}</span>
-          <span v-if="competition.place">· {{ competition.place }}</span>
+          <div>
+            <span>{{
+              formatDateRangeFr(competition.start_date, competition.end_date)
+            }}</span>
+            <span> • </span>
+            <span v-if="competition.place">{{ competition.place }}</span>
+          </div>
         </div>
         <div class="flex flex-wrap gap-1.5">
           <UBadge size="sm" variant="subtle" color="neutral">
@@ -82,10 +85,6 @@ import { useAuthUser } from "~/composables/useAuthUser";
 import {
   translateCompetitionCategory,
   translateCompetitionType,
-  translateDistance,
-  translatePaymentStatus,
-  translateRegistrationStatus,
-  translateTarget,
 } from "~/utils/translate";
 import type { ArcherDto } from "~~/shared/archer/archer.dto";
 import type { CompetitionListingDto } from "~~/shared/competitions/competition-listing.dto";
