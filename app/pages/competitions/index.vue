@@ -17,10 +17,10 @@
         class="mb-6 flex flex-col gap-4 rounded-lg border border-default p-4 sm:flex-row sm:flex-wrap sm:items-end"
       >
         <UFormField label="Du">
-          <UInputDate v-model="filterStart" class="w-full sm:w-44" />
+          <ChapInputDate v-model="filterStart" />
         </UFormField>
         <UFormField label="Au">
-          <UInputDate v-model="filterEnd" class="w-full sm:w-44" />
+          <ChapInputDate v-model="filterEnd" />
         </UFormField>
         <UFormField label="Recherche" class="min-w-0 flex-1">
           <UInput

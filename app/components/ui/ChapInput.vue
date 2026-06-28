@@ -1,0 +1,26 @@
+<template>
+  <UInput v-model="model" :placeholder="placeholder" :icon="icon" :class>
+    <template #trailing v-if="removable && !!model">
+      <UButton
+        icon="i-ph-x-bold"
+        variant="link"
+        size="sm"
+        @click="model = undefined"
+        color="secondary"
+      />
+    </template>
+  </UInput>
+</template>
+
+<script setup lang="ts">
+defineProps<{
+  placeholder?: string;
+  icon?: string;
+  class?: string;
+  removable?: boolean;
+}>();
+
+const model = defineModel<string>();
+</script>
+
+<style scoped lang=""></style>
