@@ -31,10 +31,19 @@ export type UpdateParticipationInput = {
   weapon?: WeaponEnum | null;
 };
 
+/** Participation plus archer fields for browse / roster reads. */
+export type ParticipationWithArcherSummary = Participation & {
+  archerPublicName: string;
+  archerAuthUserId: string | null;
+};
+
 export interface ParticipationRepository {
   create: (input: CreateParticipationInput) => Promise<Participation>;
   findById: (id: ParticipationId) => Promise<Participation | null>;
   findMany: () => Promise<Participation[]>;
+  findManyWithArcherSummary: (
+    competitionIds?: readonly string[],
+  ) => Promise<ParticipationWithArcherSummary[]>;
   update: (
     id: ParticipationId,
     input: UpdateParticipationInput,

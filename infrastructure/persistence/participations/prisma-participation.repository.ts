@@ -1,6 +1,7 @@
 import type {
   CreateParticipationInput,
   ParticipationRepository,
+  ParticipationWithArcherSummary,
   UpdateParticipationInput,
 } from "~~/application/ports/participation-repository.port";
 import type { Participation } from "~~/domain/participations/participation";
@@ -50,6 +51,45 @@ export class PrismaParticipationRepository implements ParticipationRepository {
       orderBy: { created_at: "desc" },
     });
     return rows.map(toDomain);
+  };
+
+  public findManyWithArcherSummary = async (
+    competitionIds?: readonly string[],
+  ): Promise<ParticipationWithArcherSummary[]> => {
+    if (competitionIds !== undefined && competitionIds.length === 0) {
+      return [];
+    }
+
+    const where =
+      competitionIds === undefined
+        ? undefined
+        : { competition_id: { in: [...competitionIds] } };
+
+    const rows = await prismaClient.participation.findMany({
+      where,
+      include: {
+        archer: {
+          select: {
+            public_name: true,
+            auth_user_id: true,
+          },
+        },
+      },
+      orderBy: [
+        { competition_id: "asc" },
+        { archer: { public_name: "asc" } },
+        { created_at: "asc" },
+      ],
+    });
+
+    return rows.map((row) => {
+      const { archer, ...participationRow } = row;
+      return {
+        ...toDomain(participationRow),
+        archerPublicName: archer.public_name,
+        archerAuthUserId: archer.auth_user_id,
+      };
+    });
   };
 
   public update = async (

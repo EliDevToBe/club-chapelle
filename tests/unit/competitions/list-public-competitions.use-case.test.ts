@@ -26,6 +26,7 @@ describe("ListPublicCompetitions", () => {
       create: vi.fn(),
       findById: vi.fn(),
       findMany: vi.fn(),
+      findManyForListing: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
     };

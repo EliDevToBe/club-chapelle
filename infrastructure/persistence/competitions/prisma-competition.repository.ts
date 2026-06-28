@@ -1,10 +1,11 @@
 import type {
+  CompetitionBrowseDateFilter,
   CompetitionRepository,
   CreateCompetitionInput,
   UpdateCompetitionInput,
 } from "~~/application/ports/competition-repository.port";
 import type { Competition } from "~~/domain/competitions/competition";
-import type { competition } from "~~/generated/prisma/client";
+import type { competition, Prisma } from "~~/generated/prisma/client";
 import { prismaClient } from "~~/infrastructure/persistence/prisma.client";
 
 const toDomain = (row: competition): Competition => ({
@@ -51,6 +52,28 @@ export class PrismaCompetitionRepository implements CompetitionRepository {
 
   public findMany = async (): Promise<Competition[]> => {
     const rows = await prismaClient.competition.findMany({
+      orderBy: [{ start_date: "asc" }, { name: "asc" }],
+    });
+    return rows.map(toDomain);
+  };
+
+  public findManyForListing = async (
+    filter: CompetitionBrowseDateFilter,
+  ): Promise<Competition[]> => {
+    const where: Prisma.competitionWhereInput = {};
+    if (filter.startDateYmd !== null) {
+      where.end_date = {
+        gte: new Date(`${filter.startDateYmd}T00:00:00.000Z`),
+      };
+    }
+    if (filter.endDateYmd !== null) {
+      where.start_date = {
+        lte: new Date(`${filter.endDateYmd}T00:00:00.000Z`),
+      };
+    }
+
+    const rows = await prismaClient.competition.findMany({
+      where,
       orderBy: [{ start_date: "asc" }, { name: "asc" }],
     });
     return rows.map(toDomain);
