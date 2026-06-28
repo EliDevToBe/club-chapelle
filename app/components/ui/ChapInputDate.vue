@@ -1,5 +1,9 @@
 <template>
-  <UInputDate ref="dateInputRef" v-model="calendarDate" class="w-full sm:w-44">
+  <UInputDate
+    ref="dateInputRef"
+    v-model="calendarDate"
+    class="w-full sm:min-w-45"
+  >
     <template #leading>
       <UPopover :reference="dateInputRef?.inputsRef[3]?.$el">
         <UButton
@@ -18,15 +22,12 @@
     </template>
 
     <template #trailing v-if="calendarDate">
-      <UButton
-        color="secondary"
-        variant="link"
-        size="sm"
-        icon="i-ph-x-bold"
-        aria-label="Effacer la date"
-        class="px-0"
+      <div
+        class="cursor-pointer text-secondary hover:text-secondary-500 flex justify-center items-center shrink-0"
         @click="calendarDate = undefined"
-      />
+      >
+        <UIcon name="i-ph-x-bold" class="size-4" />
+      </div>
     </template>
   </UInputDate>
 </template>
