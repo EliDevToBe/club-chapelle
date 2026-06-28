@@ -6,14 +6,14 @@
 
     <ul :class="ui.participationWrapper">
       <li v-for="row in archer.rows" :key="row.id" :class="ui.participation">
-        <span class="text-muted"
-          >•&nbsp;{{ translateDistance[row.distance] }}
+        <div class="text-muted">
+          <span>•&nbsp;{{ translateDistance[row.distance] }}</span>
 
           <!-- Target -->
           <span v-if="row.target" class="text-muted">
             •&nbsp;{{ translateTarget[row.target] }}
           </span>
-        </span>
+        </div>
 
         <div :class="ui.badgeWrapper">
           <!-- Registration status -->
@@ -59,10 +59,10 @@ defineProps<{
 }>();
 
 const ui = {
-  root: "space-y-2",
+  root: "rounded-md flex flex-col gap-1 p-2",
   name: "text-sm font-medium text-highlighted!",
-  participationWrapper: "space-y-2 border-l-2 border-muted pl-3",
-  participation: "grid grid-cols-[1fr_2fr] gap-2 items-center text-sm",
+  participationWrapper: "pl-1 flex flex-col gap-2",
+  participation: "grid lg:grid-cols-2 gap-2 items-center text-sm ",
   badgeWrapper: "flex flex-nowrap gap-1.5",
 };
 </script>

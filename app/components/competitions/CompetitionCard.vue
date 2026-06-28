@@ -1,5 +1,12 @@
 <template>
-  <UCard :ui="{ body: 'space-y-3' }">
+  <UCard
+    ref="cardRef"
+    :ui="{ body: 'space-y-3' }"
+    :class="[
+      isHovered ? 'shadow-md shadow-secondary/50' : '',
+      'transition-shadow duration-100',
+    ]"
+  >
     <template #header>
       <div class="space-y-2">
         <h2 class="text-lg font-semibold leading-tight">
@@ -14,8 +21,9 @@
             <span>{{
               formatDateRangeFr(competition.start_date, competition.end_date)
             }}</span>
-            <span> • </span>
-            <span v-if="competition.place">{{ competition.place }}</span>
+            <span v-if="competition.place" class="flex flex-nowrap">
+              •&nbsp;{{ competition.place }}</span
+            >
           </div>
         </div>
         <div class="flex flex-wrap gap-1.5">
@@ -42,9 +50,7 @@
         size="sm"
         variant="link"
         :label="
-          expandedCompetitionIds.has(competition.id)
-            ? 'Masquer les participants'
-            : 'Voir les participants'
+          expandedCompetitionIds.has(competition.id) ? 'Masquer' : 'Détails'
         "
         :trailing-icon="
           expandedCompetitionIds.has(competition.id)
@@ -67,9 +73,10 @@
 
     <div
       v-if="expandedCompetitionIds.has(competition.id)"
-      class="space-y-4 border-t border-default pt-3"
+      class="flex flex-col gap-3 border-t border-default pt-3"
     >
       <CompetitionParticipant
+        class="odd:bg-secondary/5 even:bg-default"
         v-for="archer in groupParticipationsByArcher(
           competition.participations,
         )"
@@ -81,6 +88,7 @@
 </template>
 
 <script setup lang="ts">
+import { useElementHover } from "@vueuse/core";
 import { useAuthUser } from "~/composables/useAuthUser";
 import {
   translateCompetitionCategory,
@@ -97,6 +105,8 @@ defineProps<{
 }>();
 
 const { isAdmin } = useAuthUser();
+const cardRef = useTemplateRef<HTMLDivElement>("cardRef");
+const isHovered = useElementHover(cardRef);
 
 const expandedCompetitionIds = ref<Set<string>>(new Set());
 const addArcherForCompetitionId = ref<string | null>(null);
