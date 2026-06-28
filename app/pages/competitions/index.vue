@@ -25,12 +25,13 @@
         <UFormField label="Recherche" class="min-w-0 flex-1">
           <ChapInput
             v-model="filter.q"
-            placeholder="Nom de compétition ou d’archer·ère ..."
+            placeholder="Compétition ou archer·ère ..."
             icon="i-ph-magnifying-glass-duotone"
-            class="w-full"
+            class="w-full min-w-30"
             clearable
           />
         </UFormField>
+
         <UFormField label="Filtrer">
           <div class="flex gap-2">
             <UButton
