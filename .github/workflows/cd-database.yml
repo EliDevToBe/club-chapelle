@@ -38,6 +38,7 @@ jobs:
           echo "has_prisma_changes=$HAS_PRISMA_CHANGES" >> "$GITHUB_OUTPUT"
 
   deploy:
+    timeout-minutes: 15
     needs: detect-prisma-changes
     if: needs.detect-prisma-changes.outputs.has_prisma_changes == 'true'
     runs-on: ubuntu-latest
@@ -96,13 +97,11 @@ jobs:
 
       - name: Deploy migrations to production
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_PRODUCTION_URL }}
           DIRECT_URL: ${{ secrets.DATABASE_PRODUCTION_DIRECT_URL }}
         run: npx prisma migrate deploy
 
       - name: Verify migration success
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_PRODUCTION_URL }}
           DIRECT_URL: ${{ secrets.DATABASE_PRODUCTION_DIRECT_URL }}
         run: |
           npx prisma migrate status
