@@ -220,6 +220,7 @@ club-ai/
 
 - **Admin** creates competitions and details; assigns **Members** and/or **Managers** as participants (Managers participate as archers when assigned).
 - Each participation carries **payment state** (see `payment_status` / `payer` in the schema). Combinations must follow **§4.3.1 Participation and competition rules**.
+- **Browse (authenticated):** Member, Manager, and Admin can browse the club competition pool in a **list view** (`/competitions`) with filters; **own** participation fee/registration visibility follows §3.2. **Calendar-style** views remain §6 / v2.
 - **Notifications:** at minimum **email** for **payment requests** and **reminders** initiated by Admin (one-click flows).
 
 ## 6. Calendars
@@ -229,6 +230,8 @@ club-ai/
 | -------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------- |
 | **Anyone**           | Calendar (or equivalent) of **available** competitions in the club pool | Placement TBD: dedicated route vs section on an existing page. |
 | **Logged-in Member** | Calendar (or equivalent) of **their** participations                    | Must respect Member-only data visibility.                      |
+
+A **list/card browse** at `/competitions` satisfies part of the “browse available competitions” matrix row (§3.2); **calendar** milestones in [project-roadmap.md](project-roadmap.md) v2 are still open.
 
 
 ## 7. Competition Listener (advanced phase)
