@@ -1,6 +1,9 @@
 name: Release
 
 on:
+  push:
+    branches:
+      - develop
   workflow_dispatch:
 
 permissions:
@@ -20,12 +23,27 @@ jobs:
             const repo = context.repo.repo;
             const base = "main";
             const head = "develop";
-            const title = "chore(release): promote develop to main";
+            const title = "🚀 Release to Production";
             const body = [
               "Automated release PR created from `develop` to `main`.",
               "",
               "This PR must be merged through branch protection so CI/CD and deployment gates remain enforced."
             ].join("\n");
+
+            const comparison = await github.rest.repos.compareCommitsWithBasehead({
+              owner,
+              repo,
+              basehead: `${base}...${head}`,
+            });
+
+            if (comparison.data.ahead_by === 0) {
+              core.info("develop is not ahead of main; no release PR needed.");
+              return;
+            }
+
+            core.info(
+              `develop is ${comparison.data.ahead_by} commit(s) ahead of main; checking for an open release PR.`,
+            );
 
             const existing = await github.rest.pulls.list({
               owner,
