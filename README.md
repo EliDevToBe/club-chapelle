@@ -18,7 +18,7 @@ Club life today mixes a public showcase (photos, news, contact) with operational
 A small set of main areas—**landing**, **infos**, **contact**—with room for club photos, news-style updates, and links to Instagram and Facebook so the club stays visible where people already are.
 
 **Signed-in members**  
-Browse available competitions and see **their** participations, including calendar-style views when that phase ships—so “where and when am I committed?” has a single answer.
+Browse available competitions and see **their** participations in a **list/card view** at `/competitions` (date range, search, and a **Les miennes** filter; own fee and registration status where the role allows). **Calendar-style** views are planned for a later phase—see [project-spec.md](project-spec.md) and [project-roadmap.md](project-roadmap.md).
 
 **Back-office for the club**  
 Staff use a dedicated space to manage **archers**, **competitions**, and **participation** (who goes where), including **payment status** and reminders. Access is gated by **roles** (Admin, Manager, Member) so each person only sees and does what matches their job—not a one-size-fits-all dashboard.
