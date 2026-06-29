@@ -1,5 +1,7 @@
 import type { WebsiteConfig } from "~~/domain/website/website-config";
+import { normaliseFeatureFlags } from "~~/shared/website/feature-flags.schema";
 import type {
+  FeatureFlagsDto,
   HomepageCarouselItemDto,
   HomepageCarouselSettingsDto,
   WebsiteConfigDto,
@@ -86,4 +88,8 @@ export const toHomepageCarouselSettings = (
     });
 
   return { data };
+};
+
+export const toFeatureFlagsSettings = (settings: unknown): FeatureFlagsDto => {
+  return normaliseFeatureFlags(settings);
 };
