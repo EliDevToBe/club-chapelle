@@ -45,3 +45,26 @@ export const requireRoles = (
 
   return authUser;
 };
+
+/**
+ * Requires an authenticated user with the `developer` role.
+ * Unlike `requireRoles`, this does not grant access to other product roles.
+ */
+export const requireDeveloper = (event: H3Event): AuthUserContext => {
+  const authUser = readAuthUser(event);
+  if (!authUser?.authenticated) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Authentication required",
+    });
+  }
+
+  if (!authUser.roles.includes("developer")) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Forbidden",
+    });
+  }
+
+  return authUser;
+};

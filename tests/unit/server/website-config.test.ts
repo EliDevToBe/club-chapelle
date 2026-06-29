@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { parseHomepageCarouselPatchBody } from "~~/server/utils/website-config";
+import {
+  parseFeatureFlagsPatchBody,
+  parseHomepageCarouselPatchBody,
+} from "~~/server/utils/website-config";
+import { defaultFeatureFlags } from "~~/shared/website/feature-flags.schema";
 
 describe("parseHomepageCarouselPatchBody", () => {
   it("rejects empty payloads", () => {
@@ -48,5 +52,29 @@ describe("parseHomepageCarouselPatchBody", () => {
         },
       ],
     });
+  });
+});
+
+describe("parseFeatureFlagsPatchBody", () => {
+  it("rejects empty payloads", () => {
+    expect(() => parseFeatureFlagsPatchBody(null)).toThrowError(
+      "Invalid request body",
+    );
+  });
+
+  it("normalises missing settings to defaults", () => {
+    expect(parseFeatureFlagsPatchBody({ settings: undefined })).toEqual(
+      defaultFeatureFlags(),
+    );
+  });
+
+  it("strips unknown keys from patch payloads", () => {
+    expect(
+      parseFeatureFlagsPatchBody({
+        settings: {
+          unknown_flag: true,
+        },
+      }),
+    ).toEqual(defaultFeatureFlags());
   });
 });

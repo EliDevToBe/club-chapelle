@@ -1,4 +1,7 @@
+import type { FeatureFlags } from "~~/shared/website/feature-flags.schema";
 import type { WebsiteConfigKey } from "~~/shared/website/website-config.keys";
+
+export type FeatureFlagsDto = FeatureFlags;
 
 export type WebsiteConfigDto = {
   key: string;

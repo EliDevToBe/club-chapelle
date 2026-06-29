@@ -4,6 +4,9 @@ import { useAuthUser } from "./useAuthUser";
 export const useSiteNavItems = () => {
   const route = useRoute();
   const { isAdmin, user } = useAuthUser();
+  const { isEnabled } = useFeatureFlags();
+
+  const competitionFlag = isEnabled("competition_dashboard");
 
   const navItems = computed<NavigationMenuItem[][]>(() => {
     const baseItems: NavigationMenuItem[] = [];
@@ -25,7 +28,7 @@ export const useSiteNavItems = () => {
       },
     );
 
-    if (user.value) {
+    if (user.value && competitionFlag.value) {
       baseItems.push({
         label: "Compétitions",
         to: "/competitions",
