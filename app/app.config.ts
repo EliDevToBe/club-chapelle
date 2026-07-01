@@ -260,5 +260,12 @@ export default defineAppConfig({
         root: "gap-0",
       },
     },
+
+    inputMenu: {
+      slots: {
+        trailingIcon:
+          "group-data-[state=open]:rotate-90 transition-transform duration-200",
+      },
+    },
   },
 });

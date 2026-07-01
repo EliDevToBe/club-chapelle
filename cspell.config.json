@@ -44,6 +44,7 @@
     "trispot",
     "Tzara",
     "unstub",
-    "uuid"
+    "uuid",
+    "vueuse"
   ]
 }
