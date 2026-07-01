@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { archerListQuerySchema } from "~~/shared/archer/archer-list.schema";
 import { ARCHER_LIST_MAX_LIMIT } from "~~/shared/archer/archer-list.dto";
+import { archerListQuerySchema } from "~~/shared/archer/archer-list.schema";
 
 describe("archerListQuerySchema", () => {
   it("accepts paginated query input", () => {
