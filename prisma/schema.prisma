@@ -153,6 +153,7 @@ model participation {
   updated_at          DateTime            @default(now()) @db.Timestamptz
   archer              archer              @relation(fields: [archer_id], references: [id])
   competition         competition         @relation(fields: [competition_id], references: [id])
+  session             String?
 }
 
 model file {
