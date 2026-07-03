@@ -3,6 +3,7 @@ export default defineAppConfig({
     colors: {
       primary: "brand-carrot",
       secondary: "brand-greenblue",
+      neutral: "chapblack",
     },
 
     header: {
@@ -263,6 +264,14 @@ export default defineAppConfig({
 
     inputMenu: {
       slots: {
+        trailingIcon:
+          "group-data-[state=open]:rotate-90 transition-transform duration-200",
+      },
+    },
+
+    selectMenu: {
+      slots: {
+        arrow: "i-ph-caret-right-duotone",
         trailingIcon:
           "group-data-[state=open]:rotate-90 transition-transform duration-200",
       },

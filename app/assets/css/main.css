@@ -13,6 +13,7 @@
   --color-brand-carrot-800: #623800;
   --color-brand-carrot-900: #371e00;
   --color-brand-carrot-950: #241100;
+
   --color-brand-greenblue-50: #bbfcff;
   --color-brand-greenblue-100: #36faff;
   --color-brand-greenblue-200: #00dce1;
@@ -24,6 +25,7 @@
   --color-brand-greenblue-800: #003738;
   --color-brand-greenblue-900: #002021;
   --color-brand-greenblue-950: #001415;
+
   --color-brand-stone-50: #fff0cc;
   --color-brand-stone-100: #ffe39e;
   --color-brand-stone-200: #ffc639;
@@ -35,4 +37,38 @@
   --color-brand-stone-800: #4d3600;
   --color-brand-stone-900: #291d00;
   --color-brand-stone-950: #140f00;
+
+  /* --color-chapblack-50: #aeaeae; */
+  /* --color-chapblack-100: #a3a3a3; */
+  /* --color-chapblack-200: #8b8b8b; */
+  /* --color-chapblack-300: #777777; */
+  /* --color-chapblack-400: #636363; */
+  /* --color-chapblack-500: #4e4e4e; */
+  /* --color-chapblack-600: #3b3b3b; */
+  /* --color-chapblack-700: #2a2a2a; */
+  /* --color-chapblack-800: #181818; */
+  /* --color-chapblack-900: #000000; */
+  /* --color-chapblack-950: #000000; */
+
+  --color-chapblack-50: #00636f;
+  --color-chapblack-100: #005e68;
+
+  /* --color-chapblack-200: #00545c; */
+  --color-chapblack-200: oklch(92.9% 0.013 255.508);
+  /* --color-chapblack-300: #00474d; */
+  --color-chapblack-300: oklch(86.9% 0.022 252.894);
+  /* --color-chapblack-400: #003e42; */
+  --color-chapblack-400: oklch(70.4% 0.04 256.788);
+
+  /* --color-chapblack-500: #003437; */
+  --color-chapblack-500: oklch(55.4% 0.046 257.417);
+  --color-chapblack-600: #002b2d;
+  --color-chapblack-700: #002223;
+  /* --color-chapblack-800: #001717; */
+  /* --color-chapblack-800: oklch(28.799% 0.0374 252.215); */
+  --color-chapblack-800: oklch(27.8% 0.033 256.848);
+  /* --color-chapblack-800: #000a0a; */
+  /* --color-chapblack-900: #000a0a; */
+  --color-chapblack-900: #0a0000;
+  --color-chapblack-950: #000505;
 }
