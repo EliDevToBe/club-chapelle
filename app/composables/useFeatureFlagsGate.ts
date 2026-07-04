@@ -15,12 +15,9 @@ export const useFeatureFlagsGate = () => {
       return defaultFeatureFlags();
     },
   );
-  const loaded = useState<boolean>(
-    FEATURE_FLAGS_GATE_STATE_KEYS.loaded,
-    () => {
-      return false;
-    },
-  );
+  const loaded = useState<boolean>(FEATURE_FLAGS_GATE_STATE_KEYS.loaded, () => {
+    return false;
+  });
 
   return {
     flags,

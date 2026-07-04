@@ -1,13 +1,13 @@
+import {
+  syncFeatureFlagsGate,
+  useFeatureFlagsGate,
+} from "~/composables/useFeatureFlagsGate";
 import { defaultFeatureFlags } from "~~/shared/website/feature-flags.schema";
 import {
   isFeatureGatedRouteAllowed,
   resolveFeatureFlagForPath,
 } from "~~/shared/website/feature-gated-routes";
 import { WEBSITE_CONFIG_PUBLIC_ENDPOINTS } from "~~/shared/website/website-config.keys";
-import {
-  syncFeatureFlagsGate,
-  useFeatureFlagsGate,
-} from "~/composables/useFeatureFlagsGate";
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const flagKey = resolveFeatureFlagForPath(to.path);
