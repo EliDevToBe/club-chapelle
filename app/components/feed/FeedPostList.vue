@@ -8,7 +8,7 @@
 
     <div v-if="showLoadMore" :class="ui.loadMoreWrapper">
       <UButton
-        variant="outline"
+        variant="link"
         color="primary"
         label="Voir plus d’actualités"
         @click="loadMore"
