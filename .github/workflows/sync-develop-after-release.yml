@@ -3,8 +3,10 @@ name: Sync develop after release
 # After a release PR (develop → main) merges, merge main back into develop so
 # release merge commits do not drift from the next release.
 #
-# Branch protection on `develop` must allow `github-actions[bot]` to push
-# (bypass list or ruleset exception). If sync fails with 403, add that actor.
+# Requires repo configuration:
+# - GitHub App (Contents: read/write) installed on this repository
+# - `vars.SYNC_APP_ID` and `secrets.SYNC_APP_PRIVATE_KEY` for that app
+# - App added to the `develop` ruleset bypass list (Integration, always allow)
 
 on:
   pull_request:
@@ -18,9 +20,6 @@ on:
         required: false
         type: string
 
-permissions:
-  contents: write
-
 jobs:
   sync-develop:
     name: Merge main back into develop
@@ -32,10 +31,19 @@ jobs:
         contains(github.event.pull_request.title, 'Release to Production')
       )
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.SYNC_APP_ID }}
+          private-key: ${{ secrets.SYNC_APP_PRIVATE_KEY }}
+
       - name: Merge main into develop
         uses: actions/github-script@v7
         with:
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
@@ -83,9 +91,9 @@ jobs:
 
               if (error.status === 403) {
                 core.setFailed(
-                  "Permission denied: GitHub Actions cannot push to develop. " +
-                    "Allow github-actions[bot] to bypass branch protection on develop, " +
-                    "or merge main into develop manually.",
+                  "Permission denied: the sync GitHub App cannot merge into develop. " +
+                    "Add the app to the develop ruleset bypass list and verify " +
+                    "SYNC_APP_ID / SYNC_APP_PRIVATE_KEY, or merge main into develop manually.",
                 );
                 return;
               }
