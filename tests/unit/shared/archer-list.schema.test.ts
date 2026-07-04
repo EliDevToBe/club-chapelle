@@ -7,7 +7,7 @@ describe("archerListQuerySchema", () => {
     const result = archerListQuerySchema.safeParse({
       limit: 20,
       offset: 0,
-      q: "alice",
+      search: "alice",
     });
 
     expect(result.success).toBe(true);
@@ -15,7 +15,7 @@ describe("archerListQuerySchema", () => {
       expect(result.data).toEqual({
         limit: 20,
         offset: 0,
-        q: "alice",
+        search: "alice",
       });
     }
   });

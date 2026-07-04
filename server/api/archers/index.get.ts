@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
   const page = await listArchersHandler.findPage({
     limit: query.limit,
     offset: query.offset,
-    q: query.q,
+    search: query.search,
   });
 
   return {

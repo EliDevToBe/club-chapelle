@@ -7,7 +7,7 @@ import type {
 export const useArcher = () => {
   const listPage = async (
     query: Required<Pick<ArcherListQueryDto, "limit" | "offset">> &
-      Pick<ArcherListQueryDto, "q">,
+      Pick<ArcherListQueryDto, "search">,
     signal?: AbortSignal,
   ): Promise<ArcherListResponseDto> => {
     return $fetch<ArcherListResponseDto>("/api/archers", {
@@ -15,7 +15,7 @@ export const useArcher = () => {
       query: {
         limit: query.limit,
         offset: query.offset,
-        q: query.q,
+        search: query.search,
       },
       signal,
     });

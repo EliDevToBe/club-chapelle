@@ -6,7 +6,7 @@ describe("parseCompetitionsListingRawQuery", () => {
     expect(parseCompetitionsListingRawQuery({})).toEqual({
       dateStartYmd: null,
       dateEndYmd: null,
-      q: null,
+      search: null,
       onlyMine: false,
     });
   });
@@ -20,7 +20,7 @@ describe("parseCompetitionsListingRawQuery", () => {
     ).toEqual({
       dateStartYmd: "2026-01-10",
       dateEndYmd: "2026-03-01",
-      q: null,
+      search: null,
       onlyMine: false,
     });
   });
@@ -29,7 +29,7 @@ describe("parseCompetitionsListingRawQuery", () => {
     expect(parseCompetitionsListingRawQuery({ mine: "true" })).toEqual({
       dateStartYmd: null,
       dateEndYmd: null,
-      q: null,
+      search: null,
       onlyMine: true,
     });
   });
@@ -49,9 +49,11 @@ describe("parseCompetitionsListingRawQuery", () => {
     }).toThrow();
   });
 
-  it("parses q trimmed", () => {
-    expect(parseCompetitionsListingRawQuery({ q: "  hello  " })).toMatchObject({
-      q: "hello",
+  it("parses search trimmed", () => {
+    expect(
+      parseCompetitionsListingRawQuery({ search: "  hello  " }),
+    ).toMatchObject({
+      search: "hello",
     });
   });
 });

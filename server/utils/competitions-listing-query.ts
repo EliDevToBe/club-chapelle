@@ -35,7 +35,7 @@ const assertValidYmd = (raw: string, paramName: string): void => {
 export type CompetitionsListingQueryParsed = {
   dateStartYmd: string | null;
   dateEndYmd: string | null;
-  q: string | null;
+  search: string | null;
   onlyMine: boolean;
 };
 
@@ -50,7 +50,7 @@ export const parseCompetitionsListingRawQuery = (
 ): CompetitionsListingQueryParsed => {
   const startRaw = firstQueryString(query.start);
   const endRaw = firstQueryString(query.end);
-  const qRaw = firstQueryString(query.q);
+  const searchRaw = firstQueryString(query.search);
   const mineRaw = query.mine;
 
   if (mineRaw !== undefined && mineRaw !== null && mineRaw !== "") {
@@ -77,13 +77,13 @@ export const parseCompetitionsListingRawQuery = (
     dateEndYmd = endRaw;
   }
 
-  const qTrimmed = qRaw?.trim() ?? "";
-  const q = qTrimmed === "" ? null : qTrimmed;
+  const searchTrimmed = searchRaw?.trim() ?? "";
+  const search = searchTrimmed === "" ? null : searchTrimmed;
 
   return {
     dateStartYmd,
     dateEndYmd,
-    q,
+    search,
     onlyMine,
   };
 };

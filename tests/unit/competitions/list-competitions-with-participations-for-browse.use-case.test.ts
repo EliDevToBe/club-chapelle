@@ -44,7 +44,7 @@ const baseInput = () => ({
     startDateYmd: null as string | null,
     endDateYmd: null as string | null,
   },
-  q: null as string | null,
+  search: null as string | null,
   onlyMine: false,
   viewerUserId: "user-1",
   viewerName: null as string | null,
@@ -152,7 +152,7 @@ describe("ListCompetitionsWithParticipationsForBrowse", () => {
     expect(rows).toEqual([{ competition: c1, participations: [pMine] }]);
   });
 
-  it("filters by search q on competition name", async () => {
+  it("filters by search on competition name", async () => {
     const c1 = sampleCompetition("c1", "Paris Open");
     competitions.findManyForListing = vi.fn().mockResolvedValue([c1]);
     participations.findManyWithArcherSummary = vi.fn().mockResolvedValue([]);
@@ -163,13 +163,13 @@ describe("ListCompetitionsWithParticipationsForBrowse", () => {
     );
     const rows = await handler.list({
       ...baseInput(),
-      q: "paris",
+      search: "paris",
     });
     expect(rows).toHaveLength(1);
 
     const rowsEmpty = await handler.list({
       ...baseInput(),
-      q: "lyon",
+      search: "lyon",
     });
     expect(rowsEmpty).toHaveLength(0);
   });

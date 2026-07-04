@@ -1,0 +1,45 @@
+---
+description: Avoid single-letter HTTP query keys, API fields, and exported identifiers
+alwaysApply: true
+---
+
+# No single-letter identifiers
+
+## Requirement
+
+Use **descriptive names** (at least two characters) for:
+
+- **HTTP query string keys** (URL params, `$fetch` `query`, router `query` objects synced to the URL)
+- **JSON/API field names** in DTOs, Zod schemas, and request/response bodies
+- **Exported** identifiers and public filter/DTO properties (types, functions, reactive filter objects)
+
+Free-text search filters use **`search`**, not `q`.
+
+## Rationale
+
+Single-letter keys (`q`, `s`, `n`) are hard to grep, easy to confuse with loop variables, and unclear in URLs and API docs.
+
+## Examples
+
+```typescript
+// ❌ Avoid
+GET /api/competitions?q=paris
+filter.q = routeQuery.q
+{ q: trimmed }
+
+// ✅ Prefer
+GET /api/competitions?search=paris
+filter.search = routeQuery.search
+{ search: trimmed }
+```
+
+## Allowed exceptions
+
+- Loop indices **`i`** and **`j`**
+- **`_`-prefixed** unused bindings (Biome / ESLint convention)
+- **Third-party** URL or API params we do not control (e.g. Sirv/Unsplash `q` for image quality)
+
+## When adding a new list or browse endpoint
+
+1. Name the search param **`search`** unless the domain has a more specific term (e.g. `email` for user lookup).
+2. Mirror the same key from the Vue route query through shared schemas to server parsers and use-case filter types—avoid renaming at each layer.

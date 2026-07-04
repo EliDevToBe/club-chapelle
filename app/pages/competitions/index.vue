@@ -23,7 +23,7 @@
 
         <UFormField label="Recherche" class="min-w-30 flex-1">
           <ChapInput
-            v-model="filter.q"
+            v-model="filter.search"
             placeholder="Compétition ou archer·ère ..."
             icon="i-ph-magnifying-glass-duotone"
             class="w-full text-sm! md:text-base"
@@ -97,7 +97,7 @@ import type { CompetitionListingDto } from "~~/shared/competitions/competition-l
 type CompetitionsFilters = {
   start?: string;
   end?: string;
-  q?: string;
+  search?: string;
   mine?: "true";
 };
 
@@ -171,11 +171,11 @@ const buildQueryFromRefs = (): CompetitionsFilters => {
     queryFilters.end = filter.end;
   }
 
-  const trimmed = filter.q?.trim();
+  const trimmed = filter.search?.trim();
   if (trimmed) {
-    queryFilters.q = trimmed;
+    queryFilters.search = trimmed;
   } else if (!trimmed) {
-    queryFilters.q = undefined;
+    queryFilters.search = undefined;
   }
 
   if (filter.mine) {
@@ -187,7 +187,7 @@ const buildQueryFromRefs = (): CompetitionsFilters => {
   return queryFilters;
 };
 
-const FILTER_QUERY_KEYS = new Set<string>(["start", "end", "q", "mine"]);
+const FILTER_QUERY_KEYS = new Set<string>(["start", "end", "search", "mine"]);
 
 const normaliseRouteQuery = (
   raw: Record<string, unknown>,
@@ -208,7 +208,7 @@ const normaliseRouteQuery = (
       continue;
     }
 
-    out[key as "start" | "end" | "q"] = Array.isArray(value)
+    out[key as "start" | "end" | "search"] = Array.isArray(value)
       ? String(value[0])
       : String(value);
   }
@@ -247,19 +247,25 @@ const applyRefsToRouter = async () => {
 const syncRouteToRefs = () => {
   syncingFromRoute.value = true;
 
-  const q = route.query;
+  const routeQuery = route.query;
   filter.start =
-    typeof q.start === "string" && q.start !== "" ? q.start : undefined;
+    typeof routeQuery.start === "string" && routeQuery.start !== ""
+      ? routeQuery.start
+      : undefined;
   filterStart.value = filter.start
     ? YmdToCalendarDate(filter.start)
     : undefined;
 
-  filter.end = typeof q.end === "string" && q.end !== "" ? q.end : undefined;
+  filter.end =
+    typeof routeQuery.end === "string" && routeQuery.end !== ""
+      ? routeQuery.end
+      : undefined;
   filterEnd.value = filter.end ? YmdToCalendarDate(filter.end) : undefined;
 
-  filter.q = typeof q.q === "string" ? q.q : "";
+  filter.search =
+    typeof routeQuery.search === "string" ? routeQuery.search : "";
 
-  filter.mine = q.mine === "true" ? "true" : undefined;
+  filter.mine = routeQuery.mine === "true" ? "true" : undefined;
 
   void nextTick(() => {
     syncingFromRoute.value = false;
@@ -329,7 +335,7 @@ watch(
 );
 
 watchDebounced(
-  () => filter.q,
+  () => filter.search,
   () => {
     if (syncingFromRoute.value) {
       return;
