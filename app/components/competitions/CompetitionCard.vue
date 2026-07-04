@@ -1,5 +1,5 @@
 <template>
-  <UCard ref="cardRef" :class="isHovered ? ui.root : ''">
+  <UCard ref="cardRef" :class="[isHovered ? ui.rootHover : '']">
     <template #header>
       <div :class="ui.header">
         <h2 :class="ui.title">
@@ -31,51 +31,50 @@
       </div>
     </template>
 
-    <div class="flex justify-between items-center">
-      <p
-        v-if="competition.participations.length === 0"
-        class="text-secondary-500 text-sm"
-      >
-        Aucune participation enregistrée.
-      </p>
+    <div :class="ui.content">
+      <div class="flex justify-between items-center">
+        <p
+          v-if="competition.participations.length === 0"
+          class="text-secondary-500 text-sm"
+        >
+          Aucune participation enregistrée.
+        </p>
 
-      <UButton
-        v-else
-        size="sm"
-        variant="link"
-        :data-state="showDetails ? 'open' : 'closed'"
-        :label="showDetails ? 'Masquer' : 'Détails'"
-        :trailing-icon="'i-ph-caret-right-duotone'"
-        class="group px-0"
-        @click="toggleExpanded()"
-        :ui="{
-          trailingIcon:
-            'transition-transform duration-200 group-data-[state=open]:rotate-90',
-        }"
-      />
+        <UButton
+          v-else
+          size="sm"
+          variant="link"
+          :data-state="showDetails ? 'open' : 'closed'"
+          :label="showDetails ? 'Masquer' : 'Détails'"
+          :trailing-icon="'i-ph-caret-right-duotone'"
+          class="group px-0"
+          @click="toggleExpanded()"
+          :ui="{
+            trailingIcon:
+              'transition-transform duration-200 group-data-[state=open]:rotate-90',
+          }"
+        />
 
-      <UButton
-        v-if="isAdmin"
-        size="xs"
-        variant="soft"
-        label="Ajouter un archer"
-        icon="i-ph-user-plus-duotone"
-        @click="emit('addArcherForCompetition', competition.id)"
-      />
-    </div>
+        <UButton
+          v-if="isAdmin"
+          size="xs"
+          variant="soft"
+          label="Ajouter un archer"
+          icon="i-ph-user-plus-duotone"
+          @click="emit('addArcherForCompetition', competition.id)"
+        />
+      </div>
 
-    <div
-      v-if="showDetails"
-      class="flex flex-col gap-3 border-t border-default pt-3"
-    >
-      <CompetitionParticipant
-        :class="ui.participantRow"
-        v-for="archer in groupParticipationsByArcher(
-          competition.participations,
-        )"
-        :key="archer.archerId"
-        :archer="archer"
-      />
+      <div v-if="showDetails" class="">
+        <CompetitionParticipant
+          :class="ui.participantRow"
+          v-for="archer in groupParticipationsByArcher(
+            competition.participations,
+          )"
+          :key="archer.archerId"
+          :archer="archer"
+        />
+      </div>
     </div>
   </UCard>
 </template>
@@ -104,11 +103,13 @@ const emit = defineEmits<{
 }>();
 
 const ui = {
-  root: LIGHT_HOVER_BORDER_COLOR,
+  rootHover: LIGHT_HOVER_BORDER_COLOR,
   header: "flex flex-col gap-2",
   title: "text-lg font-semibold leading-tight",
+  content: "flex flex-col gap-2",
   details: "flex flex-wrap items-center gap-2 text-sm text-muted",
   detailsBadgeWrapper: "flex flex-wrap gap-1.5",
+  participantWrapper: "flex flex-col gap-3 border-t border-default pt-3",
   participantRow: "odd:bg-neutral-800/30 even:bg-default",
 };
 

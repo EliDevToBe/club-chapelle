@@ -63,6 +63,17 @@
           v-for="comp in competitions"
           :key="comp.id"
           :competition="comp"
+          @add-archer-for-competition="onAddArcherForCompetition"
+          :prevent-collapse="showArcherSelectModal"
+        />
+
+        <ArcherSelectModal
+          v-if="selectedCompetition"
+          :competition-id="selectedCompetition.id"
+          :competition-category="selectedCompetition.category"
+          :competition-type="selectedCompetition.type"
+          v-model:open="showArcherSelectModal"
+          @participation-created="onParticipationCreated"
         />
       </div>
     </ChapSection>
@@ -73,6 +84,7 @@
 import { CalendarDate } from "@internationalized/date";
 import { watchDebounced } from "@vueuse/core";
 import { nextTick } from "vue";
+import ArcherSelectModal from "~/components/archer/ArcherSelectModal.vue";
 import CompetitionCard from "~/components/competitions/CompetitionCard.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ChapInput from "~/components/ui/ChapInput.vue";
@@ -100,8 +112,18 @@ const { hydrateIfNeeded, isAdmin } = useAuthUser();
 const { addToastInfo } = useChapToast();
 
 const competitions = ref<CompetitionListingDto[]>([]);
+const selectedCompetitionId = ref<string>();
+const selectedCompetition = computed(() => {
+  if (!selectedCompetitionId.value) {
+    return undefined;
+  }
+  return competitions.value.find((comp) => {
+    return comp.id === selectedCompetitionId.value;
+  });
+});
 const pending = ref(true);
 const errorMessage = ref<string | null>(null);
+const showArcherSelectModal = ref(false);
 
 const filter = reactive<CompetitionsFilters>({});
 
@@ -266,6 +288,15 @@ const onStubCreateCompetition = () => {
     description: "La création de compétition sera branchée sur l’API admin.",
   });
   void navigateTo("/admin");
+};
+
+const onAddArcherForCompetition = (competitionId: string) => {
+  selectedCompetitionId.value = competitionId;
+  showArcherSelectModal.value = true;
+};
+
+const onParticipationCreated = (): void => {
+  void fetchCompetitions();
 };
 
 watch(
