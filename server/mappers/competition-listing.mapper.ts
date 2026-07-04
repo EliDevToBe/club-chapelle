@@ -33,6 +33,7 @@ export const toParticipationBrowseRowDto = (
     distance: row.distance,
     target: row.target,
     weapon: row.weapon,
+    session: row.session,
     created_at: formatDateForDb(row.createdAt),
   };
 };

@@ -15,6 +15,7 @@ const baseRow = (): ParticipationWithArcherSummary => ({
   distance: "m18",
   target: null,
   weapon: null,
+  session: "session_1",
   createdAt: new Date("2026-02-01T00:00:00.000Z"),
   archerPublicName: "Jean",
   archerAuthUserId: "user-1",

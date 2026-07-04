@@ -2,7 +2,7 @@
   <UInputDate
     ref="dateInputRef"
     v-model="calendarDate"
-    class="w-full sm:min-w-45"
+    class="w-full sm:min-w-45 text-sm md:text-base"
   >
     <template #leading>
       <UPopover :reference="dateInputRef?.inputsRef[3]?.$el">

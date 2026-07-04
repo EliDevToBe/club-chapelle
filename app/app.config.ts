@@ -3,6 +3,7 @@ export default defineAppConfig({
     colors: {
       primary: "brand-carrot",
       secondary: "brand-greenblue",
+      neutral: "chapblack",
     },
 
     header: {
@@ -73,7 +74,7 @@ export default defineAppConfig({
       slots: {
         base: [
           "cursor-pointer justify-center rounded-lg font-medium inline-flex items-center disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabled:opacity-75 aria-disabled:opacity-75",
-          "transition-colors",
+          "transition-colors disabled:bg-gray-600!",
         ],
       },
       compoundVariants: [
@@ -258,6 +259,41 @@ export default defineAppConfig({
     progress: {
       slots: {
         root: "gap-0",
+      },
+    },
+
+    inputMenu: {
+      slots: {
+        trailingIcon:
+          "group-data-[state=open]:rotate-90 transition-transform duration-200",
+        item: "hover:cursor-pointer",
+      },
+    },
+
+    selectMenu: {
+      slots: {
+        item: "hover:cursor-pointer",
+        arrow: "i-ph-caret-right-duotone",
+        trailingIcon:
+          "group-data-[state=open]:rotate-90 transition-transform duration-200",
+      },
+    },
+
+    tabs: {
+      slots: {
+        list: "bg-neutral-800/30!",
+        trigger: [
+          "data-[state=inactive]:text-muted",
+          "hover:data-[state=inactive]:not-disabled:text-secondary",
+          "hover:data-[state=inactive]:not-disabled:cursor-pointer",
+        ],
+      },
+    },
+
+    card: {
+      slots: {
+        root: "border border-default ring-transparent!",
+        header: "bg-neutral-800/30",
       },
     },
   },

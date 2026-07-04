@@ -33,8 +33,6 @@ export const useFeatureFlags = () => {
   });
 
   const isEnabled = (key: FeatureFlagKey) => {
-    console.log(flags.value[key]);
-
     return computed(() => {
       return flags.value[key] ?? false;
     });

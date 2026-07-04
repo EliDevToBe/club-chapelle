@@ -1,10 +1,11 @@
 import type {
   ArcherRepository,
   CreateArcherInput,
+  FindArchersPageInput,
   UpdateArcherInput,
 } from "~~/application/ports/archer-repository.port";
 import type { Archer } from "~~/domain/archer/archer";
-import type { archer } from "~~/generated/prisma/client";
+import type { archer, Prisma } from "~~/generated/prisma/client";
 import { prismaClient } from "~~/infrastructure/persistence/prisma.client";
 
 const toDomain = (row: archer): Archer => ({
@@ -38,6 +39,37 @@ export class PrismaArcherRepository implements ArcherRepository {
       orderBy: { created_at: "desc" },
     });
     return rows.map(toDomain);
+  };
+
+  public findPage = async (input: FindArchersPageInput) => {
+    const where: Prisma.archerWhereInput = {};
+
+    if (!input.includeOffboarded) {
+      where.offboarded_at = null;
+    }
+
+    const trimmedQuery = input.q?.trim();
+    if (trimmedQuery) {
+      where.public_name = {
+        contains: trimmedQuery,
+        mode: "insensitive",
+      };
+    }
+
+    const [rows, total] = await Promise.all([
+      prismaClient.archer.findMany({
+        where,
+        orderBy: { public_name: "asc" },
+        skip: input.offset,
+        take: input.limit,
+      }),
+      prismaClient.archer.count({ where }),
+    ]);
+
+    return {
+      items: rows.map(toDomain),
+      total,
+    };
   };
 
   public update = async (

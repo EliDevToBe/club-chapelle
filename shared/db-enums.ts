@@ -37,3 +37,11 @@ export type TokenTypeEnum =
   | "change_email";
 
 export type RoleEnum = "member" | "manager" | "admin" | "developer";
+
+export type SessionEnum =
+  | "session_1"
+  | "session_2"
+  | "session_3"
+  | "session_4"
+  | "session_5"
+  | "session_6";

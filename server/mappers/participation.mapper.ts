@@ -22,6 +22,7 @@ export const toParticipationDto = (
   distance: participation.distance,
   target: participation.target,
   weapon: participation.weapon,
+  session: participation.session,
   created_at: formatDateForDb(participation.createdAt),
 });
 
@@ -36,6 +37,7 @@ export const toCreateParticipationInput = (
   distance: dto.distance,
   target: dto.target,
   weapon: dto.weapon,
+  session: dto.session,
 });
 
 export const toUpdateParticipationInput = (
@@ -47,4 +49,5 @@ export const toUpdateParticipationInput = (
   distance: dto.distance,
   target: dto.target,
   weapon: dto.weapon,
+  session: dto.session,
 });

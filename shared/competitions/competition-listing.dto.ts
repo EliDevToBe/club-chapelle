@@ -4,6 +4,7 @@ import type {
   PayerEnum,
   PaymentStatusEnum,
   RegistrationStatusEnum,
+  SessionEnum,
   TargetEnum,
   WeaponEnum,
 } from "~~/shared/db-enums";
@@ -24,6 +25,7 @@ export type ParticipationBrowseRowDto = {
   distance: DistanceEnum;
   target: TargetEnum | null;
   weapon: WeaponEnum | null;
+  session: SessionEnum | null;
   created_at: string;
 };
 

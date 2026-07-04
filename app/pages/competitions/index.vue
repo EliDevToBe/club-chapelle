@@ -14,7 +14,7 @@
       </div>
 
       <div
-        class="mb-6 flex flex-col gap-4 rounded-lg border border-default p-4 sm:flex-row sm:flex-wrap sm:items-end"
+        class="bg-neutral-800/30 mb-6 flex flex-col gap-4 rounded-lg border border-default p-4 sm:flex-row sm:flex-wrap sm:items-end"
       >
         <UFormField label="Du">
           <ChapInputDate v-model="filterStart" />
@@ -27,7 +27,7 @@
             v-model="filter.q"
             placeholder="Compétition ou archer·ère ..."
             icon="i-ph-magnifying-glass-duotone"
-            class="w-full min-w-30"
+            class="w-full min-w-30 text-sm! md:text-base"
             clearable
           />
         </UFormField>
@@ -44,7 +44,11 @@
               :variant="filter.mine === 'true' ? 'solid' : 'outline'"
               label="Les miennes"
               size="sm"
-              @click="filter.mine = 'true'"
+              @click="
+                () => {
+                  filter.mine = 'true';
+                }
+              "
             />
           </div>
         </UFormField>
@@ -59,6 +63,17 @@
           v-for="comp in competitions"
           :key="comp.id"
           :competition="comp"
+          @add-archer-for-competition="onAddArcherForCompetition"
+          :prevent-collapse="showArcherSelectModal"
+        />
+
+        <ArcherSelectModal
+          v-if="selectedCompetition"
+          :competition-id="selectedCompetition.id"
+          :competition-category="selectedCompetition.category"
+          :competition-type="selectedCompetition.type"
+          v-model:open="showArcherSelectModal"
+          @participation-created="onParticipationCreated"
         />
       </div>
     </ChapSection>
@@ -69,6 +84,7 @@
 import { CalendarDate } from "@internationalized/date";
 import { watchDebounced } from "@vueuse/core";
 import { nextTick } from "vue";
+import ArcherSelectModal from "~/components/archer/ArcherSelectModal.vue";
 import CompetitionCard from "~/components/competitions/CompetitionCard.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ChapInput from "~/components/ui/ChapInput.vue";
@@ -96,8 +112,18 @@ const { hydrateIfNeeded, isAdmin } = useAuthUser();
 const { addToastInfo } = useChapToast();
 
 const competitions = ref<CompetitionListingDto[]>([]);
+const selectedCompetitionId = ref<string>();
+const selectedCompetition = computed(() => {
+  if (!selectedCompetitionId.value) {
+    return undefined;
+  }
+  return competitions.value.find((comp) => {
+    return comp.id === selectedCompetitionId.value;
+  });
+});
 const pending = ref(true);
 const errorMessage = ref<string | null>(null);
+const showArcherSelectModal = ref(false);
 
 const filter = reactive<CompetitionsFilters>({});
 
@@ -149,6 +175,8 @@ const buildQueryFromRefs = (): CompetitionsFilters => {
 
   if (filter.mine) {
     queryFilters.mine = "true";
+  } else {
+    queryFilters.mine = undefined;
   }
 
   return queryFilters;
@@ -215,12 +243,13 @@ const syncRouteToRefs = () => {
   syncingFromRoute.value = true;
 
   const q = route.query;
-  filter.start = typeof q.start === "string" && q.start !== "" ? q.start : "";
+  filter.start =
+    typeof q.start === "string" && q.start !== "" ? q.start : undefined;
   filterStart.value = filter.start
     ? YmdToCalendarDate(filter.start)
     : undefined;
 
-  filter.end = typeof q.end === "string" && q.end !== "" ? q.end : "";
+  filter.end = typeof q.end === "string" && q.end !== "" ? q.end : undefined;
   filterEnd.value = filter.end ? YmdToCalendarDate(filter.end) : undefined;
 
   filter.q = typeof q.q === "string" ? q.q : "";
@@ -259,6 +288,15 @@ const onStubCreateCompetition = () => {
     description: "La création de compétition sera branchée sur l’API admin.",
   });
   void navigateTo("/admin");
+};
+
+const onAddArcherForCompetition = (competitionId: string) => {
+  selectedCompetitionId.value = competitionId;
+  showArcherSelectModal.value = true;
+};
+
+const onParticipationCreated = (): void => {
+  void fetchCompetitions();
 };
 
 watch(

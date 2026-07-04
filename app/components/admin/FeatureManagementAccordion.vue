@@ -3,7 +3,6 @@
     :items="accordionItems"
     v-model="selectedItem"
     class="transition-colors duration-150"
-    :class="selectedItem ? 'bg-secondary/5' : ''"
   >
     <template #content="{ item }">
       <FeatureManagement v-if="item.value === 'feature-flags'" />

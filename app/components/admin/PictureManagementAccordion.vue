@@ -3,7 +3,6 @@
     :items="accordionItems"
     v-model="selectedItem"
     class="transition-colors duration-150"
-    :class="selectedItem ? 'bg-secondary/5' : ''"
   >
     <template #content="{ item }">
       <div class="flex gap-2 items-center mb-1 px-2">
