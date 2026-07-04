@@ -1,6 +1,6 @@
 <template>
   <UInputMenu
-    :autocomplete="false"
+    autocomplete="off"
     ref="inputMenuRef"
     v-model="model"
     v-model:search-term="searchTerm"
