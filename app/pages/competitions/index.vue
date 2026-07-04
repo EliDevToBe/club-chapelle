@@ -9,7 +9,11 @@
         <UButton
           icon="i-ph-plus-circle-duotone"
           label="Nouvelle compétition"
-          @click="onStubCreateCompetition"
+          @click="
+            () => {
+              showCreateCompetitionModal = true;
+            }
+          "
         />
       </div>
 
@@ -74,6 +78,11 @@
           v-model:open="showArcherSelectModal"
           @participation-created="onParticipationCreated"
         />
+
+        <CreateCompetitionModal
+          v-model:open="showCreateCompetitionModal"
+          @competition-created="onCompetitionCreated"
+        />
       </div>
     </ChapSection>
   </ContentPageWrapper>
@@ -85,12 +94,12 @@ import { watchDebounced } from "@vueuse/core";
 import { nextTick } from "vue";
 import ArcherSelectModal from "~/components/archer/ArcherSelectModal.vue";
 import CompetitionCard from "~/components/competitions/CompetitionCard.vue";
+import CreateCompetitionModal from "~/components/competitions/CreateCompetitionModal.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ChapInput from "~/components/ui/ChapInput.vue";
 import ChapInputDate from "~/components/ui/ChapInputDate.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 import { useAuthUser } from "~/composables/useAuthUser";
-import { useChapToast } from "~/composables/useChapToasts";
 import { calendarDateToYmd, YmdToCalendarDate } from "~/utils";
 import type { CompetitionListingDto } from "~~/shared/competitions/competition-listing.dto";
 
@@ -114,7 +123,6 @@ const ui = {
 const route = useRoute();
 const router = useRouter();
 const { hydrateIfNeeded, isAdmin } = useAuthUser();
-const { addToastInfo } = useChapToast();
 
 const competitions = ref<CompetitionListingDto[]>([]);
 const selectedCompetitionId = ref<string>();
@@ -129,6 +137,7 @@ const selectedCompetition = computed(() => {
 const pending = ref(true);
 const errorMessage = ref<string | null>(null);
 const showArcherSelectModal = ref(false);
+const showCreateCompetitionModal = ref(false);
 
 const filter = reactive<CompetitionsFilters>({});
 
@@ -293,12 +302,8 @@ const fetchCompetitions = async () => {
   }
 };
 
-const onStubCreateCompetition = () => {
-  addToastInfo({
-    title: "À venir",
-    description: "La création de compétition sera branchée sur l’API admin.",
-  });
-  void navigateTo("/admin");
+const onCompetitionCreated = (): void => {
+  void fetchCompetitions();
 };
 
 const onAddArcherForCompetition = (competitionId: string) => {
