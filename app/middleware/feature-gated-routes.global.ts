@@ -1,12 +1,13 @@
-import {
-  defaultFeatureFlags,
-  type FeatureFlags,
-} from "~~/shared/website/feature-flags.schema";
+import { defaultFeatureFlags } from "~~/shared/website/feature-flags.schema";
 import {
   isFeatureGatedRouteAllowed,
   resolveFeatureFlagForPath,
 } from "~~/shared/website/feature-gated-routes";
 import { WEBSITE_CONFIG_PUBLIC_ENDPOINTS } from "~~/shared/website/website-config.keys";
+import {
+  syncFeatureFlagsGate,
+  useFeatureFlagsGate,
+} from "~/composables/useFeatureFlagsGate";
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const flagKey = resolveFeatureFlagForPath(to.path);
@@ -15,27 +16,20 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return;
   }
 
-  const flagsState = useState<FeatureFlags>("feature-flags-gate", () => {
-    return defaultFeatureFlags();
-  });
-  const flagsLoaded = useState("feature-flags-gate-loaded", () => {
-    return false;
-  });
+  const { flags, loaded } = useFeatureFlagsGate();
 
-  if (!flagsLoaded.value) {
+  if (!loaded.value) {
     try {
-      const response = await $fetch<{ settings: FeatureFlags }>(
+      const response = await $fetch<{ settings: typeof flags.value }>(
         WEBSITE_CONFIG_PUBLIC_ENDPOINTS.featureFlags,
       );
-      flagsState.value = response.settings;
+      syncFeatureFlagsGate(response.settings);
     } catch {
-      // Keep defaults (all flags false)
+      syncFeatureFlagsGate(defaultFeatureFlags());
     }
-
-    flagsLoaded.value = true;
   }
 
-  if (!isFeatureGatedRouteAllowed(to.path, flagsState.value)) {
+  if (!isFeatureGatedRouteAllowed(to.path, flags.value)) {
     return navigateTo("/");
   }
 });
