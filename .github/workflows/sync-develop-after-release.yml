@@ -1,0 +1,94 @@
+name: Sync develop after release
+
+# After a release PR (develop → main) merges, merge main back into develop so
+# release merge commits do not drift from the next release.
+#
+# Branch protection on `develop` must allow `github-actions[bot]` to push
+# (bypass list or ruleset exception). If sync fails with 403, add that actor.
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      release_pr_number:
+        description: Release PR number (optional, used in the sync commit message)
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  sync-develop:
+    name: Merge main back into develop
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.pull_request.merged == true &&
+        github.event.pull_request.head.ref == 'develop' &&
+        contains(github.event.pull_request.title, 'Release to Production')
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge main into develop
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const prNumber =
+              context.eventName === "workflow_dispatch"
+                ? context.payload.inputs.release_pr_number
+                : String(context.payload.pull_request.number);
+
+            const comparison = await github.rest.repos.compareCommitsWithBasehead({
+              owner,
+              repo,
+              basehead: "develop...main",
+            });
+
+            if (comparison.data.ahead_by === 0) {
+              core.info("develop already contains all commits from main; nothing to sync.");
+              return;
+            }
+
+            core.info(
+              `main is ${comparison.data.ahead_by} commit(s) ahead of develop; merging main into develop.`,
+            );
+
+            const commitMessage = prNumber
+              ? `chore: sync develop with main after release (#${prNumber})`
+              : "chore: sync develop with main after release";
+
+            try {
+              const merge = await github.rest.repos.merge({
+                owner,
+                repo,
+                base: "develop",
+                head: "main",
+                commit_message: commitMessage,
+              });
+              core.info(`Synced develop at ${merge.data.sha}`);
+            } catch (error) {
+              if (error.status === 409) {
+                core.setFailed(
+                  "Merge conflict: could not sync main into develop automatically. " +
+                    "Merge origin/main into develop locally and resolve conflicts.",
+                );
+                return;
+              }
+
+              if (error.status === 403) {
+                core.setFailed(
+                  "Permission denied: GitHub Actions cannot push to develop. " +
+                    "Allow github-actions[bot] to bypass branch protection on develop, " +
+                    "or merge main into develop manually.",
+                );
+                return;
+              }
+
+              throw error;
+            }

@@ -180,6 +180,7 @@ _Can ship after v2 or be pulled earlier if the club prioritises fee follow-up._
 
 | Date       | Change                                                                 |
 | ---------- | ---------------------------------------------------------------------- |
+| 2026-07-04 | **Release sync:** after a **Release to Production** PR merges to `main`, GitHub Actions merges `main` back into `develop` (`.github/workflows/sync-develop-after-release.yml`) so release merge commits do not drift. |
 | 2026-06-29 | **v1 browse UI:** authenticated **`/competitions`** overview (filters, card list, participation details, RBAC redaction); **`GET /api/competitions`** listing use case; snapshot and v1 checkboxes updated (PR #27). |
 | 2026-05-01 | MVP gallery docs alignment: snapshot now reflects CDN/object-storage-backed gallery management (upload/rename/delete), `website_config` carousel curation, and clarified Prisma `file` scope for non-gallery assets (e.g. competition PDFs). |
 | 2026-04-23 | MVP gallery admin: new **`/admin`** website panel with Sirv `/chapelle` preview selection, admin-only carousel curation API (`website_config`), and public carousel now reading remote config with fallback images. |
