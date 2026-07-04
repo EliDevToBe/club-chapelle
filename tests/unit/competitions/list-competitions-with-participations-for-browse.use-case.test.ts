@@ -32,6 +32,7 @@ const sampleParticipation = (
   distance: "m18",
   target: "trispot",
   weapon: "recurve",
+  session: null,
   createdAt: new Date("2026-02-01T00:00:00.000Z"),
   archerPublicName: "Archer One",
   archerAuthUserId: null,

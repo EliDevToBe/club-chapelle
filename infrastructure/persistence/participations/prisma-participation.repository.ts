@@ -18,6 +18,7 @@ const toDomain = (row: participation): Participation => ({
   distance: row.distance,
   target: row.target,
   weapon: row.weapon,
+  session: row.session,
   createdAt: row.created_at,
 });
 
@@ -35,6 +36,7 @@ export class PrismaParticipationRepository implements ParticipationRepository {
         distance: input.distance,
         target: input.target,
         weapon: input.weapon,
+        session: input.session,
       },
     });
 
@@ -112,6 +114,7 @@ export class PrismaParticipationRepository implements ParticipationRepository {
         distance: input.distance,
         target: input.target,
         weapon: input.weapon,
+        session: input.session,
       },
     });
     return row ? toDomain(row) : null;
