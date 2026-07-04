@@ -57,6 +57,7 @@ export const useSiteNavItems = () => {
         label: "Admin",
         to: "/admin",
         active: route.path.startsWith("/admin"),
+        class: "text-info",
       });
     }
 

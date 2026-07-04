@@ -17,6 +17,7 @@ export const useFacebookFeed = () => {
         loadError instanceof Error
           ? loadError
           : new Error("Impossible de charger les actualités.");
+
       posts.value = [];
     } finally {
       pending.value = false;
