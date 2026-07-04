@@ -26,13 +26,21 @@
       </div>
 
       <div :class="ui.overlay" aria-hidden="true">
-        <span :class="ui.overlayLabel">
-          <UIcon
-            name="i-ph-facebook-logo-duotone"
-            class="size-6 shrink-0 text-primary"
-          />
-          <span>Voir sur Facebook</span>
-        </span>
+        <div class="relative">
+          <div class="absolute inset-0">
+            <div
+              class="absolute top-5 left-1/2 -translate-x-1/2 w-35 h-15 bg-secondary-200 rounded-full blur-[45px]"
+            ></div>
+          </div>
+
+          <span :class="[ui.overlayLabel, 'text-shadow-lg']">
+            <UIcon
+              name="i-ph-facebook-logo-duotone"
+              class="size-6 shrink-0 text-primary-500"
+            />
+            <span> Voir sur Facebook </span>
+          </span>
+        </div>
       </div>
     </a>
   </UCard>
@@ -52,7 +60,7 @@ const ui = {
   overlay:
     "feed-post-card__overlay absolute inset-0 flex items-center justify-center",
   overlayLabel:
-    "flex flex-col items-center gap-2 text-center text-sm font-medium text-primary",
+    "relative z-10 flex flex-col items-center gap-2 rounded-2xl px-6 py-4 text-center text-sm font-medium text-primary-500!",
 };
 
 const formattedDate = computed(() => {
