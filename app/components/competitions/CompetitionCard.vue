@@ -1,12 +1,5 @@
 <template>
-  <UCard
-    ref="cardRef"
-    :ui="{ body: 'space-y-3' }"
-    :class="[
-      isHovered ? 'shadow-md shadow-secondary/50' : '',
-      'transition-shadow duration-100',
-    ]"
-  >
+  <UCard ref="cardRef" :class="ui.card">
     <template #header>
       <div class="space-y-2">
         <h2 class="text-lg font-semibold leading-tight">
@@ -66,7 +59,7 @@
         variant="soft"
         label="Ajouter un archer"
         icon="i-ph-user-plus-duotone"
-        @click="openAddArcherModal(competition.id)"
+        @click="emit('addArcherForCompetition', competition.id)"
       />
     </div>
 
@@ -93,30 +86,30 @@ import {
   translateCompetitionCategory,
   translateCompetitionType,
 } from "~/utils/translate";
-import type { ArcherDto } from "~~/shared/archer/archer.dto";
 import type { CompetitionListingDto } from "~~/shared/competitions/competition-listing.dto";
 import type { CompetitionCategoryEnum } from "~~/shared/db-enums";
+import { LIGHT_HOVER_BORDER_COLOR } from "../ui/style";
 import type { ArcherWithParticipations } from "./CompetitionParticipant.vue";
 import CompetitionParticipant from "./CompetitionParticipant.vue";
 
-defineProps<{
+const props = defineProps<{
   competition: CompetitionListingDto;
+  preventCollapse?: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   toggleExpanded: [];
+  addArcherForCompetition: [string];
 }>();
+
+const ui = computed(() => ({
+  card: [isHovered.value ? `${LIGHT_HOVER_BORDER_COLOR} ` : ""],
+}));
 
 const { isAdmin } = useAuthUser();
 const cardRef = useTemplateRef<HTMLDivElement>("cardRef");
 const isHovered = useElementHover(cardRef);
 
-const addArcherForCompetitionId = ref<string | null>(null);
-const selectedArcherId = ref<string | undefined>(undefined);
-const archersInCompetition = ref<ArcherDto[]>([]);
-
-const archersLoadPending = ref(false);
-const addArcherModalOpen = ref(false);
 const showDetails = ref(false);
 
 const categoryIcon = (category: CompetitionCategoryEnum): string => {
@@ -163,28 +156,8 @@ const toggleExpanded = () => {
   showDetails.value = !showDetails.value;
 };
 
-const openAddArcherModal = async (competitionId: string) => {
-  addArcherForCompetitionId.value = competitionId;
-  selectedArcherId.value = undefined;
-  addArcherModalOpen.value = true;
-  await loadArchersForModal();
-};
-const loadArchersForModal = async () => {
-  archersLoadPending.value = true;
-  try {
-    const res = await $fetch<{ archers: ArcherDto[] }>("/api/archers", {
-      credentials: "include",
-    });
-    archersInCompetition.value = res.archers;
-  } catch {
-    archersInCompetition.value = [];
-  } finally {
-    archersLoadPending.value = false;
-  }
-};
-
 onClickOutside(cardRef, () => {
-  if (!showDetails.value) {
+  if (!showDetails.value || props.preventCollapse) {
     return;
   }
   showDetails.value = false;

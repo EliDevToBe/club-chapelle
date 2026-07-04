@@ -69,6 +69,7 @@
   --color-chapblack-800: oklch(27.8% 0.033 256.848);
   /* --color-chapblack-800: #000a0a; */
   /* --color-chapblack-900: #000a0a; */
-  --color-chapblack-900: #0a0000;
+  /* --color-chapblack-900: #00090a; */
+  --color-chapblack-900: #000000;
   --color-chapblack-950: #000505;
 }

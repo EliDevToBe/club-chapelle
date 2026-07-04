@@ -14,7 +14,7 @@
       </div>
 
       <div
-        class="mb-6 flex flex-col gap-4 rounded-lg border border-default p-4 sm:flex-row sm:flex-wrap sm:items-end"
+        class="bg-neutral-800/30 mb-6 flex flex-col gap-4 rounded-lg border border-default p-4 sm:flex-row sm:flex-wrap sm:items-end"
       >
         <UFormField label="Du">
           <ChapInputDate v-model="filterStart" />

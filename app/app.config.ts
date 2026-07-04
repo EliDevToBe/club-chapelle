@@ -276,5 +276,23 @@ export default defineAppConfig({
           "group-data-[state=open]:rotate-90 transition-transform duration-200",
       },
     },
+
+    tabs: {
+      slots: {
+        list: "bg-neutral-800/30!",
+        trigger: [
+          "data-[state=inactive]:text-muted",
+          "hover:data-[state=inactive]:not-disabled:text-secondary",
+          "hover:data-[state=inactive]:not-disabled:cursor-pointer",
+        ],
+      },
+    },
+
+    card: {
+      slots: {
+        root: "border border-default ring-transparent!",
+        header: "bg-neutral-800/30",
+      },
+    },
   },
 });
