@@ -109,6 +109,7 @@ _Order: persistence and authenticated Admin surfaces before exposing mutations; 
 - [x] ✅ **Use cases** and **Nitro handlers** for CRUD on archers, competitions, participations (with `requireRoles` on each handler).
 - [ ] **Staff UI** (Nuxt) to perform day-to-day CRUD **without** using raw HTTP clients manually—usable by staff who have API access through the browser only.
 - [x] ✅ **Authenticated competitions browse UI** (`/competitions`): filterable card list (date range, search, Toutes / Les miennes), nested participations, status redaction per §3.2 — list view, not full calendar (see v2).
+- [x] ✅ **Admin participation placement** from browse: modal (archer, départ/session, distance, target when required) via `useParticipation` → `POST /api/participations`.
 
 ### Permission reality check (spec §3.2)
 
