@@ -11,13 +11,39 @@
             :name="categoryIcon(competition.category)"
             class="size-5 shrink-0 text-primary"
           />
-          <div>
-            <span>{{
-              formatDateRangeFr(competition.start_date, competition.end_date)
-            }}</span>
-            <span v-if="competition.place" class="flex flex-nowrap">
-              {{ competition.place }}</span
-            >
+          <div class="flex flex-col flex-wrap gap-1">
+            <span class="flex gap-1">
+              <span class="text-primary">•</span>
+              <span>
+                {{
+                  formatDateRangeFr(
+                    competition.start_date,
+                    competition.end_date,
+                  )
+                }}
+              </span>
+            </span>
+
+            <div class="flex gap-1">
+              <span v-if="competition.place" class="">
+                <span class="text-primary">• </span>
+                <span>
+                  {{ competition.place }}
+                </span>
+              </span>
+
+              <span v-if="competition.price">
+                <span class="text-primary">• </span>
+                <span>
+                  {{
+                    Intl.NumberFormat("fr-FR", {
+                      style: "currency",
+                      currency: "EUR",
+                    }).format(Number(competition.price))
+                  }}
+                </span>
+              </span>
+            </div>
           </div>
         </div>
         <div :class="ui.detailsBadgeWrapper">
@@ -105,7 +131,7 @@ const emit = defineEmits<{
 const ui = {
   rootHover: LIGHT_HOVER_BORDER_COLOR,
   header: "flex flex-col gap-2",
-  title: "text-lg font-semibold leading-tight",
+  title: "text-lg font-semibold leading-tight text-gray-300",
   content: "flex flex-col gap-2",
   details: "flex flex-wrap items-center gap-2 text-sm text-muted",
   detailsBadgeWrapper: "flex flex-wrap gap-1.5",
@@ -156,7 +182,7 @@ const formatDateRangeFr = (start: string, end: string): string => {
   });
   const a = new Date(`${start}T12:00:00.000Z`);
   const b = new Date(`${end}T12:00:00.000Z`);
-  return `${fmt.format(a)} - ${fmt.format(b)}`;
+  return `${fmt.format(a)} au ${fmt.format(b)}`;
 };
 
 const toggleExpanded = () => {
