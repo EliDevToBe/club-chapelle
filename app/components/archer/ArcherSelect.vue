@@ -87,7 +87,7 @@ const loadPage = async (options: { reset: boolean }): Promise<void> => {
       {
         limit: ARCHER_LIST_PAGE_SIZE,
         offset,
-        q: debouncedSearchTerm.value.trim() || undefined,
+        search: debouncedSearchTerm.value.trim() || undefined,
       },
       controller.signal,
     );

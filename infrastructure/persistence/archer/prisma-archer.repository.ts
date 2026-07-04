@@ -48,7 +48,7 @@ export class PrismaArcherRepository implements ArcherRepository {
       where.offboarded_at = null;
     }
 
-    const trimmedQuery = input.q?.trim();
+    const trimmedQuery = input.search?.trim();
     if (trimmedQuery) {
       where.public_name = {
         contains: trimmedQuery,

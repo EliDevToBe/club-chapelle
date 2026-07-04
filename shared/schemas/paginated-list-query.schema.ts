@@ -8,7 +8,7 @@ import {
 export type PaginatedListRawNormalised = {
   limit: number | undefined;
   offset: number | undefined;
-  q: string | undefined;
+  search: string | undefined;
 };
 
 export const normalisePaginatedListRawQuery = (
@@ -17,7 +17,7 @@ export const normalisePaginatedListRawQuery = (
   return {
     limit: optionalIntQueryParam(query.limit),
     offset: optionalIntQueryParam(query.offset),
-    q: trimmedOptionalQueryString(query.q),
+    search: trimmedOptionalQueryString(query.search),
   };
 };
 
@@ -27,7 +27,7 @@ export const createPaginatedListQuerySchema = (options: {
   return z.object({
     limit: z.number().int().min(1).max(options.maxLimit).optional(),
     offset: z.number().int().min(0).default(0),
-    q: z.string().optional(),
+    search: z.string().optional(),
   });
 };
 

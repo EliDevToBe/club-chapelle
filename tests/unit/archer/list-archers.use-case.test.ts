@@ -41,13 +41,13 @@ describe("ListArchers", () => {
     const useCase = new ListArchers(repo);
 
     await expect(
-      useCase.findPage({ limit: 20, offset: 0, q: "ali" }),
+      useCase.findPage({ limit: 20, offset: 0, search: "ali" }),
     ).resolves.toEqual(page);
 
     expect(repo.findPage).toHaveBeenCalledWith({
       limit: 20,
       offset: 0,
-      q: "ali",
+      search: "ali",
       includeOffboarded: false,
     });
   });

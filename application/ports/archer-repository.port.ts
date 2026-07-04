@@ -15,7 +15,7 @@ export type UpdateArcherInput = {
 export type FindArchersPageInput = {
   limit: number;
   offset: number;
-  q?: string;
+  search?: string;
   includeOffboarded?: boolean;
 };
 

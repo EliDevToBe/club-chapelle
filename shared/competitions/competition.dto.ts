@@ -30,7 +30,8 @@ export type CompetitionCreateDto = {
   category: CompetitionCategoryEnum;
   type: CompetitionTypeEnum;
   is_championship?: boolean;
-  season_year: number;
 };
 
-export type CompetitionUpdateDto = Partial<CompetitionCreateDto>;
+export type CompetitionUpdateDto = Partial<CompetitionCreateDto> & {
+  season_year?: number;
+};

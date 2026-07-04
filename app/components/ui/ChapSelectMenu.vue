@@ -14,7 +14,7 @@
   >
     <template #trailing>
       <UIcon
-        class="group-data-[state=open]:rotate-90 transition-transform duration-200 text-muted size-4"
+        class="group-data-[state=open]:rotate-90 transition-transform duration-200 text-dimmed size-4"
         name="i-ph-caret-right-duotone"
       />
     </template>

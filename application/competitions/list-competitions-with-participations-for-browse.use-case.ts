@@ -15,7 +15,7 @@ export type CompetitionWithParticipations = {
 
 export type ListCompetitionsWithParticipationsFilters = {
   dateFilter: CompetitionBrowseDateFilter;
-  q: string | null;
+  search: string | null;
   onlyMine: boolean;
   viewerUserId: string;
   viewerName: string | null;
@@ -104,8 +104,8 @@ export class ListCompetitionsWithParticipations {
         });
     }
 
-    if (filters.q !== null && filters.q !== "") {
-      const needle = filters.q.toLowerCase();
+    if (filters.search !== null && filters.search !== "") {
+      const needle = filters.search.toLowerCase();
 
       competitionsWithParticipationsRows =
         competitionsWithParticipationsRows.filter((row) => {

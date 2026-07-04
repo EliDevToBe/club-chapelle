@@ -10,12 +10,12 @@ describe("normalisePaginatedListRawQuery", () => {
       normalisePaginatedListRawQuery({
         limit: "20",
         offset: "40",
-        q: "  alice  ",
+        search: "  alice  ",
       }),
     ).toEqual({
       limit: 20,
       offset: 40,
-      q: "alice",
+      search: "alice",
     });
   });
 
@@ -23,7 +23,7 @@ describe("normalisePaginatedListRawQuery", () => {
     expect(normalisePaginatedListRawQuery({ limit: "10" })).toEqual({
       limit: 10,
       offset: undefined,
-      q: undefined,
+      search: undefined,
     });
   });
 });
@@ -35,7 +35,7 @@ describe("createPaginatedListQuerySchema", () => {
     expect(schema.parse({ limit: 20 })).toEqual({
       limit: 20,
       offset: 0,
-      q: undefined,
+      search: undefined,
     });
   });
 

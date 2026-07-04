@@ -7,7 +7,7 @@ describe("parseArchersListRawQuery", () => {
     expect(parseArchersListRawQuery({})).toEqual({
       limit: undefined,
       offset: 0,
-      q: undefined,
+      search: undefined,
     });
   });
 
@@ -16,12 +16,12 @@ describe("parseArchersListRawQuery", () => {
       parseArchersListRawQuery({
         limit: "20",
         offset: "40",
-        q: "  alice  ",
+        search: "  alice  ",
       }),
     ).toEqual({
       limit: 20,
       offset: 40,
-      q: "alice",
+      search: "alice",
     });
   });
 
@@ -29,7 +29,7 @@ describe("parseArchersListRawQuery", () => {
     expect(parseArchersListRawQuery({ limit: "10" })).toEqual({
       limit: 10,
       offset: 0,
-      q: undefined,
+      search: undefined,
     });
   });
 
@@ -55,12 +55,12 @@ describe("parseArchersListRawQuery", () => {
     expect(
       parseArchersListRawQuery({
         limit: ["25", "30"],
-        q: ["bob", "ignored"],
+        search: ["bob", "ignored"],
       }),
     ).toEqual({
       limit: 25,
       offset: 0,
-      q: "bob",
+      search: "bob",
     });
   });
 });

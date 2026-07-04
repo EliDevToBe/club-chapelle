@@ -5,29 +5,32 @@
       title="Compétitions"
       description="Concours et présences du club."
     >
-      <div v-if="isAdmin" class="mb-6 flex flex-wrap gap-2">
+      <div v-if="isAdmin" :class="ui.adminWrapper">
         <UButton
           icon="i-ph-plus-circle-duotone"
           label="Nouvelle compétition"
-          @click="onStubCreateCompetition"
+          @click="
+            () => {
+              showCreateCompetitionModal = true;
+            }
+          "
         />
       </div>
 
-      <div
-        class="bg-neutral-800/30 mb-6 flex flex-col gap-4 rounded-lg border border-default p-4 sm:flex-row sm:flex-wrap sm:items-end"
-      >
+      <div :class="ui.filterWrapper">
         <UFormField label="Du">
           <ChapInputDate v-model="filterStart" />
         </UFormField>
         <UFormField label="Au">
           <ChapInputDate v-model="filterEnd" />
         </UFormField>
-        <UFormField label="Recherche" class="min-w-0 flex-1">
+
+        <UFormField label="Recherche" class="min-w-30 flex-1">
           <ChapInput
-            v-model="filter.q"
+            v-model="filter.search"
             placeholder="Compétition ou archer·ère ..."
             icon="i-ph-magnifying-glass-duotone"
-            class="w-full min-w-30 text-sm! md:text-base"
+            class="w-full text-sm! md:text-base"
             clearable
           />
         </UFormField>
@@ -58,7 +61,7 @@
       <div v-else-if="errorMessage" class="text-error text-sm">
         {{ errorMessage }}
       </div>
-      <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 items-start">
+      <div v-else :class="ui.competitionsWrapper">
         <CompetitionCard
           v-for="comp in competitions"
           :key="comp.id"
@@ -75,6 +78,11 @@
           v-model:open="showArcherSelectModal"
           @participation-created="onParticipationCreated"
         />
+
+        <CreateCompetitionModal
+          v-model:open="showCreateCompetitionModal"
+          @competition-created="onCompetitionCreated"
+        />
       </div>
     </ChapSection>
   </ContentPageWrapper>
@@ -86,30 +94,35 @@ import { watchDebounced } from "@vueuse/core";
 import { nextTick } from "vue";
 import ArcherSelectModal from "~/components/archer/ArcherSelectModal.vue";
 import CompetitionCard from "~/components/competitions/CompetitionCard.vue";
+import CreateCompetitionModal from "~/components/competitions/CreateCompetitionModal.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ChapInput from "~/components/ui/ChapInput.vue";
 import ChapInputDate from "~/components/ui/ChapInputDate.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 import { useAuthUser } from "~/composables/useAuthUser";
-import { useChapToast } from "~/composables/useChapToasts";
 import { calendarDateToYmd, YmdToCalendarDate } from "~/utils";
 import type { CompetitionListingDto } from "~~/shared/competitions/competition-listing.dto";
-
-definePageMeta({
-  layout: "default",
-});
 
 type CompetitionsFilters = {
   start?: string;
   end?: string;
-  q?: string;
+  search?: string;
   mine?: "true";
+};
+
+const ui = {
+  adminWrapper: "mb-6 flex flex-wrap gap-2",
+  filterWrapper: [
+    "flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4 mb-6 p-4",
+    "rounded-lg border border-default",
+    "bg-neutral-800/30",
+  ],
+  competitionsWrapper: "grid grid-cols-1 gap-4 md:grid-cols-2 items-start",
 };
 
 const route = useRoute();
 const router = useRouter();
 const { hydrateIfNeeded, isAdmin } = useAuthUser();
-const { addToastInfo } = useChapToast();
 
 const competitions = ref<CompetitionListingDto[]>([]);
 const selectedCompetitionId = ref<string>();
@@ -124,6 +137,7 @@ const selectedCompetition = computed(() => {
 const pending = ref(true);
 const errorMessage = ref<string | null>(null);
 const showArcherSelectModal = ref(false);
+const showCreateCompetitionModal = ref(false);
 
 const filter = reactive<CompetitionsFilters>({});
 
@@ -166,11 +180,11 @@ const buildQueryFromRefs = (): CompetitionsFilters => {
     queryFilters.end = filter.end;
   }
 
-  const trimmed = filter.q?.trim();
+  const trimmed = filter.search?.trim();
   if (trimmed) {
-    queryFilters.q = trimmed;
+    queryFilters.search = trimmed;
   } else if (!trimmed) {
-    queryFilters.q = undefined;
+    queryFilters.search = undefined;
   }
 
   if (filter.mine) {
@@ -182,7 +196,7 @@ const buildQueryFromRefs = (): CompetitionsFilters => {
   return queryFilters;
 };
 
-const FILTER_QUERY_KEYS = new Set<string>(["start", "end", "q", "mine"]);
+const FILTER_QUERY_KEYS = new Set<string>(["start", "end", "search", "mine"]);
 
 const normaliseRouteQuery = (
   raw: Record<string, unknown>,
@@ -203,7 +217,7 @@ const normaliseRouteQuery = (
       continue;
     }
 
-    out[key as "start" | "end" | "q"] = Array.isArray(value)
+    out[key as "start" | "end" | "search"] = Array.isArray(value)
       ? String(value[0])
       : String(value);
   }
@@ -242,19 +256,25 @@ const applyRefsToRouter = async () => {
 const syncRouteToRefs = () => {
   syncingFromRoute.value = true;
 
-  const q = route.query;
+  const routeQuery = route.query;
   filter.start =
-    typeof q.start === "string" && q.start !== "" ? q.start : undefined;
+    typeof routeQuery.start === "string" && routeQuery.start !== ""
+      ? routeQuery.start
+      : undefined;
   filterStart.value = filter.start
     ? YmdToCalendarDate(filter.start)
     : undefined;
 
-  filter.end = typeof q.end === "string" && q.end !== "" ? q.end : undefined;
+  filter.end =
+    typeof routeQuery.end === "string" && routeQuery.end !== ""
+      ? routeQuery.end
+      : undefined;
   filterEnd.value = filter.end ? YmdToCalendarDate(filter.end) : undefined;
 
-  filter.q = typeof q.q === "string" ? q.q : "";
+  filter.search =
+    typeof routeQuery.search === "string" ? routeQuery.search : "";
 
-  filter.mine = q.mine === "true" ? "true" : undefined;
+  filter.mine = routeQuery.mine === "true" ? "true" : undefined;
 
   void nextTick(() => {
     syncingFromRoute.value = false;
@@ -282,12 +302,8 @@ const fetchCompetitions = async () => {
   }
 };
 
-const onStubCreateCompetition = () => {
-  addToastInfo({
-    title: "À venir",
-    description: "La création de compétition sera branchée sur l’API admin.",
-  });
-  void navigateTo("/admin");
+const onCompetitionCreated = (): void => {
+  void fetchCompetitions();
 };
 
 const onAddArcherForCompetition = (competitionId: string) => {
@@ -324,7 +340,7 @@ watch(
 );
 
 watchDebounced(
-  () => filter.q,
+  () => filter.search,
   () => {
     if (syncingFromRoute.value) {
       return;
