@@ -329,5 +329,17 @@ export default defineAppConfig({
         cellTrigger: "data-disabled:text-secondary-800!",
       },
     },
+
+    drawer: {
+      compoundVariants: [
+        {
+          direction: ["right", "left"],
+          class: {
+            content: "w-auto max-w-[calc(100%-2rem)]",
+            handle: "h-12! w-1! bg-transparent!",
+          },
+        },
+      ],
+    },
   },
 });
