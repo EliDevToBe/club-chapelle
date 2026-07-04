@@ -141,9 +141,9 @@ import type {
   CompetitionTypeEnum,
 } from "~~/shared/db-enums";
 import ChapInput from "../ui/ChapInput.vue";
+import ChapInputDate from "../ui/ChapInputDate.vue";
 import ChapInputDateRange from "../ui/ChapInputDateRange.vue";
 import ChapSelectMenu from "../ui/ChapSelectMenu.vue";
-import ChapInputDate from "../ui/ChapInputDate.vue";
 
 const emit = defineEmits<{
   "competition-created": [];
