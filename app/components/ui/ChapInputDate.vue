@@ -2,6 +2,7 @@
   <UInputDate
     ref="dateInputRef"
     v-model="calendarDate"
+    :disabled="disabled"
     class="w-full sm:min-w-40 text-sm md:text-base"
   >
     <template #leading>
@@ -13,10 +14,17 @@
           icon="i-lucide-calendar"
           aria-label="Sélectionner une date"
           class="px-0"
+          :disabled="disabled"
         />
 
         <template #content>
-          <UCalendar v-model="calendarDate" class="p-2" />
+          <UCalendar
+            variant="subtle"
+            v-model="calendarDate"
+            :min-date="minDate"
+            :is-date-disabled="(date) => (minDate && date < minDate) || false"
+            class="p-2"
+          />
         </template>
       </UPopover>
     </template>
@@ -35,6 +43,12 @@
 
 <script setup lang="ts">
 import type { CalendarDate } from "@internationalized/date";
+
+defineProps<{
+  disabled?: boolean;
+  minDate?: CalendarDate;
+  withRange?: boolean;
+}>();
 
 const calendarDate = defineModel<CalendarDate>();
 
