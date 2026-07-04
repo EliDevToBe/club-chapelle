@@ -74,7 +74,7 @@ export default defineAppConfig({
       slots: {
         base: [
           "cursor-pointer justify-center rounded-lg font-medium inline-flex items-center disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabled:opacity-75 aria-disabled:opacity-75",
-          "transition-colors disabled:bg-gray-600!",
+          "transition-colors",
         ],
       },
       compoundVariants: [
@@ -91,7 +91,7 @@ export default defineAppConfig({
               "hover:bg-primary",
               "active:bg-primary-600",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
-              "disabled:bg-primary aria-disabled:bg-primary",
+              "disabled:bg-gray-600! aria-disabled:bg-primary",
             ],
           },
         },
@@ -294,6 +294,12 @@ export default defineAppConfig({
       slots: {
         root: "border border-default ring-transparent!",
         header: "bg-neutral-800/30",
+      },
+    },
+
+    calendar: {
+      slots: {
+        cellTrigger: "data-disabled:text-secondary-800!",
       },
     },
   },
