@@ -5,10 +5,10 @@
       title="Actualités"
       description="Les dernières nouvelles du club"
     >
-      <div v-if="pending" class="text-muted text-sm">Chargement…</div>
+      <div v-if="pending" :class="ui.textPending">Chargement…</div>
 
       <div v-else-if="error" :class="ui.errorWrapper">
-        <p class="text-error text-sm">
+        <p :class="ui.textError">
           Impossible de charger les publications pour le moment.
         </p>
         <ChapButton
@@ -36,9 +36,14 @@
       </template>
     </ChapSection>
 
-    <Transition name="feed-facebook-sticky">
+    <Transition
+      enter-active-class="transition-opacity duration-200"
+      leave-active-class="transition-opacity duration-200"
+      enter-from-class="opacity-0"
+      leave-to-class="opacity-0"
+    >
       <div v-if="showStickyFacebookLink" :class="ui.stickyOverlay">
-        <div class="bg-neutral-900 rounded-lg">
+        <div :class="ui.stickyButtonWrapper">
           <ChapButton
             :to="socialFacebook"
             target="_blank"
@@ -76,7 +81,12 @@ const showStickyFacebookLink = ref(false);
 const ui = {
   errorWrapper: "flex flex-col items-start gap-4",
   facebookLinkWrapper: "flex justify-center pt-4",
-  stickyOverlay: "fixed inset-x-0 bottom-6 z-40 flex justify-center px-4",
+  stickyOverlay:
+    "fixed inset-x-0 bottom-6 md:bottom-12 z-40 flex justify-center px-4",
+  stickyButtonWrapper: "bg-neutral-900 rounded-lg",
+
+  textError: "text-error text-sm",
+  textPending: "text-muted text-sm",
 };
 
 const updateStickyVisibility = (isAnchorVisible: boolean): void => {
@@ -134,14 +144,4 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped>
-.feed-facebook-sticky-enter-active,
-.feed-facebook-sticky-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.feed-facebook-sticky-enter-from,
-.feed-facebook-sticky-leave-to {
-  opacity: 0;
-}
-</style>
+<style scoped></style>
