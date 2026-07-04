@@ -75,7 +75,7 @@ enum role {
   developer
 }
 
-enum session {  
+enum session {
   session_1
   session_2
   session_3

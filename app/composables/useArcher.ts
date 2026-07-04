@@ -1,7 +1,4 @@
-import type {
-  ArcherCreateDto,
-  ArcherDto,
-} from "~~/shared/archer/archer.dto";
+import type { ArcherCreateDto, ArcherDto } from "~~/shared/archer/archer.dto";
 import type {
   ArcherListQueryDto,
   ArcherListResponseDto,
