@@ -7,10 +7,3 @@ export const getNextVisibleCount = (
 ): number => {
   return Math.min(currentVisible + pageSize, totalCount);
 };
-
-export const hasMoreFeedPosts = (
-  visibleCount: number,
-  totalCount: number,
-): boolean => {
-  return visibleCount < totalCount;
-};

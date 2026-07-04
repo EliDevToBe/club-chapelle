@@ -23,7 +23,6 @@ import type { FacebookFeedPostDto } from "~~/shared/website/facebook-feed-post.d
 import {
   FEED_PAGE_SIZE,
   getNextVisibleCount,
-  hasMoreFeedPosts,
 } from "~~/shared/website/feed-pagination";
 
 const props = defineProps<{
@@ -42,7 +41,7 @@ const visiblePosts = computed(() => {
 });
 
 const showLoadMore = computed(() => {
-  return hasMoreFeedPosts(visibleCount.value, props.posts.length);
+  return visibleCount.value < props.posts.length;
 });
 
 const loadMore = (): void => {
