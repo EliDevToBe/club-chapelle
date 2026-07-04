@@ -27,7 +27,9 @@ jobs:
             const body = [
               "Automated release PR created from `develop` to `main`.",
               "",
-              "This PR must be merged through branch protection so CI/CD and deployment gates remain enforced."
+              "This PR must be merged through branch protection so CI/CD and deployment gates remain enforced.",
+              "",
+              "After merge, [Sync develop after release](.github/workflows/sync-develop-after-release.yml) merges `main` back into `develop` to prevent release drift."
             ].join("\n");
 
             const comparison = await github.rest.repos.compareCommitsWithBasehead({
