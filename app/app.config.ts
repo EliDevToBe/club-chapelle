@@ -295,13 +295,26 @@ export default defineAppConfig({
 
     tabs: {
       slots: {
-        list: "bg-neutral-800/30!",
+        list: "bg-neutral-800/40!",
         trigger: [
           "data-[state=inactive]:text-muted",
           "hover:data-[state=inactive]:not-disabled:text-secondary",
           "hover:data-[state=inactive]:not-disabled:cursor-pointer",
         ],
       },
+      compoundVariants: [
+        {
+          color: "primary",
+          variant: "pill",
+          class: {
+            indicator: "bg-primary/20! outline outline-primary-500/75!",
+            trigger: [
+              "data-[state=active]:text-primary outline-primary/25 focus-visible:outline-3",
+              "in-[[data-slot=list]:not(:has([data-slot=indicator]))]:data-[state=active]:before:bg-primary",
+            ],
+          },
+        },
+      ],
     },
 
     card: {
