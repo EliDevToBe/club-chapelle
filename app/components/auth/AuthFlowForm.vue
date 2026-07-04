@@ -211,8 +211,8 @@ const requirements = computed(() => [
 
 const login = () => {
   const body = {
-    email: form.email,
-    password: form.password,
+    email: form.email.trim().toLowerCase(),
+    password: form.password.trim(),
   };
   try {
     const parsed = authLoginFormSchema.parse(body);
@@ -232,7 +232,7 @@ const login = () => {
 };
 
 const forgotPassword = () => {
-  const body = { email: form.email };
+  const body = { email: form.email.trim().toLowerCase() };
   try {
     const parsed = authForgotPasswordFormSchema.parse(body);
     emit("submit", { kind: "forgotPassword", email: parsed.email });

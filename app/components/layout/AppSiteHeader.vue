@@ -3,7 +3,9 @@
     v-model:open="isMenuOpen"
     :toggle="{ color: isMenuOpen ? 'secondary' : 'primary' }"
     mode="drawer"
-    :menu="{ direction: 'right' }"
+    :menu="{
+      direction: 'right',
+    }"
     title="Les Archers de la Chapelle"
   >
     <template #title>

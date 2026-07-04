@@ -7,15 +7,26 @@ export const useSiteNavItems = () => {
   const { isEnabled } = useFeatureFlags();
 
   const competitionFlag = isEnabled("competition_dashboard");
+  const facebookFeedFlag = isEnabled("facebook_feed");
 
   const navItems = computed<NavigationMenuItem[][]>(() => {
     const baseItems: NavigationMenuItem[] = [];
+
+    baseItems.push({
+      label: "Accueil",
+      to: "/",
+      active: route.path === "/" || route.path === "",
+    });
+
+    if (facebookFeedFlag.value) {
+      baseItems.push({
+        label: "Actualités",
+        to: "/feed",
+        active: route.path.startsWith("/feed"),
+      });
+    }
+
     baseItems.push(
-      {
-        label: "Accueil",
-        to: "/",
-        active: route.path === "/" || route.path === "",
-      },
       {
         label: "Infos",
         to: "/infos",
@@ -46,6 +57,7 @@ export const useSiteNavItems = () => {
         label: "Admin",
         to: "/admin",
         active: route.path.startsWith("/admin"),
+        class: "text-info",
       });
     }
 

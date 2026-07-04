@@ -32,7 +32,7 @@
             <span :class="[ui.listMainElement, 'text-primary-500']"
               >le mercredi soir de 19h30 à minuit :
             </span>
-            <span class="text-secondary-200 font-semibold underline"
+            <span class="text-secondary-300 font-semibold underline"
               >dédié à l'initiation</span
             >
             <span> mais ouvert à toutes et tous</span>

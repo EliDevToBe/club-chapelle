@@ -16,6 +16,10 @@ export const FEATURE_FLAG_REGISTRY = {
     label: "Dashboard des compétitions",
     description: "Afficher le dashboard de compétitions",
   },
+  facebook_feed: {
+    label: "Actualités (fil Facebook)",
+    description: "Afficher l’onglet Actualités et le fil Facebook",
+  },
 } as const satisfies Readonly<Record<string, FeatureFlagDefinition>>;
 
 export type FeatureFlagKey = keyof typeof FEATURE_FLAG_REGISTRY;

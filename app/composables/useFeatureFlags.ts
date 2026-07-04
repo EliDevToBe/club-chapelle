@@ -1,3 +1,4 @@
+import { syncFeatureFlagsGate } from "~/composables/useFeatureFlagsGate";
 import type {
   FeatureFlagKey,
   FeatureFlags,
@@ -59,6 +60,7 @@ export const useFeatureFlags = () => {
       });
 
       await refresh();
+      syncFeatureFlagsGate(flags.value);
     } finally {
       isSaving.value = false;
     }
