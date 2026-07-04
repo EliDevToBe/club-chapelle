@@ -266,11 +266,13 @@ export default defineAppConfig({
       slots: {
         trailingIcon:
           "group-data-[state=open]:rotate-90 transition-transform duration-200",
+        item: "hover:cursor-pointer",
       },
     },
 
     selectMenu: {
       slots: {
+        item: "hover:cursor-pointer",
         arrow: "i-ph-caret-right-duotone",
         trailingIcon:
           "group-data-[state=open]:rotate-90 transition-transform duration-200",

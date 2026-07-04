@@ -1,11 +1,12 @@
 <template>
-  <UCard ref="cardRef" :class="ui.card">
+  <UCard ref="cardRef" :class="isHovered ? ui.root : ''">
     <template #header>
-      <div class="space-y-2">
-        <h2 class="text-lg font-semibold leading-tight">
+      <div :class="ui.header">
+        <h2 :class="ui.title">
           {{ competition.name }}
         </h2>
-        <div class="flex flex-wrap items-center gap-2 text-sm text-muted">
+
+        <div :class="ui.details">
           <UIcon
             :name="categoryIcon(competition.category)"
             class="size-5 shrink-0 text-primary"
@@ -15,11 +16,11 @@
               formatDateRangeFr(competition.start_date, competition.end_date)
             }}</span>
             <span v-if="competition.place" class="flex flex-nowrap">
-              •&nbsp;{{ competition.place }}</span
+              {{ competition.place }}</span
             >
           </div>
         </div>
-        <div class="flex flex-wrap gap-1.5">
+        <div :class="ui.detailsBadgeWrapper">
           <UBadge size="sm" variant="subtle" color="neutral">
             {{ translateCompetitionCategory[competition.category] }}
           </UBadge>
@@ -68,7 +69,7 @@
       class="flex flex-col gap-3 border-t border-default pt-3"
     >
       <CompetitionParticipant
-        class="odd:bg-secondary/5 even:bg-default"
+        :class="ui.participantRow"
         v-for="archer in groupParticipationsByArcher(
           competition.participations,
         )"
@@ -102,9 +103,14 @@ const emit = defineEmits<{
   addArcherForCompetition: [string];
 }>();
 
-const ui = computed(() => ({
-  card: [isHovered.value ? `${LIGHT_HOVER_BORDER_COLOR} ` : ""],
-}));
+const ui = {
+  root: LIGHT_HOVER_BORDER_COLOR,
+  header: "flex flex-col gap-2",
+  title: "text-lg font-semibold leading-tight",
+  details: "flex flex-wrap items-center gap-2 text-sm text-muted",
+  detailsBadgeWrapper: "flex flex-wrap gap-1.5",
+  participantRow: "odd:bg-neutral-800/30 even:bg-default",
+};
 
 const { isAdmin } = useAuthUser();
 const cardRef = useTemplateRef<HTMLDivElement>("cardRef");
@@ -149,7 +155,7 @@ const formatDateRangeFr = (start: string, end: string): string => {
   });
   const a = new Date(`${start}T12:00:00.000Z`);
   const b = new Date(`${end}T12:00:00.000Z`);
-  return `${fmt.format(a)} — ${fmt.format(b)}`;
+  return `${fmt.format(a)} - ${fmt.format(b)}`;
 };
 
 const toggleExpanded = () => {

@@ -27,7 +27,7 @@
             v-model="filter.q"
             placeholder="Compétition ou archer·ère ..."
             icon="i-ph-magnifying-glass-duotone"
-            class="w-full min-w-30"
+            class="w-full min-w-30 text-sm! md:text-base"
             clearable
           />
         </UFormField>
@@ -44,7 +44,11 @@
               :variant="filter.mine === 'true' ? 'solid' : 'outline'"
               label="Les miennes"
               size="sm"
-              @click="filter.mine = 'true'"
+              @click="
+                () => {
+                  filter.mine = 'true';
+                }
+              "
             />
           </div>
         </UFormField>
@@ -149,6 +153,8 @@ const buildQueryFromRefs = (): CompetitionsFilters => {
 
   if (filter.mine) {
     queryFilters.mine = "true";
+  } else {
+    queryFilters.mine = undefined;
   }
 
   return queryFilters;
@@ -215,12 +221,13 @@ const syncRouteToRefs = () => {
   syncingFromRoute.value = true;
 
   const q = route.query;
-  filter.start = typeof q.start === "string" && q.start !== "" ? q.start : "";
+  filter.start =
+    typeof q.start === "string" && q.start !== "" ? q.start : undefined;
   filterStart.value = filter.start
     ? YmdToCalendarDate(filter.start)
     : undefined;
 
-  filter.end = typeof q.end === "string" && q.end !== "" ? q.end : "";
+  filter.end = typeof q.end === "string" && q.end !== "" ? q.end : undefined;
   filterEnd.value = filter.end ? YmdToCalendarDate(filter.end) : undefined;
 
   filter.q = typeof q.q === "string" ? q.q : "";
