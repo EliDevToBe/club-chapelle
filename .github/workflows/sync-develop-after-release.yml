@@ -1,0 +1,102 @@
+name: Sync develop after release
+
+# After a release PR (develop → main) merges, merge main back into develop so
+# release merge commits do not drift from the next release.
+#
+# Requires repo configuration:
+# - GitHub App (Contents: read/write) installed on this repository
+# - `vars.SYNC_APP_ID` and `secrets.SYNC_APP_PRIVATE_KEY` for that app
+# - App added to the `develop` ruleset bypass list (Integration, always allow)
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      release_pr_number:
+        description: Release PR number (optional, used in the sync commit message)
+        required: false
+        type: string
+
+jobs:
+  sync-develop:
+    name: Merge main back into develop
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.pull_request.merged == true &&
+        github.event.pull_request.head.ref == 'develop' &&
+        contains(github.event.pull_request.title, 'Release to Production')
+      )
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.SYNC_APP_ID }}
+          private-key: ${{ secrets.SYNC_APP_PRIVATE_KEY }}
+
+      - name: Merge main into develop
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const prNumber =
+              context.eventName === "workflow_dispatch"
+                ? context.payload.inputs.release_pr_number
+                : String(context.payload.pull_request.number);
+
+            const comparison = await github.rest.repos.compareCommitsWithBasehead({
+              owner,
+              repo,
+              basehead: "develop...main",
+            });
+
+            if (comparison.data.ahead_by === 0) {
+              core.info("develop already contains all commits from main; nothing to sync.");
+              return;
+            }
+
+            core.info(
+              `main is ${comparison.data.ahead_by} commit(s) ahead of develop; merging main into develop.`,
+            );
+
+            const commitMessage = prNumber
+              ? `chore: sync develop with main after release (#${prNumber})`
+              : "chore: sync develop with main after release";
+
+            try {
+              const merge = await github.rest.repos.merge({
+                owner,
+                repo,
+                base: "develop",
+                head: "main",
+                commit_message: commitMessage,
+              });
+              core.info(`Synced develop at ${merge.data.sha}`);
+            } catch (error) {
+              if (error.status === 409) {
+                core.setFailed(
+                  "Merge conflict: could not sync main into develop automatically. " +
+                    "Merge origin/main into develop locally and resolve conflicts.",
+                );
+                return;
+              }
+
+              if (error.status === 403) {
+                core.setFailed(
+                  "Permission denied: the sync GitHub App cannot merge into develop. " +
+                    "Add the app to the develop ruleset bypass list and verify " +
+                    "SYNC_APP_ID / SYNC_APP_PRIVATE_KEY, or merge main into develop manually.",
+                );
+                return;
+              }
+
+              throw error;
+            }
