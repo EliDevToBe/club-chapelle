@@ -8,9 +8,20 @@
       :aria-label="linkAriaLabel"
     >
       <div :class="ui.content">
-        <time :datetime="post.createdTime" class="text-sm text-muted">
-          {{ formattedDate }}
-        </time>
+        <div class="flex items-center justify-between">
+          <time :datetime="post.createdTime" class="text-sm text-muted">
+            {{ formattedDate }}
+          </time>
+
+          <UButton
+            variant="link"
+            color="primary"
+            size="sm"
+            class="md:hidden"
+            label="Voir sur Facebook"
+            trailing-icon="i-ph-arrow-up-right"
+          />
+        </div>
 
         <p v-if="displayMessage" class="text-default whitespace-pre-line">
           {{ displayMessage }}
@@ -25,7 +36,7 @@
         />
       </div>
 
-      <div :class="ui.overlay" aria-hidden="true">
+      <div :class="[ui.overlay, 'max-md:hidden']" aria-hidden="true">
         <div class="relative">
           <div class="absolute inset-0">
             <div
@@ -54,7 +65,7 @@ const props = defineProps<{
 }>();
 
 const ui = {
-  interactive: "feed-post-card__interactive relative block",
+  interactive: "md:feed-post-card__interactive relative block",
   content: "feed-post-card__content flex flex-col gap-4 p-4 sm:p-6",
   thumbnail: "w-full rounded-lg object-cover max-h-80",
   overlay:

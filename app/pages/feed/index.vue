@@ -3,7 +3,7 @@
     <ChapSection
       is-main-section
       title="Actualités"
-      description="Les dernières nouvelles du club."
+      description="Les dernières nouvelles du club"
     >
       <div v-if="pending" class="text-muted text-sm">Chargement…</div>
 
