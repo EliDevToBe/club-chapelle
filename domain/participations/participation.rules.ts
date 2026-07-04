@@ -36,6 +36,49 @@ const OUTDOOR_OLYMPIC_DISTANCES: readonly DistanceEnum[] = [
   "beginner",
 ];
 
+const INDOOR_OLYMPIC_DISTANCES: readonly DistanceEnum[] = ["m18", "beginner"];
+
+export const ALLOWED_TARGETS: readonly TargetEnum[] = ["trispot", "spot40"];
+
+export const allowedDistancesForCompetition = (
+  category: CompetitionCategoryEnum,
+  type: CompetitionTypeEnum,
+): DistanceEnum[] => {
+  if (category === "indoor") {
+    if (INDOOR_FORBIDDEN_TYPES.includes(type)) {
+      return [];
+    }
+    if (type === "olympic") {
+      return [...INDOOR_OLYMPIC_DISTANCES];
+    }
+    if (type === "d3") {
+      return ["other"];
+    }
+    return [];
+  }
+
+  if (category === "outdoor") {
+    if (OUTDOOR_FIELD_NATURE_D3.includes(type)) {
+      return ["other"];
+    }
+    if (type === "beursault") {
+      return ["m50"];
+    }
+    if (type === "olympic") {
+      return [...OUTDOOR_OLYMPIC_DISTANCES];
+    }
+  }
+
+  return [];
+};
+
+export const isTargetRequiredForCompetition = (
+  category: CompetitionCategoryEnum,
+  type: CompetitionTypeEnum,
+): boolean => {
+  return category === "indoor" && type === "olympic";
+};
+
 export const validateParticipationRules = (
   input: ParticipationRuleInput,
 ): { valid: true } | { valid: false; reason: string } => {

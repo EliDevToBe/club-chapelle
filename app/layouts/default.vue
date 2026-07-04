@@ -2,7 +2,7 @@
   <div class="min-h-dvh flex flex-col">
     <AppSiteHeader />
 
-    <UMain class="flex-1">
+    <UMain class="flex-1 min-h-0">
       <slot />
     </UMain>
 

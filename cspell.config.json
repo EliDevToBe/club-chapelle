@@ -6,6 +6,7 @@
     "barebow",
     "beursault",
     "burstable",
+    "chapblack",
     "clearable",
     "color",
     "datasource",
@@ -44,6 +45,7 @@
     "trispot",
     "Tzara",
     "unstub",
-    "uuid"
+    "uuid",
+    "vueuse"
   ]
 }

@@ -38,6 +38,10 @@ When requirements are ambiguous, **cite or quote** **README** and **project-spec
 - **Archer shell**: Revoking access unlinks the user from the Archer record; historical participations remain—do not erase audit history to “clean up” accounts.
 - **Locale**: Prefer French expectations for copy and dates in user-facing surfaces unless explicitly scoped otherwise.
 
+## Naming
+
+- HTTP query keys, API/DTO fields, and exported filter properties must not be single letters; free-text search uses **`search`** — see `.cursor/rules/no-single-letter-identifiers.mdc`.
+
 ## Context7
 
 When library APIs matter (Nuxt, Prisma, Vitest, etc.), prefer **Context7** MCP (`resolve-library-id` → `query-docs`) for current docs instead of guessing versions.

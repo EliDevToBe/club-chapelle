@@ -3,6 +3,7 @@ export default defineAppConfig({
     colors: {
       primary: "brand-carrot",
       secondary: "brand-greenblue",
+      neutral: "chapblack",
     },
 
     header: {
@@ -13,6 +14,20 @@ export default defineAppConfig({
         overlay: "md:hidden",
         left: "md:flex-1 flex items-center gap-1.5",
         right: "md:flex-1 flex items-center justify-end gap-1.5",
+      },
+    },
+
+    footer: {
+      slots: {
+        root: "",
+        top: "py-8 lg:py-12",
+        bottom: "py-8 lg:py-12",
+        container:
+          "py-8 lg:py-4 lg:flex lg:items-center lg:justify-between lg:gap-x-3",
+        left: "flex items-center justify-center lg:justify-start lg:flex-1 gap-x-1.5 mt-1 lg:mt-0 lg:order-1",
+        center: "mt-1 lg:mt-0 lg:order-2 flex items-center justify-center",
+        right:
+          "lg:flex-1 flex items-center justify-center lg:justify-end gap-x-1.5 lg:order-3",
       },
     },
 
@@ -90,7 +105,7 @@ export default defineAppConfig({
               "hover:bg-primary",
               "active:bg-primary-600",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
-              "disabled:bg-primary aria-disabled:bg-primary",
+              "disabled:bg-gray-600! aria-disabled:bg-primary",
             ],
           },
         },
@@ -258,6 +273,47 @@ export default defineAppConfig({
     progress: {
       slots: {
         root: "gap-0",
+      },
+    },
+
+    inputMenu: {
+      slots: {
+        trailingIcon:
+          "group-data-[state=open]:rotate-90 transition-transform duration-200",
+        item: "hover:cursor-pointer",
+      },
+    },
+
+    selectMenu: {
+      slots: {
+        item: "hover:cursor-pointer",
+        arrow: "i-ph-caret-right-duotone",
+        trailingIcon:
+          "group-data-[state=open]:rotate-90 transition-transform duration-200",
+      },
+    },
+
+    tabs: {
+      slots: {
+        list: "bg-neutral-800/30!",
+        trigger: [
+          "data-[state=inactive]:text-muted",
+          "hover:data-[state=inactive]:not-disabled:text-secondary",
+          "hover:data-[state=inactive]:not-disabled:cursor-pointer",
+        ],
+      },
+    },
+
+    card: {
+      slots: {
+        root: "border border-default ring-transparent!",
+        header: "bg-neutral-800/30",
+      },
+    },
+
+    calendar: {
+      slots: {
+        cellTrigger: "data-disabled:text-secondary-800!",
       },
     },
   },

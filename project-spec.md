@@ -156,7 +156,7 @@ A **Member** is a user account that may be **linked** to an Archer. Invitations 
 
 These rules align with `prisma/schema.prisma` enums (`competition_category`, `competition_type`, `distance`, `target`, `payer`, `payment_status`). They are implemented in **`domain/participations/participation.rules.ts`**, enforced by the **local Prisma seed** (`npm run db:seed`), and must be respected by future back-office and APIs.
 
-**Season year (`season_year` on competitions):** the sport year runs **September (calendar year Y) through August (year Y + 1)**. The stored value is **Y** (e.g. September 2025–August 2026 → `2025`).
+**Season year (`season_year` on competitions):** the sport year runs **September (calendar year Y) through August (year Y + 1)**. The stored value is **Y + 1** (e.g. September 2025–August 2026 → `2026`).
 
 **Shared (participation)**
 

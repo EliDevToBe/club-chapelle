@@ -1,6 +1,10 @@
 import { useChapToast } from "./useChapToasts";
 
-const isAbortError = (error: unknown) => {
+export const isAbortError = (error: unknown): boolean => {
+  if (error instanceof DOMException && error.name === "AbortError") {
+    return true;
+  }
+
   return (
     typeof error === "object" &&
     !!error &&

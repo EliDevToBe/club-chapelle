@@ -3,6 +3,7 @@ import type {
   UpdateCompetitionInput,
 } from "~~/application/ports/competition-repository.port";
 import type { Competition } from "~~/domain/competitions/competition";
+import { seasonYearFromDate } from "~~/domain/utils";
 import type {
   CompetitionCreateDto,
   CompetitionDto,
@@ -27,30 +28,41 @@ export const toCompetitionDto = (competition: Competition): CompetitionDto => ({
 
 export const toCreateCompetitionInput = (
   dto: CompetitionCreateDto,
-): CreateCompetitionInput => ({
-  fileId: dto.file_id,
-  name: dto.name,
-  startDate: parseDbDateString(dto.start_date),
-  endDate: parseDbDateString(dto.end_date),
-  place: dto.place,
-  price: dto.price,
-  category: dto.category,
-  type: dto.type,
-  isChampionship: dto.is_championship,
-  seasonYear: dto.season_year,
-});
+): CreateCompetitionInput => {
+  const startDate = parseDbDateString(dto.start_date);
+  return {
+    fileId: dto.file_id,
+    name: dto.name,
+    startDate,
+    endDate: parseDbDateString(dto.end_date),
+    place: dto.place,
+    price: dto.price,
+    category: dto.category,
+    type: dto.type,
+    isChampionship: dto.is_championship,
+    seasonYear: seasonYearFromDate(startDate),
+  };
+};
 
 export const toUpdateCompetitionInput = (
   dto: CompetitionUpdateDto,
-): UpdateCompetitionInput => ({
-  fileId: dto.file_id,
-  name: dto.name,
-  startDate: dto.start_date ? parseDbDateString(dto.start_date) : undefined,
-  endDate: dto.end_date ? parseDbDateString(dto.end_date) : undefined,
-  place: dto.place,
-  price: dto.price,
-  category: dto.category,
-  type: dto.type,
-  isChampionship: dto.is_championship,
-  seasonYear: dto.season_year,
-});
+): UpdateCompetitionInput => {
+  const startDate = dto.start_date
+    ? parseDbDateString(dto.start_date)
+    : undefined;
+
+  return {
+    fileId: dto.file_id,
+    name: dto.name,
+    startDate,
+    endDate: dto.end_date ? parseDbDateString(dto.end_date) : undefined,
+    place: dto.place,
+    price: dto.price,
+    category: dto.category,
+    type: dto.type,
+    isChampionship: dto.is_championship,
+    seasonYear:
+      dto.season_year ??
+      (startDate ? seasonYearFromDate(startDate) : undefined),
+  };
+};

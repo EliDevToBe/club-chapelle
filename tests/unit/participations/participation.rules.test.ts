@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  allowedDistancesForCompetition,
+  isTargetRequiredForCompetition,
   type ParticipationRuleInput,
   validateParticipationRules,
 } from "~~/domain/participations/participation.rules";
@@ -173,5 +175,51 @@ describe("validateParticipationRules", () => {
       target: "trispot",
     });
     expect(r.valid).toBe(false);
+  });
+});
+
+describe("allowedDistancesForCompetition", () => {
+  it("returns m18 and beginner for indoor olympic", () => {
+    expect(allowedDistancesForCompetition("indoor", "olympic")).toEqual([
+      "m18",
+      "beginner",
+    ]);
+  });
+
+  it("returns other for indoor d3", () => {
+    expect(allowedDistancesForCompetition("indoor", "d3")).toEqual(["other"]);
+  });
+
+  it("returns empty for indoor forbidden types", () => {
+    expect(allowedDistancesForCompetition("indoor", "beursault")).toEqual([]);
+  });
+
+  it("returns outdoor olympic distances", () => {
+    expect(allowedDistancesForCompetition("outdoor", "olympic")).toEqual([
+      "m50",
+      "m60",
+      "m70",
+      "beginner",
+    ]);
+  });
+
+  it("returns m50 for outdoor beursault", () => {
+    expect(allowedDistancesForCompetition("outdoor", "beursault")).toEqual([
+      "m50",
+    ]);
+  });
+
+  it("returns other for outdoor field", () => {
+    expect(allowedDistancesForCompetition("outdoor", "field")).toEqual([
+      "other",
+    ]);
+  });
+});
+
+describe("isTargetRequiredForCompetition", () => {
+  it("returns true only for indoor olympic", () => {
+    expect(isTargetRequiredForCompetition("indoor", "olympic")).toBe(true);
+    expect(isTargetRequiredForCompetition("indoor", "d3")).toBe(false);
+    expect(isTargetRequiredForCompetition("outdoor", "olympic")).toBe(false);
   });
 });

@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
       startDateYmd: parsed.dateStartYmd,
       endDateYmd: parsed.dateEndYmd,
     },
-    q: parsed.q,
+    search: parsed.search,
     onlyMine: parsed.onlyMine,
     viewerUserId: authUser.id,
     viewerName: authUser.name,

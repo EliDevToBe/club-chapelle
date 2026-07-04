@@ -7,6 +7,7 @@ import type {
   PayerEnum,
   PaymentStatusEnum,
   RegistrationStatusEnum,
+  SessionEnum,
   TargetEnum,
   WeaponEnum,
 } from "~~/shared/db-enums";
@@ -20,6 +21,7 @@ export type CreateParticipationInput = {
   distance: DistanceEnum;
   target?: TargetEnum | null;
   weapon?: WeaponEnum | null;
+  session?: SessionEnum | null;
 };
 
 export type UpdateParticipationInput = {
@@ -29,6 +31,7 @@ export type UpdateParticipationInput = {
   distance?: DistanceEnum;
   target?: TargetEnum | null;
   weapon?: WeaponEnum | null;
+  session?: SessionEnum | null;
 };
 
 /** Participation plus archer fields for browse / roster reads. */

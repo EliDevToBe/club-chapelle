@@ -19,10 +19,10 @@ export const translateRegistrationStatus: Record<
 } as const;
 
 export const translateDistance: Record<DistanceEnum, string> = {
-  m18: "18 m",
-  m50: "50 m",
-  m60: "60 m",
-  m70: "70 m",
+  m18: "18m",
+  m50: "50m",
+  m60: "60m",
+  m70: "70m",
   beginner: "Débutant·e",
   other: "Autre distance",
 } as const;

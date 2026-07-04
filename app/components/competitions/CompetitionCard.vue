@@ -1,32 +1,52 @@
 <template>
-  <UCard
-    ref="cardRef"
-    :ui="{ body: 'space-y-3' }"
-    :class="[
-      isHovered ? 'shadow-md shadow-secondary/50' : '',
-      'transition-shadow duration-100',
-    ]"
-  >
+  <UCard ref="cardRef" :class="[isHovered ? ui.rootHover : '']">
     <template #header>
-      <div class="space-y-2">
-        <h2 class="text-lg font-semibold leading-tight">
+      <div :class="ui.header">
+        <h2 :class="ui.title">
           {{ competition.name }}
         </h2>
-        <div class="flex flex-wrap items-center gap-2 text-sm text-muted">
+
+        <div :class="ui.details">
           <UIcon
             :name="categoryIcon(competition.category)"
             class="size-5 shrink-0 text-primary"
           />
-          <div>
-            <span>{{
-              formatDateRangeFr(competition.start_date, competition.end_date)
-            }}</span>
-            <span v-if="competition.place" class="flex flex-nowrap">
-              •&nbsp;{{ competition.place }}</span
-            >
+          <div class="flex flex-col flex-wrap gap-1">
+            <span class="flex gap-1">
+              <span class="text-primary">•</span>
+              <span>
+                {{
+                  formatDateRangeFr(
+                    competition.start_date,
+                    competition.end_date,
+                  )
+                }}
+              </span>
+            </span>
+
+            <div class="flex gap-1">
+              <span v-if="competition.place" class="">
+                <span class="text-primary">• </span>
+                <span>
+                  {{ competition.place }}
+                </span>
+              </span>
+
+              <span v-if="competition.price">
+                <span class="text-primary">• </span>
+                <span>
+                  {{
+                    Intl.NumberFormat("fr-FR", {
+                      style: "currency",
+                      currency: "EUR",
+                    }).format(Number(competition.price))
+                  }}
+                </span>
+              </span>
+            </div>
           </div>
         </div>
-        <div class="flex flex-wrap gap-1.5">
+        <div :class="ui.detailsBadgeWrapper">
           <UBadge size="sm" variant="subtle" color="neutral">
             {{ translateCompetitionCategory[competition.category] }}
           </UBadge>
@@ -37,51 +57,50 @@
       </div>
     </template>
 
-    <div class="flex justify-between items-center">
-      <p
-        v-if="competition.participations.length === 0"
-        class="text-secondary-500 text-sm"
-      >
-        Aucune participation enregistrée.
-      </p>
+    <div :class="ui.content">
+      <div class="flex justify-between items-center">
+        <p
+          v-if="competition.participations.length === 0"
+          class="text-secondary-500 text-sm"
+        >
+          Aucune participation enregistrée.
+        </p>
 
-      <UButton
-        v-else
-        size="sm"
-        variant="link"
-        :data-state="showDetails ? 'open' : 'closed'"
-        :label="showDetails ? 'Masquer' : 'Détails'"
-        :trailing-icon="'i-ph-caret-right-duotone'"
-        class="group px-0"
-        @click="toggleExpanded()"
-        :ui="{
-          trailingIcon:
-            'transition-transform duration-200 group-data-[state=open]:rotate-90',
-        }"
-      />
+        <UButton
+          v-else
+          size="sm"
+          variant="link"
+          :data-state="showDetails ? 'open' : 'closed'"
+          :label="showDetails ? 'Masquer' : 'Détails'"
+          :trailing-icon="'i-ph-caret-right-duotone'"
+          class="group px-0"
+          @click="toggleExpanded()"
+          :ui="{
+            trailingIcon:
+              'transition-transform duration-200 group-data-[state=open]:rotate-90',
+          }"
+        />
 
-      <UButton
-        v-if="isAdmin"
-        size="xs"
-        variant="soft"
-        label="Ajouter un archer"
-        icon="i-ph-user-plus-duotone"
-        @click="openAddArcherModal(competition.id)"
-      />
-    </div>
+        <UButton
+          v-if="isAdmin"
+          size="xs"
+          variant="soft"
+          label="Ajouter un archer"
+          icon="i-ph-user-plus-duotone"
+          @click="emit('addArcherForCompetition', competition.id)"
+        />
+      </div>
 
-    <div
-      v-if="showDetails"
-      class="flex flex-col gap-3 border-t border-default pt-3"
-    >
-      <CompetitionParticipant
-        class="odd:bg-secondary/5 even:bg-default"
-        v-for="archer in groupParticipationsByArcher(
-          competition.participations,
-        )"
-        :key="archer.archerId"
-        :archer="archer"
-      />
+      <div v-if="showDetails" class="">
+        <CompetitionParticipant
+          :class="ui.participantRow"
+          v-for="archer in groupParticipationsByArcher(
+            competition.participations,
+          )"
+          :key="archer.archerId"
+          :archer="archer"
+        />
+      </div>
     </div>
   </UCard>
 </template>
@@ -93,30 +112,37 @@ import {
   translateCompetitionCategory,
   translateCompetitionType,
 } from "~/utils/translate";
-import type { ArcherDto } from "~~/shared/archer/archer.dto";
 import type { CompetitionListingDto } from "~~/shared/competitions/competition-listing.dto";
 import type { CompetitionCategoryEnum } from "~~/shared/db-enums";
+import { LIGHT_HOVER_BORDER_COLOR } from "../ui/style";
 import type { ArcherWithParticipations } from "./CompetitionParticipant.vue";
 import CompetitionParticipant from "./CompetitionParticipant.vue";
 
-defineProps<{
+const props = defineProps<{
   competition: CompetitionListingDto;
+  preventCollapse?: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   toggleExpanded: [];
+  addArcherForCompetition: [string];
 }>();
+
+const ui = {
+  rootHover: LIGHT_HOVER_BORDER_COLOR,
+  header: "flex flex-col gap-2",
+  title: "text-lg font-semibold leading-tight text-gray-300",
+  content: "flex flex-col gap-2",
+  details: "flex flex-wrap items-center gap-2 text-sm text-muted",
+  detailsBadgeWrapper: "flex flex-wrap gap-1.5",
+  participantWrapper: "flex flex-col gap-3 border-t border-default pt-3",
+  participantRow: "odd:bg-neutral-800/30 even:bg-default",
+};
 
 const { isAdmin } = useAuthUser();
 const cardRef = useTemplateRef<HTMLDivElement>("cardRef");
 const isHovered = useElementHover(cardRef);
 
-const addArcherForCompetitionId = ref<string | null>(null);
-const selectedArcherId = ref<string | undefined>(undefined);
-const archersInCompetition = ref<ArcherDto[]>([]);
-
-const archersLoadPending = ref(false);
-const addArcherModalOpen = ref(false);
 const showDetails = ref(false);
 
 const categoryIcon = (category: CompetitionCategoryEnum): string => {
@@ -156,35 +182,15 @@ const formatDateRangeFr = (start: string, end: string): string => {
   });
   const a = new Date(`${start}T12:00:00.000Z`);
   const b = new Date(`${end}T12:00:00.000Z`);
-  return `${fmt.format(a)} — ${fmt.format(b)}`;
+  return `${fmt.format(a)} au ${fmt.format(b)}`;
 };
 
 const toggleExpanded = () => {
   showDetails.value = !showDetails.value;
 };
 
-const openAddArcherModal = async (competitionId: string) => {
-  addArcherForCompetitionId.value = competitionId;
-  selectedArcherId.value = undefined;
-  addArcherModalOpen.value = true;
-  await loadArchersForModal();
-};
-const loadArchersForModal = async () => {
-  archersLoadPending.value = true;
-  try {
-    const res = await $fetch<{ archers: ArcherDto[] }>("/api/archers", {
-      credentials: "include",
-    });
-    archersInCompetition.value = res.archers;
-  } catch {
-    archersInCompetition.value = [];
-  } finally {
-    archersLoadPending.value = false;
-  }
-};
-
 onClickOutside(cardRef, () => {
-  if (!showDetails.value) {
+  if (!showDetails.value || props.preventCollapse) {
     return;
   }
   showDetails.value = false;
