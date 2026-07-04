@@ -3,7 +3,22 @@
     <template #content>
       <div :class="ui.root">
         <div :class="[ui.body, 'gap-8']">
-          <span>Sélectionne ou crée un·e archer·ère </span>
+          <div :class="ui.header">
+            <span :class="ui.title">Sélectionne ou crée un·e archer·ère</span>
+            <UButton
+              icon="i-ph-x-bold"
+              variant="link"
+              color="secondary"
+              class="size-4"
+              size="sm"
+              @click="
+                () => {
+                  isOpen = false;
+                }
+              "
+            />
+          </div>
+
           <div :class="ui.fields">
             <UFormField label="Archer·ère" required>
               <ArcherSelect
@@ -104,11 +119,13 @@ const { addToastError, addToastSuccess } = useChapToast();
 
 const ui = {
   root: "p-4 flex flex-col gap-8",
+  header: "flex justify-between items-center",
   body: "flex flex-col gap-6",
   fields: "flex flex-col gap-6",
   subFields: "flex flex-col gap-6 sm:grid sm:grid-cols-2",
   footer: "flex justify-end",
 
+  title: "text-lg font-semibold leading-tight",
   field: "w-full",
   validField: "ring-1 ring-success-500/60 rounded-md",
 };
