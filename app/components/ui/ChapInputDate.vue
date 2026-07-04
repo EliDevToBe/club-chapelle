@@ -2,7 +2,7 @@
   <UInputDate
     ref="dateInputRef"
     v-model="calendarDate"
-    class="w-full sm:min-w-45 text-sm md:text-base"
+    class="w-full sm:min-w-40 text-sm md:text-base"
   >
     <template #leading>
       <UPopover :reference="dateInputRef?.inputsRef[3]?.$el">
@@ -21,8 +21,9 @@
       </UPopover>
     </template>
 
-    <template #trailing v-if="calendarDate">
+    <template #trailing>
       <div
+        v-if="calendarDate"
         class="cursor-pointer text-secondary hover:text-secondary-500 flex justify-center items-center shrink-0"
         @click="calendarDate = undefined"
       >

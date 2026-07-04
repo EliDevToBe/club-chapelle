@@ -5,7 +5,7 @@
       title="Compétitions"
       description="Concours et présences du club."
     >
-      <div v-if="isAdmin" class="mb-6 flex flex-wrap gap-2">
+      <div v-if="isAdmin" :class="ui.adminWrapper">
         <UButton
           icon="i-ph-plus-circle-duotone"
           label="Nouvelle compétition"
@@ -13,21 +13,20 @@
         />
       </div>
 
-      <div
-        class="bg-neutral-800/30 mb-6 flex flex-col gap-4 rounded-lg border border-default p-4 sm:flex-row sm:flex-wrap sm:items-end"
-      >
+      <div :class="ui.filterWrapper">
         <UFormField label="Du">
           <ChapInputDate v-model="filterStart" />
         </UFormField>
         <UFormField label="Au">
           <ChapInputDate v-model="filterEnd" />
         </UFormField>
-        <UFormField label="Recherche" class="min-w-0 flex-1">
+
+        <UFormField label="Recherche" class="min-w-30 flex-1">
           <ChapInput
             v-model="filter.q"
             placeholder="Compétition ou archer·ère ..."
             icon="i-ph-magnifying-glass-duotone"
-            class="w-full min-w-30 text-sm! md:text-base"
+            class="w-full text-sm! md:text-base"
             clearable
           />
         </UFormField>
@@ -58,7 +57,7 @@
       <div v-else-if="errorMessage" class="text-error text-sm">
         {{ errorMessage }}
       </div>
-      <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 items-start">
+      <div v-else :class="ui.competitionsWrapper">
         <CompetitionCard
           v-for="comp in competitions"
           :key="comp.id"
@@ -95,15 +94,21 @@ import { useChapToast } from "~/composables/useChapToasts";
 import { calendarDateToYmd, YmdToCalendarDate } from "~/utils";
 import type { CompetitionListingDto } from "~~/shared/competitions/competition-listing.dto";
 
-definePageMeta({
-  layout: "default",
-});
-
 type CompetitionsFilters = {
   start?: string;
   end?: string;
   q?: string;
   mine?: "true";
+};
+
+const ui = {
+  adminWrapper: "mb-6 flex flex-wrap gap-2",
+  filterWrapper: [
+    "flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4 mb-6 p-4",
+    "rounded-lg border border-default",
+    "bg-neutral-800/30",
+  ],
+  competitionsWrapper: "grid grid-cols-1 gap-4 md:grid-cols-2 items-start",
 };
 
 const route = useRoute();
