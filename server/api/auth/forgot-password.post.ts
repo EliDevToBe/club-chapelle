@@ -7,6 +7,7 @@ import {
   MAILTRAP_TEMPLATES_IDS,
 } from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { asStringOrEmpty } from "~~/shared/utils/base-string.helper";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event);
@@ -55,7 +56,7 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<Record<string, unknown>>(event);
   const parsed = authForgotPasswordFormSchema.safeParse({
-    email: typeof body.email === "string" ? body.email : "",
+    email: asStringOrEmpty(body.email),
   });
 
   if (!parsed.success) {

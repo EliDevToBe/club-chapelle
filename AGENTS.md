@@ -42,6 +42,15 @@ When requirements are ambiguous, **cite or quote** **README** and **project-spec
 
 - HTTP query keys, API/DTO fields, and exported filter properties must not be single letters; free-text search uses **`search`** — see `.cursor/rules/no-single-letter-identifiers.mdc`.
 
+## Zod
+
+- Schemas **validate** only; **normalise payloads before parse** — see `.cursor/rules/zod-validation-only.mdc`. Exceptions require an explicit comment above the schema.
+
+## Helpers
+
+- Do not add trivial one-liner wrappers around natives — see `.cursor/rules/no-native-wrapper-helpers.mdc`.
+- Add a human-readable comment above any regex explaining what it matches.
+
 ## Context7
 
 When library APIs matter (Nuxt, Prisma, Vitest, etc.), prefer **Context7** MCP (`resolve-library-id` → `query-docs`) for current docs instead of guessing versions.

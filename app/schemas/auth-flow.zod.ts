@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+/**
+ * Exception: auth form schemas are bound directly in Vue (`v-model` → `safeParse`).
+ * Trimming in a separate prepare step would duplicate every field at each submit handler.
+ */
 const emailField = z
   .string()
   .transform((s) => s.trim())
@@ -20,6 +24,7 @@ export const passwordPolicySchema = z
   });
 
 /** Login: trim passwords; no strength rules (legacy accounts). */
+/** Exception: see `emailField` — trim stays on schema for direct form binding. */
 export const authLoginFormSchema = z.object({
   email: emailField,
   password: z
@@ -34,6 +39,7 @@ export const authForgotPasswordFormSchema = z.object({
 });
 
 /** Invitation register: strong password + confirmation (trimmed, must match). */
+/** Exception: see `emailField` — trim stays on schema for direct form binding. */
 export const authInvitationRegisterFormSchema = z
   .object({
     password: z
@@ -48,6 +54,7 @@ export const authInvitationRegisterFormSchema = z
   });
 
 /** Forgot-password completion: recovery token + strong password + confirmation. */
+/** Exception: see `emailField` — trim stays on schema for direct form binding. */
 export const authResetPasswordBodySchema = z
   .object({
     token: z

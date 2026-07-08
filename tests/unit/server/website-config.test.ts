@@ -2,8 +2,16 @@ import { describe, expect, it } from "vitest";
 import {
   parseFeatureFlagsPatchBody,
   parseHomepageCarouselPatchBody,
+  parseSiteSettingsPatchBody,
 } from "~~/server/utils/website-config";
 import { defaultFeatureFlags } from "~~/shared/website/feature-flags.schema";
+
+const siteSettingsSeed = {
+  contact_email: "archerschapelle@gmail.com",
+  club_address: "Gymnase Tristan Tzara, 11 rue Tristan Tzara, 75018 PARIS",
+  instagram_url: "https://www.instagram.com/les_archers_de_la_chapelle",
+  facebook_url: "https://www.facebook.com/archersdelachapelle",
+};
 
 describe("parseHomepageCarouselPatchBody", () => {
   it("rejects empty payloads", () => {
@@ -76,5 +84,50 @@ describe("parseFeatureFlagsPatchBody", () => {
         },
       }),
     ).toEqual(defaultFeatureFlags());
+  });
+});
+
+describe("parseSiteSettingsPatchBody", () => {
+  it("rejects empty payloads", () => {
+    expect(() => {
+      return parseSiteSettingsPatchBody(null, siteSettingsSeed);
+    }).toThrowError("Invalid request body");
+  });
+
+  it("parses valid settings", () => {
+    expect(
+      parseSiteSettingsPatchBody(
+        {
+          settings: {
+            contact_email: "club@example.com",
+            club_address: "11 rue Example, 75018 Paris",
+            instagram_url: "https://www.instagram.com/example",
+            facebook_url: "https://www.facebook.com/example",
+          },
+        },
+        siteSettingsSeed,
+      ),
+    ).toEqual({
+      contact_email: "club@example.com",
+      club_address: "11 rue Example, 75018 Paris",
+      instagram_url: "https://www.instagram.com/example",
+      facebook_url: "https://www.facebook.com/example",
+    });
+  });
+
+  it("rejects invalid email", () => {
+    expect(() => {
+      return parseSiteSettingsPatchBody(
+        {
+          settings: {
+            contact_email: "invalid",
+            club_address: "11 rue Example, 75018 Paris",
+            instagram_url: "https://www.instagram.com/example",
+            facebook_url: "https://www.facebook.com/example",
+          },
+        },
+        siteSettingsSeed,
+      );
+    }).toThrowError(/Invalid contact_email/);
   });
 });

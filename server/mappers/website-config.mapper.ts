@@ -1,27 +1,20 @@
 import type { WebsiteConfig } from "~~/domain/website/website-config";
+import { asNonEmptyString } from "~~/shared/utils/base-string.helper";
 import { normaliseFeatureFlags } from "~~/shared/website/feature-flags.schema";
+import {
+  normaliseSiteSettings,
+  type SiteSettingsSeed,
+} from "~~/shared/website/site-settings.schema";
 import type {
   FeatureFlagsDto,
   HomepageCarouselItemDto,
   HomepageCarouselSettingsDto,
+  SiteSettingsDto,
   WebsiteConfigDto,
 } from "~~/shared/website/website-config.dto";
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === "object" && value !== null;
-};
-
-const asString = (value: unknown): string | null => {
-  if (typeof value !== "string") {
-    return null;
-  }
-
-  const trimmed = value.trim();
-  if (trimmed.length === 0) {
-    return null;
-  }
-
-  return trimmed;
 };
 
 const asNumber = (value: unknown): number | null => {
@@ -54,13 +47,13 @@ export const toHomepageCarouselSettings = (
         return null;
       }
 
-      const label = asString(entry.label);
-      const url = asString(entry.url);
-      const previewUrl = asString(entry.preview_url);
+      const label = asNonEmptyString(entry.label);
+      const url = asNonEmptyString(entry.url);
+      const previewUrl = asNonEmptyString(entry.preview_url);
       const width = asNumber(entry.width);
       const height = asNumber(entry.height);
-      const mtime = asString(entry.mtime);
-      const mimetype = asString(entry.mimetype);
+      const mtime = asNonEmptyString(entry.mtime);
+      const mimetype = asNonEmptyString(entry.mimetype);
 
       if (
         !label ||
@@ -92,4 +85,11 @@ export const toHomepageCarouselSettings = (
 
 export const toFeatureFlagsSettings = (settings: unknown): FeatureFlagsDto => {
   return normaliseFeatureFlags(settings);
+};
+
+export const toSiteSettingsSettings = (
+  settings: unknown,
+  seed: SiteSettingsSeed,
+): SiteSettingsDto => {
+  return normaliseSiteSettings(settings, seed);
 };
