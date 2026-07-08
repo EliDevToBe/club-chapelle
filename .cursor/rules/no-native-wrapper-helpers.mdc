@@ -1,0 +1,47 @@
+---
+description: Do not add trivial one-liner wrappers around native methods
+alwaysApply: true
+---
+
+# No trivial native wrappers
+
+## Requirement
+
+Do **not** introduce helpers whose entire body is a single call to a built-in with no extra logic (guards, normalisation, typing over `unknown`, etc.).
+
+Call the native directly at the call site, or keep one helper that adds **real** behaviour (e.g. `unknown` → trimmed non-empty string | null).
+
+## Rationale
+
+Passthrough wrappers add indirection and test surface without improving readability or reuse.
+
+## Examples
+
+```typescript
+// ❌ Avoid
+export const trimString = (value: string): string => {
+  return value.trim();
+};
+
+// ✅ Prefer — inline when input is already string
+const trimmed = value.trim();
+
+// ✅ Prefer — helper earns its name (type narrowing + semantics)
+export const asNonEmptyString = (value: unknown): string | null => {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return null;
+  }
+
+  return trimmed;
+};
+```
+
+## Allowed
+
+- Wrappers that combine steps, narrow types, or encode domain meaning.
+- Thin re-exports for module boundaries (separate from this rule).

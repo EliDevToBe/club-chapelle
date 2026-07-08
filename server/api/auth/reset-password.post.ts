@@ -4,6 +4,7 @@ import { ResetPassword } from "~~/application/user/reset-password.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { setAuthSessionCookies } from "~~/server/utils/auth-cookies";
+import { asStringOrEmpty } from "~~/shared/utils/base-string.helper";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event);
@@ -18,10 +19,9 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<Record<string, unknown>>(event);
   const parsed = authResetPasswordBodySchema.safeParse({
-    token: typeof body.token === "string" ? body.token : "",
-    password: typeof body.password === "string" ? body.password : "",
-    confirmPassword:
-      typeof body.confirmPassword === "string" ? body.confirmPassword : "",
+    token: asStringOrEmpty(body.token),
+    password: asStringOrEmpty(body.password),
+    confirmPassword: asStringOrEmpty(body.confirmPassword),
   });
 
   if (!parsed.success) {

@@ -65,13 +65,14 @@ import FeedPostList from "~/components/feed/FeedPostList.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
+import { useSiteSettings } from "~/composables/useSiteSettings";
 
 definePageMeta({
   layout: "default",
 });
 
-const { public: pub } = useRuntimeConfig();
-const socialFacebook = pub.socialFacebook;
+const { facebookUrl } = useSiteSettings();
+const socialFacebook = facebookUrl;
 
 const { posts, pending, error } = useFacebookFeed();
 
