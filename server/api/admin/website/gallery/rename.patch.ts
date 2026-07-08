@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   const clientSecret = config.sirvApiClientSecret;
   const cdnDomain = config.sirvCdnDomain;
   const directory = config.sirvDirectory;
-  const repos = getRepositories();
+  const { websiteConfigRepository } = getRepositories();
 
   if (!clientId || !clientSecret || !cdnDomain || !directory) {
     throw createError({
@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
   });
   const renameWebsiteGalleryImageHandler = new RenameWebsiteGalleryImage(
     sirvGallerySource,
-    repos.websiteConfigRepository,
+    websiteConfigRepository,
   );
   const image = await renameWebsiteGalleryImageHandler.renameInDirectory(
     directory,

@@ -14,8 +14,8 @@ export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
   const body = await readBody<ArcherCreateDto>(event);
 
-  const repos = getRepositories();
-  const createArcherHandler = new CreateArcher(repos.archerRepository);
+  const { archerRepository } = getRepositories();
+  const createArcherHandler = new CreateArcher(archerRepository);
   const archer = await createArcherHandler.create(toCreateArcherInput(body));
   return { archer: toArcherDto(archer) };
 });

@@ -35,9 +35,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const seed = buildSiteSettingsSeed(event);
-  const repos = getRepositories();
+  const { websiteConfigRepository } = getRepositories();
   const getSiteSettingsHandler = new GetSiteSettings(
-    repos.websiteConfigRepository,
+    websiteConfigRepository,
     seed,
   );
   const siteSettings = await getSiteSettingsHandler.get();

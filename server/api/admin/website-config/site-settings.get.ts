@@ -9,13 +9,13 @@ export default defineEventHandler(async (event) => {
   requireRoles(event, ["admin"]);
 
   const seed = buildSiteSettingsSeed(event);
-  const repos = getRepositories();
+  const { websiteConfigRepository } = getRepositories();
   const getSiteSettingsHandler = new GetSiteSettings(
-    repos.websiteConfigRepository,
+    websiteConfigRepository,
     seed,
   );
   const settings = await getSiteSettingsHandler.get();
-  const config = await repos.websiteConfigRepository.findByKey(
+  const config = await websiteConfigRepository.findByKey(
     WEBSITE_CONFIG_KEYS.siteSettings,
   );
 

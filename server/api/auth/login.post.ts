@@ -21,13 +21,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<LoginBody>(event);
-  const repos = getRepositories();
+  const { userRepository } = getRepositories();
   const authServices = createAuthServices({
     accessSecret,
     refreshSecret,
   });
   const loginUserHandler = new LoginUser(
-    repos.userRepository,
+    userRepository,
     authServices.password,
     authServices.jwt,
   );

@@ -31,16 +31,16 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const repos = getRepositories();
+  const { userRepository, passwordResetPersistence } = getRepositories();
   const authServices = createAuthServices({
     accessSecret,
     refreshSecret,
   });
   const resetPasswordHandler = new ResetPassword(
-    repos.userRepository,
+    userRepository,
     authServices.password,
     authServices.jwt,
-    repos.passwordResetPersistence,
+    passwordResetPersistence,
   );
   const result = await resetPasswordHandler.reset({
     token: parsed.data.token,

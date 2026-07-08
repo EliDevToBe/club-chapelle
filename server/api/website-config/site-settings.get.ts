@@ -4,9 +4,9 @@ import { buildSiteSettingsSeed } from "~~/server/utils/site-settings-seed";
 
 export default defineEventHandler(async (event) => {
   const seed = buildSiteSettingsSeed(event);
-  const repos = getRepositories();
+  const { websiteConfigRepository } = getRepositories();
   const getSiteSettingsHandler = new GetSiteSettings(
-    repos.websiteConfigRepository,
+    websiteConfigRepository,
     seed,
   );
   const settings = await getSiteSettingsHandler.get();

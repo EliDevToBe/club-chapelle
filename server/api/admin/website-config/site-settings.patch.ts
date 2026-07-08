@@ -16,9 +16,9 @@ export default defineEventHandler(async (event) => {
   const seed = buildSiteSettingsSeed(event);
   const body = await readBody<SiteSettingsPatchBody>(event);
   const normalisedSettings = parseSiteSettingsPatchBody(body, seed);
-  const repos = getRepositories();
+  const { websiteConfigRepository } = getRepositories();
   const updateWebsiteConfigHandler = new UpdateWebsiteConfig(
-    repos.websiteConfigRepository,
+    websiteConfigRepository,
   );
   const config = await updateWebsiteConfigHandler.update(
     WEBSITE_CONFIG_KEYS.siteSettings,
