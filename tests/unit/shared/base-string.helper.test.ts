@@ -3,6 +3,7 @@ import {
   asNonEmptyString,
   asStringOrEmpty,
   asTrimmedString,
+  normaliseUrl,
 } from "~~/shared/utils/base-string.helper";
 
 describe("asNonEmptyString", () => {
@@ -38,5 +39,25 @@ describe("asStringOrEmpty", () => {
   it("returns empty string for non-strings", () => {
     expect(asStringOrEmpty(null)).toBe("");
     expect(asStringOrEmpty(undefined)).toBe("");
+  });
+});
+
+describe("normaliseUrl", () => {
+  it("trims surrounding whitespace", () => {
+    expect(normaliseUrl("  https://www.instagram.com/example  ")).toBe(
+      "https://www.instagram.com/example",
+    );
+  });
+
+  it("strips trailing slashes", () => {
+    expect(normaliseUrl("https://www.facebook.com/example///")).toBe(
+      "https://www.facebook.com/example",
+    );
+  });
+
+  it("trims and strips trailing slashes together", () => {
+    expect(normaliseUrl("  https://www.instagram.com/example/  ")).toBe(
+      "https://www.instagram.com/example",
+    );
   });
 });

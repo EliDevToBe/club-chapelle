@@ -68,7 +68,7 @@
 import { useChapToast } from "~/composables/useChapToasts";
 import { useSiteSettings } from "~/composables/useSiteSettings";
 import { useZod } from "~/composables/useZod";
-import { normaliseSocialUrl } from "~~/shared/website/normalise-social-url";
+import { normaliseUrl } from "~~/shared/utils/base-string.helper";
 import { parseSiteSettings } from "~~/shared/website/site-settings.schema";
 import type { SiteSettingsDto } from "~~/shared/website/website-config.dto";
 
@@ -102,8 +102,8 @@ watch(
 );
 
 const onSubmit = async (): Promise<void> => {
-  formState.instagram_url = normaliseSocialUrl(formState.instagram_url);
-  formState.facebook_url = normaliseSocialUrl(formState.facebook_url);
+  formState.instagram_url = normaliseUrl(formState.instagram_url);
+  formState.facebook_url = normaliseUrl(formState.facebook_url);
 
   let validatedSettings: SiteSettingsDto;
 

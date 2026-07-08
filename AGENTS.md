@@ -49,6 +49,7 @@ When requirements are ambiguous, **cite or quote** **README** and **project-spec
 ## Helpers
 
 - Do not add trivial one-liner wrappers around natives — see `.cursor/rules/no-native-wrapper-helpers.mdc`.
+- Add a human-readable comment above any regex explaining what it matches.
 
 ## Context7
 

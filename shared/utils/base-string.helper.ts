@@ -22,3 +22,9 @@ export const asStringOrEmpty = (value: unknown): string => {
 
   return value;
 };
+
+export const normaliseUrl = (value: string): string => {
+  const trimmed = value.trim();
+  // Remove one or more trailing slashes (e.g. profile URLs saved with a trailing `/`).
+  return trimmed.replace(/\/+$/, "");
+};
