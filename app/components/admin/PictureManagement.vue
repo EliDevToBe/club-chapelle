@@ -69,7 +69,7 @@
 
     <div v-if="isLoadingInitial" :class="ui.pictureWrapper">
       <USkeleton
-        v-for="index in 6"
+        v-for="index in pageSize"
         :key="index"
         class="h-40 w-full rounded-lg"
       />
@@ -82,7 +82,7 @@
 
     <div v-else :class="ui.pictureWrapper">
       <div
-        v-for="image in galleryImages"
+        v-for="image in visibleGalleryImages"
         :key="image.path"
         :class="[
           ui.itemButton,
@@ -148,6 +148,19 @@
       </div>
     </div>
 
+    <div v-if="showPagination" class="flex justify-center pt-2">
+      <UPagination
+        size="sm"
+        variant="ghost"
+        active-variant="outline"
+        v-model:page="currentPage"
+        :total="galleryImages.length"
+        :items-per-page="pageSize"
+        show-edges
+        color="primary"
+      />
+    </div>
+
     <p class="text-sm text-muted">
       {{ selectedUrls.length }} image(s) sélectionnée(s).
     </p>
@@ -155,6 +168,7 @@
 </template>
 
 <script setup lang="ts">
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import Banner from "~/components/banner/Banner.vue";
 import ChapAccordionContentAction from "~/components/ui/ChapAccordionContentAction.vue";
 import ChapAccordionContentWrapper from "~/components/ui/ChapAccordionContentWrapper.vue";
@@ -163,6 +177,11 @@ import ChapEditableLabel from "~/components/ui/ChapEditableLabel.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { usePictureManagement } from "~/composables/usePictureManagement";
 import { useWebsiteConfig } from "~/composables/useWebsiteConfig";
+import {
+  clampGalleryPage,
+  getGalleryPageSize,
+  getGalleryPageSlice,
+} from "~~/shared/website/gallery-pagination";
 import type {
   HomepageCarouselItemDto,
   WebsiteGalleryImageDto,
@@ -221,6 +240,53 @@ watch(
     immediate: true,
   },
 );
+
+const breakpoints = useBreakpoints(breakpointsTailwind);
+
+const gridColumns = computed(() => {
+  if (breakpoints.greaterOrEqual("xl").value) {
+    return 4;
+  }
+  if (breakpoints.greaterOrEqual("md").value) {
+    return 3;
+  }
+  if (breakpoints.greaterOrEqual("sm").value) {
+    return 2;
+  }
+  return 1;
+});
+
+const pageSize = computed(() => {
+  return getGalleryPageSize(gridColumns.value);
+});
+const currentPage = ref(1);
+
+const visibleGalleryImages = computed(() => {
+  return getGalleryPageSlice(
+    galleryImages.value,
+    currentPage.value,
+    pageSize.value,
+  );
+});
+
+const showPagination = computed(() => {
+  return galleryImages.value.length > pageSize.value;
+});
+
+watch(
+  () => galleryImages.value.length,
+  () => {
+    currentPage.value = 1;
+  },
+);
+
+watch(pageSize, (nextPageSize) => {
+  currentPage.value = clampGalleryPage(
+    currentPage.value,
+    galleryImages.value.length,
+    nextPageSize,
+  );
+});
 
 const isLoadingInitial = computed(() => {
   return isLoadingGallery.value || isLoadingCarouselConfig.value;

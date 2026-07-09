@@ -341,5 +341,26 @@ export default defineAppConfig({
         },
       ],
     },
+
+    pagination: {
+      slots: {
+        prev: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
+        next: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
+        first: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
+        last: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
+      },
+    },
   },
 });
