@@ -14,9 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const { competitionRepository } = getRepositories();
-  const deleteCompetitionHandler = new DeleteCompetition(
-    competitionRepository,
-  );
+  const deleteCompetitionHandler = new DeleteCompetition(competitionRepository);
   const deleted = await deleteCompetitionHandler.delete(id);
 
   if (!deleted) {

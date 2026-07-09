@@ -15,9 +15,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<CompetitionCreateDto>(event);
 
   const { competitionRepository } = getRepositories();
-  const createCompetitionHandler = new CreateCompetition(
-    competitionRepository,
-  );
+  const createCompetitionHandler = new CreateCompetition(competitionRepository);
   const competition = await createCompetitionHandler.create(
     toCreateCompetitionInput(body),
   );
