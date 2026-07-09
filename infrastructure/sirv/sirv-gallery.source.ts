@@ -463,6 +463,7 @@ export class SirvGallerySource implements WebsiteGallerySource {
       height: asNumber(entryRecord.height) ?? 160,
       mtime: asString(entryRecord.mtime),
       mimetype,
+      size: asNumber(entryRecord.size) ?? 0,
     };
   };
 

@@ -19,6 +19,7 @@ export type WebsiteConfigUpdateDto = {
 };
 
 export type HomepageCarouselItemDto = {
+  size: number;
   label: string;
   url: string;
   preview_url: string;

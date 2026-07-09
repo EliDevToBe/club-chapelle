@@ -95,6 +95,11 @@
             class="hidden group-hover:block absolute top-2 left-2 text-sm text-primary-600"
             >{{ `${image.mimetype.split("/").at(-1)?.toUpperCase()}` }}</span
           >
+          <span
+            v-if="image.size"
+            class="hidden group-hover:block absolute top-2 right-2 text-sm text-primary-600"
+            >{{ `${formatBytes(image.size)}` }}</span
+          >
 
           <img
             :src="image.preview_url"
@@ -163,6 +168,14 @@ import type {
   WebsiteGalleryImageDto,
 } from "~~/shared/website/website-config.dto";
 
+const formatBytes = (bytes: number): string => {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "unit",
+    unit: "megabyte",
+    unitDisplay: "narrow",
+    maximumFractionDigits: 1,
+  }).format(bytes / 1_000_000);
+};
 const ui = {
   pictureWrapper: "grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4",
   noResultWrapper:
@@ -265,6 +278,7 @@ const selectedImages = computed<HomepageCarouselItemDto[]>(() => {
         height: image.height,
         mtime: image.mtime,
         mimetype: image.mimetype,
+        size: image.size,
       };
     });
 });
