@@ -9,9 +9,9 @@ import { WEBSITE_CONFIG_KEYS } from "~~/shared/website/website-config.keys";
 export default defineEventHandler(async (event) => {
   requireDeveloper(event);
 
-  const repos = getRepositories();
+  const { websiteConfigRepository } = getRepositories();
   const findWebsiteConfigHandler = new FindWebsiteConfig(
-    repos.websiteConfigRepository,
+    websiteConfigRepository,
   );
   const config = await findWebsiteConfigHandler.findByKey(
     WEBSITE_CONFIG_KEYS.featureFlags,

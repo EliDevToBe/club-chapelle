@@ -1,4 +1,5 @@
 import { createError, getQuery, type H3Event } from "h3";
+import { asNonEmptyString } from "~~/shared/utils/base-string.helper";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -77,8 +78,7 @@ export const parseCompetitionsListingRawQuery = (
     dateEndYmd = endRaw;
   }
 
-  const searchTrimmed = searchRaw?.trim() ?? "";
-  const search = searchTrimmed === "" ? null : searchTrimmed;
+  const search = asNonEmptyString(searchRaw);
 
   return {
     dateStartYmd,

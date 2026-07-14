@@ -14,8 +14,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const repos = getRepositories();
-  const findUserByIdHandler = new FindUserById(repos.userRepository);
+  const { userRepository } = getRepositories();
+  const findUserByIdHandler = new FindUserById(userRepository);
   const user = await findUserByIdHandler.findById(id);
 
   if (!user) {

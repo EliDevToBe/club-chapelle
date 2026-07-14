@@ -1,6 +1,7 @@
 import { createError, type MultiPartData } from "h3";
 import type { WebsiteGalleryUploadInput } from "~~/application/ports/website-gallery-source.port";
 import type { DeleteGalleryImagesBody } from "~~/application/website/delete-website-gallery-images.use-case";
+import { asTrimmedString } from "~~/shared/utils/base-string.helper";
 
 type RenameGalleryImageBody = {
   path?: unknown;
@@ -42,8 +43,8 @@ export const parseGalleryUploadParts = (
 export const parseRenameGalleryImageBody = (
   body: RenameGalleryImageBody | null | undefined,
 ): { path: string; newName: string } => {
-  const path = typeof body?.path === "string" ? body.path.trim() : "";
-  const newName = typeof body?.newName === "string" ? body.newName.trim() : "";
+  const path = asTrimmedString(body?.path);
+  const newName = asTrimmedString(body?.newName);
 
   if (path.length === 0 || newName.length === 0) {
     throw createError({
@@ -69,7 +70,7 @@ export const parseDeleteGalleryImagesBody = (
 
   const filenames = [...new Set(rawFilenames)]
     .map((entry) => {
-      return typeof entry === "string" ? entry.trim() : "";
+      return asTrimmedString(entry);
     })
     .filter((entry) => {
       return entry.length > 0;

@@ -295,13 +295,26 @@ export default defineAppConfig({
 
     tabs: {
       slots: {
-        list: "bg-neutral-800/30!",
+        list: "bg-neutral-800/40!",
         trigger: [
           "data-[state=inactive]:text-muted",
           "hover:data-[state=inactive]:not-disabled:text-secondary",
           "hover:data-[state=inactive]:not-disabled:cursor-pointer",
         ],
       },
+      compoundVariants: [
+        {
+          color: "primary",
+          variant: "pill",
+          class: {
+            indicator: "bg-primary/20! outline outline-primary-500/75!",
+            trigger: [
+              "data-[state=active]:text-primary outline-primary-500/75 focus-visible:outline-3",
+              "in-[[data-slot=list]:not(:has([data-slot=indicator]))]:data-[state=active]:before:bg-primary/20",
+            ],
+          },
+        },
+      ],
     },
 
     card: {
@@ -314,6 +327,39 @@ export default defineAppConfig({
     calendar: {
       slots: {
         cellTrigger: "data-disabled:text-secondary-800!",
+      },
+    },
+
+    drawer: {
+      compoundVariants: [
+        {
+          direction: ["right", "left"],
+          class: {
+            content: "w-auto max-w-[calc(100%-2rem)]",
+            handle: "h-12! w-1! bg-transparent!",
+          },
+        },
+      ],
+    },
+
+    pagination: {
+      slots: {
+        prev: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
+        next: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
+        first: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
+        last: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
       },
     },
   },

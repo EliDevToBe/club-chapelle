@@ -19,8 +19,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<ArcherUpdateDto>(event);
-  const repos = getRepositories();
-  const updateArcherHandler = new UpdateArcher(repos.archerRepository);
+  const { archerRepository } = getRepositories();
+  const updateArcherHandler = new UpdateArcher(archerRepository);
   const archer = await updateArcherHandler.update(
     id,
     toUpdateArcherInput(body),

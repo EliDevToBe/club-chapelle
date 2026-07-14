@@ -7,8 +7,8 @@
             <p>
               Directement par mail à
               <ChapLink
-                to="mailto:archerschapelle@gmail.com"
-                label="archerschapelle@gmail.com"
+                :to="`mailto:${contactEmail}`"
+                :label="contactEmail"
                 icon="i-ph-envelope-duotone"
               />
             </p>
@@ -30,9 +30,7 @@
           <ContentTextWrapper>
             <p>
               Au
-              <span class="text-primary-500"
-                >Gymnase Tristan Tzara, 11 rue Tristan Tzara, 75018 PARIS
-              </span>
+              <span class="text-primary-500">{{ clubAddress }}</span>
             </p>
           </ContentTextWrapper>
         </ChapSection>
@@ -87,10 +85,11 @@ import ContentTextWrapper from "~/components/layout/ContentTextWrapper.vue";
 import ChapLink from "~/components/ui/ChapLink.vue";
 import ChapListItem from "~/components/ui/ChapListItem.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
+import { useSiteSettings } from "~/composables/useSiteSettings";
 
-const { public: pub } = useRuntimeConfig();
+const { contactEmail, clubAddress, facebookUrl } = useSiteSettings();
 
-const socialFacebook = computed(() => pub.socialFacebook);
+const socialFacebook = facebookUrl;
 
 definePageMeta({
   layout: "default",

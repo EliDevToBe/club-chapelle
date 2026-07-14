@@ -1,0 +1,81 @@
+---
+description: Zod schemas validate shape only; normalise payloads before parse
+alwaysApply: true
+---
+
+# Zod: validation only, not transformation
+
+## Requirement
+
+- Use Zod schemas to **validate** parsed payloads (types, formats, bounds, required fields).
+- **Do not** use Zod to **transform** or **normalise** incoming data: no `.transform()`, `.preprocess()`, `.pipe()` chains whose purpose is mutation, or string coercions such as `.trim()`, `.toLowerCase()`, or custom maps on the schema.
+- **Normalise first**, then **parse**: trim, case-fold, cast, or merge defaults in plain TypeScript helpers (e.g. `prepare…`, `normalise…`, `asNonEmptyString`) and pass the prepared object to `schema.parse()` / `safeParse()`.
+
+## Rationale
+
+Transform logic hidden in schemas is harder to test, reuse on the server vs client, and reason about at HTTP boundaries. Explicit helpers keep validation declarative and normalisation visible.
+
+## Exception
+
+If a schema **must** transform (rare), add a **block comment directly above** the schema (or field) explaining **why** normalisation cannot live outside Zod. Do not add exceptions without that comment.
+
+## Examples
+
+```typescript
+// ❌ Avoid — trim/lowercase inside Zod
+const contactEmailSchema = z
+  .string()
+  .transform((value) => value.trim().toLowerCase())
+  .pipe(z.email());
+
+export const siteSettingsSchema = z.object({
+  club_address: z.string().trim().min(1),
+});
+```
+
+```typescript
+// ✅ Prefer — helper then validate
+const normaliseContactEmail = (value: string): string => {
+  return value.trim().toLowerCase();
+};
+
+const prepareSiteSettings = (raw: Record<string, unknown>): Record<string, unknown> => {
+  return {
+    ...raw,
+    contact_email:
+      typeof raw.contact_email === "string"
+        ? normaliseContactEmail(raw.contact_email)
+        : raw.contact_email,
+    club_address:
+      typeof raw.club_address === "string" ? raw.club_address.trim() : raw.club_address,
+  };
+};
+
+export const siteSettingsSchema = z.object({
+  contact_email: z.email(),
+  club_address: z.string().min(1),
+});
+
+export const parseSiteSettings = (raw: unknown): SiteSettings => {
+  const record = typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {};
+  return siteSettingsSchema.parse(prepareSiteSettings(record));
+};
+```
+
+```typescript
+// ✅ Allowed exception — comment required
+/**
+ * Exception: form fields are bound directly to this schema in Vue; trimming in
+ * a separate prepare step would duplicate every field at each call site.
+ */
+const emailField = z
+  .string()
+  .transform((value) => value.trim())
+  .pipe(z.email({ message: "L'adresse e-mail est invalide" }));
+```
+
+## Where helpers live
+
+- **Shared DTOs / API contracts**: `shared/**` normalisers next to the schema or in [`shared/utils/base-string.helper.ts`](shared/utils/base-string.helper.ts).
+- **HTTP / Nitro**: import from [`shared/utils/base-string.helper.ts`](shared/utils/base-string.helper.ts).
+- **Forms**: prefer a `prepare…` helper or normalise in the submit handler before `safeParse`.

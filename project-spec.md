@@ -15,17 +15,46 @@ This document describes goals, functional requirements, role permissions, domain
 - Staff can create a competition, attach participants, and see **who still owes a fee** in one overview.
 - A **Member** can log in and see **only** their participations (and public competition listings as defined).
 - **Revoking** access does not erase historical participation data (see **Archer shell** below).
-- Public visitors can navigate **landing**, **infos**, and **contact**, view a **landing carousel** of **images curated by the club** (see **MVP** under §2 and §10.1), and reach **Instagram** and **Facebook**.
+- Public visitors can navigate **landing**, **infos**, **contact**, and **Actualités**, view a **landing carousel** of **images curated by the club** (see **MVP** under §2 and §10.1), read **recent club news** from the **Facebook feed** (v0.8), and reach **Instagram** and **Facebook** profile links.
+- **Admins** can update **public copy** and **contact settings** without code changes once **v1.1** (site settings) and **v1.2** (editable content blocks) ship.
 
 ## 2. Public website
 
 
-| Area        | Purpose                                                                                              |
-| ----------- | ---------------------------------------------------------------------------------------------------- |
-| **Landing** | First impression, key messages, entry to the rest of the site.                                       |
-| **Infos**   | Practical and club information (schedule pointers, club life, etc.—exact content TBD with the club). |
-| **Contact** | How to reach the club (address, email, map or directions as needed).                                 |
+| Area           | Purpose                                                                                              |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| **Landing**    | First impression, key messages, entry to the rest of the site.                                       |
+| **Infos**      | Practical and club information (schedule, pricing, club philosophy—see **Editable public content**). |
+| **Contact**    | How to reach the club: **site settings** (email, address, social links) plus the **contact form**; not a CMS page. |
+| **Actualités** | Public **Facebook feed** (v0.8): read-only recent posts with links to each post on Facebook.         |
 
+
+**Navigation**
+
+- Four public top-level tabs: **Accueil** (landing), **Infos**, **Contact**, and **Actualités** (Facebook feed).
+
+**Social feed (v0.8 — Actualités)**
+
+- **Facebook only** in v0.8; **Instagram** remains a profile link (no feed).
+- **Public** and **read-only**: display recent posts; **no** post, comment, like, or other in-app social interaction.
+- Each listed post links to the **canonical Facebook post URL** on facebook.com.
+- Fetch on the **server** with **caching**; Facebook **API credentials** stay in server environment variables (never exposed to the client).
+- **Degraded mode:** if the API is unavailable, show an empty or error state with a prominent link to the club’s Facebook page—do not block the rest of the site.
+
+**Site settings (v1.1)**
+
+- **Admin-managed** values stored in JSON **`website_config`** (same pattern as the landing carousel): contact **email**, club **address**, **Instagram** and **Facebook** profile URLs.
+- The **Contact** page **displays** these settings; it is not a surface for editable content blocks.
+- Runtime config or environment variables may provide **seed defaults** until settings are saved; public social **display** URLs should ultimately come from admin-managed settings.
+- Facebook **API secrets** for the feed remain server-side env only.
+
+**Editable public content (v1.2)**
+
+- **Admin-managed** content blocks, also in JSON **`website_config`**:
+  - **Accueil:** welcome / foreword text.
+  - **Infos:** introduction (text); **créneaux** (structured availability list); **tarifs** (structured pricing list); club philosophy (text).
+- **Hybrid editing model:** paragraphs are **text blocks**; créneaux and tarifs are **structured lists** with typed fields (labels, times, amounts)—not a single WYSIWYG page per section.
+- **Schedule authority:** créneaux detail lives on **Infos**; Contact shows settings and the contact form, not a second editable schedule block.
 
 **Media**
 
@@ -34,7 +63,8 @@ This document describes goals, functional requirements, role permissions, domain
 
 **Social**
 
-- Prominent **Instagram** and **Facebook** links (URLs configurable). Optional later: embeds or feeds—not required for MVP.
+- Prominent **Instagram** and **Facebook** profile links (URLs configurable; **v1.1** moves display URLs to admin-managed site settings).
+- **v0.8:** public **Facebook feed** on the **Actualités** tab (see above)—read-only display, not required for MVP.
 
 **Reference**
 
@@ -58,7 +88,10 @@ Capabilities are cumulative by level.
 | Capability                                                                                             | Member | Manager | Admin |
 | ------------------------------------------------------------------------------------------------------ | ------ | ------- | ----- |
 | View public pages                                                                                      | ✅     | ✅      | ✅    |
+| View public **Actualités** feed (Facebook; **§2**)                                                     | ✅     | ✅      | ✅    |
 | **Upload** and **curate** the **landing carousel** images (MVP club gallery; **§2**)                  | ❌     | ❌      | ✅    |
+| **Edit site settings** (contact email, address, social profile URLs; **v1.1**)                         | ❌     | ❌      | ✅    |
+| **Edit public content blocks** (Accueil welcome, Infos sections; **v1.2**)                             | ❌     | ❌      | ✅    |
 | Log in                                                                                                 | ✅     | ✅      | ✅    |
 | Browse **available competitions** (club-managed list/pool)                                             | ✅     | ✅      | ✅    |
 | View **own** participations                                                                            | ✅     | ✅      | ✅    |
@@ -279,12 +312,16 @@ Evolve the Listener into an **AI-oriented workflow** that:
 | Phase    | Scope                                                                                                                                                     |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **MVP**  | **Public showcase:** **landing**, **infos**, **contact**, configurable **Instagram** and **Facebook** links. **Plus:** **Admin-managed landing gallery**—upload images and **curate which appear** (and in which order, if required) on the landing **carousel**; public site reads that curated set. |
+| **v0.8** | Public **Facebook feed** (**Actualités** tab): read-only recent posts with outbound links; server fetch + cache; degraded mode when API unavailable.        |
+| **v1.1** | **Site settings** (Admin): contact email, club address, social profile URLs; **Contact** page wired to settings.                                            |
+| **v1.2** | **Editable public content** (Admin): Accueil welcome + Infos hybrid blocks (text + structured créneaux/tarifs).                                           |
 | **v1**   | **Back-office:** archers (internal shell), **competitions**, **participations**—**without** email linking yet (Archer before full Member implementation). |
 | **v1.5** | **Member invitation**, **role management**, **Admin** panel **overview**.                                                                                 |
 | **v2**   | **Calendar** overview (public competitions + member participations as specified).                                                                         |
 | **v3**   | **Competition Listener** (cron + scrape + notify).                                                                                                        |
 | **v4**   | **AI-assisted** workflow to seek and suggest competitions from **trusted** sources, with human validation.                                                |
 
+**Note:** **v1** (operations back-office) and **v1.1 / v1.2** (public-site admin) are **parallel tracks**—not replacements for one another. Delivery order for the public-site milestones is **v0.8 → v1.1 → v1.2**; **v1** may proceed in parallel once **v0.5** auth foundation is in place.
 
 ### 10.2 Alternative roadmap (comparison)
 

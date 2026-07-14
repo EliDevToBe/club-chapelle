@@ -16,7 +16,7 @@
       <ContentTextWrapper>
         <p>
           Actuellement nous bénéficions de
-          <span class="text-primary font-semibold">quatre créneaux</span> au
+          <span class="text-primary-500 font-semibold">quatre créneaux</span> au
           gymnase Tristan Tzara dans le 18ème :
         </p>
 
@@ -29,10 +29,10 @@
           </ChapListItem>
 
           <ChapListItem>
-            <span :class="[ui.listMainElement, 'text-primary']"
+            <span :class="[ui.listMainElement, 'text-primary-500']"
               >le mercredi soir de 19h30 à minuit :
             </span>
-            <span class="text-secondary-200 font-semibold underline"
+            <span class="text-secondary-300 font-semibold underline"
               >dédié à l'initiation</span
             >
             <span> mais ouvert à toutes et tous</span>
@@ -69,18 +69,18 @@
         <ul :class="ui.listWrapper">
           <ChapListItem>
             <span :class="ui.listMainElement">adultes : </span
-            ><span class="text-primary font-semibold">195 euros</span>
+            ><span class="text-primary-500 font-semibold">195 euros</span>
           </ChapListItem>
 
           <ChapListItem>
             <span :class="ui.listMainElement">mineur·e·s, étudiant·e·s : </span
-            ><span class="text-primary font-semibold">170 euros</span>
+            ><span class="text-primary-500 font-semibold">170 euros</span>
           </ChapListItem>
 
           <ChapListItem>
             <span :class="ui.listMainElement"
               >demandeur·euse·s d'emploi et + de 70 ans : </span
-            ><span class="text-primary font-semibold">170 euros</span>
+            ><span class="text-primary-500 font-semibold">170 euros</span>
           </ChapListItem>
         </ul>
 
@@ -88,14 +88,14 @@
           <span class="text-default bg-secondary/40">
             La demande étant forte, envoyez-nous un mail à
             <a
-              class="text-primary font-bold hover:underline hover:underline-offset-4"
+              class="text-primary-500 font-bold hover:underline hover:underline-offset-4"
               href="mailto:archerschapelle@gmail.com"
               >archerschapelle@gmail.com</a
             ></span
           >
           afin de savoir si une place est disponible pour nous rencontrer le
           mercredi soir à partir de 19h30 afin de tester notre activité
-          <span class="text-primary"
+          <span class="text-primary-500"
             >(deux séances d'essai sont possibles)</span
           >
           avec nos entraîneurs !

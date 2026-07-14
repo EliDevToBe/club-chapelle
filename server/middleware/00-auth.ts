@@ -40,13 +40,13 @@ export default defineEventHandler(async (event) => {
     refreshSecret,
   });
 
-  const repos = getRepositories();
+  const { userRepository } = getRepositories();
 
   const { authUser, newAccessToken } = await resolveAuthContextFromCookies({
     accessToken,
     refreshToken,
     jwt,
-    findUserById: repos.userRepository.findById,
+    findUserById: userRepository.findById,
   });
 
   if (authUser) {

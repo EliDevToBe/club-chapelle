@@ -14,8 +14,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const repos = getRepositories();
-  const findArcherByIdHandler = new FindArcherById(repos.archerRepository);
+  const { archerRepository } = getRepositories();
+  const findArcherByIdHandler = new FindArcherById(archerRepository);
   const archer = await findArcherByIdHandler.findById(id);
 
   if (!archer) {

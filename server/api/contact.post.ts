@@ -1,6 +1,9 @@
 import { createError } from "h3";
 import { SubmitContactMessage } from "~~/application/contact/submit-contact-message.use-case";
+import { GetSiteSettings } from "~~/application/website/get-site-settings.use-case";
 import { createMailtrapTransactionalMailSender } from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { buildSiteSettingsSeed } from "~~/server/utils/site-settings-seed";
 
 type ContactBody = {
   name?: string;
@@ -16,7 +19,6 @@ export default defineEventHandler(async (event) => {
   const inboxIdRaw = config.mailtrapInboxId;
   const fromEmail = config.mailtrapFromEmail;
   const fromName = config.mailtrapFromName;
-  const toEmail = config.contactFormToEmail;
 
   if (!apiKey) {
     throw createError({
@@ -31,6 +33,15 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Mail sender is not configured",
     });
   }
+
+  const seed = buildSiteSettingsSeed(event);
+  const { websiteConfigRepository } = getRepositories();
+  const getSiteSettingsHandler = new GetSiteSettings(
+    websiteConfigRepository,
+    seed,
+  );
+  const siteSettings = await getSiteSettingsHandler.get();
+  const toEmail = siteSettings.contact_email;
 
   if (!toEmail) {
     throw createError({

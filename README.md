@@ -15,7 +15,7 @@ Club life today mixes a public showcase (photos, news, contact) with operational
 ## What you get
 
 **Public site (simple and clear)**  
-A small set of main areas—**landing**, **infos**, **contact**—with room for club photos, news-style updates, and links to Instagram and Facebook so the club stays visible where people already are.
+A small set of main areas—**landing**, **infos**, **contact**, and (from **v0.8**) **Actualités**—with room for club photos, a read-only **Facebook feed** of recent posts (each linking out to Facebook), and links to Instagram and Facebook profiles. **Admins** will be able to edit welcome copy and Infos content blocks (**v1.2**) and contact settings such as email, address, and social URLs (**v1.1**) without code changes—see [project-spec.md](project-spec.md) and [project-roadmap.md](project-roadmap.md).
 
 **Signed-in members**  
 Browse available competitions and see **their** participations in a **list/card view** at `/competitions` (date range, search, and a **Les miennes** filter; own fee and registration status where the role allows). **Calendar-style** views are planned for a later phase—see [project-spec.md](project-spec.md) and [project-roadmap.md](project-roadmap.md).
@@ -29,7 +29,7 @@ Give Les Archers de La Chapelle a **single, trustworthy picture** of club life o
 
 ## What comes later
 
-Advanced features—such as automatically **listening** to French archery federation listings for new “mandat”-style entries, or **AI-assisted** suggestions to enrich the competition pool—are planned **after** the core site and back-office are solid. Details and phased delivery are in **[project-spec.md](project-spec.md)**.
+Advanced features—such as automatically **listening** to French archery federation listings for new “mandat”-style entries, or **AI-assisted** suggestions to enrich the competition pool—are planned **after** the core site and back-office are solid. Public-site milestones (**Actualités** feed, admin-editable copy, site settings) and operational phases are tracked in **[project-spec.md](project-spec.md)** and **[project-roadmap.md](project-roadmap.md)**.
 
 ## Release and deployment flow
 

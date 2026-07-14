@@ -35,7 +35,7 @@ const emit = defineEmits<{
   "update:label": [string];
 }>();
 
-const localEditingLabel = ref(props.editingLabel ?? props.label);
+const localEditingLabel = defineModel<string>("currentLabel", { default: "" });
 
 watch(
   () => props.isEditing,
@@ -45,6 +45,10 @@ watch(
     }
   },
 );
+
+onMounted(() => {
+  localEditingLabel.value = props.editingLabel ?? props.label;
+});
 </script>
 
 <style scoped lang=""></style>

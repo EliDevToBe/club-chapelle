@@ -10,8 +10,8 @@ const allowedRoles: RoleEnum[] = ["manager", "admin"];
 export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
   const query = parseArchersListQuery(event);
-  const repos = getRepositories();
-  const listArchersHandler = new ListArchers(repos.archerRepository);
+  const { archerRepository } = getRepositories();
+  const listArchersHandler = new ListArchers(archerRepository);
 
   if (query.limit === undefined) {
     const archers = await listArchersHandler.findMany();

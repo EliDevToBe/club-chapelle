@@ -17,21 +17,25 @@ When you instantiate an **application-layer use-case class** in a Nitro handler,
 ## Examples
 
 ```typescript
+const { userRepository } = getRepositories();
+
 // ❌ Avoid: reads like a bare operation, easy to confuse with a function
-const updateUser = new UpdateUser(repos.userRepository, auth.password);
+const updateUser = new UpdateUser(userRepository, auth.password);
 const user = await updateUser.update(id, input);
 
 // ✅ Prefer: delivery role is explicit
-const updateUserHandler = new UpdateUser(repos.userRepository, auth.password);
+const updateUserHandler = new UpdateUser(userRepository, auth.password);
 const user = await updateUserHandler.update(id, input);
 ```
 
 ```typescript
+const { competitionRepository } = getRepositories();
+
 // ✅ Multi-line constructor stays on the use-case type; only the binding name changes
 const findCompetitionByIdHandler = new FindCompetitionById(
-  repos.competitionRepository,
+  competitionRepository,
 );
 const competition = await findCompetitionByIdHandler.findById(id);
 ```
 
-**Note:** `createAuthServices()`, repositories, and mappers are **not** use-case classes—name those as you like (`authServices`, `repos`, etc.).
+**Note:** `createAuthServices()`, repositories, and mappers are **not** use-case classes—name those as you like (`authServices`, etc.). Destructure only the repositories you need from `getRepositories()`.

@@ -1,3 +1,4 @@
+import { syncFeatureFlagsGate } from "~/composables/useFeatureFlagsGate";
 import type {
   FeatureFlagKey,
   FeatureFlags,
@@ -18,7 +19,9 @@ export const useFeatureFlags = () => {
   const { data, pending, error, refresh } = useAsyncData<FeatureFlagsResponse>(
     "feature-flags",
     async () => {
-      return $fetch(WEBSITE_CONFIG_PUBLIC_ENDPOINTS.featureFlags);
+      return $fetch<FeatureFlagsResponse>(
+        WEBSITE_CONFIG_PUBLIC_ENDPOINTS.featureFlags,
+      );
     },
     {
       server: false,
@@ -59,6 +62,7 @@ export const useFeatureFlags = () => {
       });
 
       await refresh();
+      syncFeatureFlagsGate(flags.value);
     } finally {
       isSaving.value = false;
     }

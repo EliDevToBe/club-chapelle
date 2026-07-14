@@ -27,11 +27,12 @@
 <script setup lang="ts">
 import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
+import { useSiteSettings } from "~/composables/useSiteSettings";
 
-const { public: pub } = useRuntimeConfig();
+const { instagramUrl, facebookUrl } = useSiteSettings();
 
-const socialInstagram = pub.socialInstagram;
-const socialFacebook = pub.socialFacebook;
+const socialInstagram = instagramUrl;
+const socialFacebook = facebookUrl;
 </script>
 
 <style scoped lang=""></style>

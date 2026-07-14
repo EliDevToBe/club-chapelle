@@ -1,9 +1,13 @@
+import type { FileInfo } from "@sirv/rest-api-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SirvGallerySource } from "~~/infrastructure/sirv/sirv-gallery.source";
+import {
+  compareGalleryFileEntries,
+  SirvGallerySource,
+} from "~~/infrastructure/sirv/sirv-gallery.source";
 
 const connectMock = vi.fn();
 const isConnectedMock = vi.fn();
-const readFolderContentsMock = vi.fn();
+const iterateFolderContentsMock = vi.fn();
 const getFileInfoMock = vi.fn();
 const fetchMock = vi.fn();
 
@@ -26,11 +30,72 @@ vi.mock("@sirv/rest-api-js", () => {
       return {
         connect: connectMock,
         isConnected: isConnectedMock,
-        readFolderContents: readFolderContentsMock,
+        iterateFolderContents: iterateFolderContentsMock,
         getFileInfo: getFileInfoMock,
       };
     }),
   };
+});
+
+const createAsyncGenerator = <T>(
+  items: T[],
+): AsyncGenerator<T, void, unknown> => {
+  return (async function* () {
+    for (const item of items) {
+      yield item;
+    }
+  })();
+};
+
+describe("compareGalleryFileEntries", () => {
+  it("sorts by filename ascending then creation time descending", () => {
+    const directory = "/chapelle";
+    const entries: FileInfo[] = [
+      {
+        filename: "/chapelle/zebra.jpg",
+        ctime: "2026-01-01T00:00:00.000Z",
+        isDirectory: false,
+      },
+      {
+        filename: "/chapelle/arc.jpg",
+        ctime: "2026-01-01T00:00:00.000Z",
+        isDirectory: false,
+      },
+      {
+        filename: "/chapelle/arc.jpg",
+        ctime: "2020-01-01T00:00:00.000Z",
+        isDirectory: false,
+      },
+    ];
+
+    const sorted = [...entries].sort((left, right) => {
+      return compareGalleryFileEntries(left, right, directory);
+    });
+
+    expect(sorted.map((entry) => entry.filename)).toEqual([
+      "/chapelle/arc.jpg",
+      "/chapelle/arc.jpg",
+      "/chapelle/zebra.jpg",
+    ]);
+    expect(sorted[0]?.ctime).toBe("2026-01-01T00:00:00.000Z");
+    expect(sorted[1]?.ctime).toBe("2020-01-01T00:00:00.000Z");
+  });
+
+  it("falls back to mtime when ctime is missing", () => {
+    const directory = "/chapelle";
+    const left: FileInfo = {
+      filename: "/chapelle/shared-name.jpg",
+      mtime: "2026-06-01T00:00:00.000Z",
+      isDirectory: false,
+    };
+    const right: FileInfo = {
+      filename: "/chapelle/shared-name.jpg",
+      mtime: "2024-06-01T00:00:00.000Z",
+      isDirectory: false,
+    };
+
+    expect(compareGalleryFileEntries(left, right, directory)).toBeLessThan(0);
+  });
 });
 
 describe("SirvGallerySource", () => {
@@ -45,7 +110,7 @@ describe("SirvGallerySource", () => {
   beforeEach(() => {
     connectMock.mockReset();
     isConnectedMock.mockReset();
-    readFolderContentsMock.mockReset();
+    iterateFolderContentsMock.mockReset();
     getFileInfoMock.mockReset();
     fetchMock.mockReset();
     connectMock.mockResolvedValue({
@@ -57,13 +122,19 @@ describe("SirvGallerySource", () => {
     vi.stubGlobal("fetch", fetchMock);
   });
 
-  it("lists image files and builds preview URLs", async () => {
-    readFolderContentsMock.mockResolvedValue({
-      contents: [
-        { filename: "/chapelle/arc.jpg", width: 1280, height: 720 },
-        { filename: "/chapelle/notes.txt" },
-      ],
-    });
+  it("lists image files from iterateFolderContents and builds preview URLs", async () => {
+    iterateFolderContentsMock.mockReturnValue(
+      createAsyncGenerator([
+        {
+          filename: "/chapelle/arc.jpg",
+          width: 1280,
+          height: 720,
+          size: 245_760,
+          isDirectory: false,
+        },
+        { filename: "/chapelle/notes.txt", isDirectory: false },
+      ]),
+    );
 
     const source = createSource();
 
@@ -77,10 +148,76 @@ describe("SirvGallerySource", () => {
       url: "https://archers-chapelle.sirv.com/chapelle/arc.jpg",
       width: 1280,
       height: 720,
+      size: 245_760,
     });
     expect(firstImage?.preview_url).toContain("w=240");
     expect(firstImage?.preview_url).toContain("h=160");
-    expect(readFolderContentsMock).toHaveBeenCalledWith("/chapelle");
+    expect(iterateFolderContentsMock).toHaveBeenCalledWith("/chapelle");
+  });
+
+  it("aggregates entries yielded across multiple Sirv continuation pages", async () => {
+    iterateFolderContentsMock.mockReturnValue(
+      createAsyncGenerator([
+        {
+          filename: "/chapelle/first-batch.jpg",
+          width: 640,
+          height: 480,
+          isDirectory: false,
+        },
+        {
+          filename: "/chapelle/second-batch.jpg",
+          width: 800,
+          height: 600,
+          isDirectory: false,
+        },
+      ]),
+    );
+
+    const source = createSource();
+    const images = await source.listImagesInDirectory("/chapelle");
+
+    expect(images).toHaveLength(2);
+    expect(images.map((image) => image.path)).toEqual([
+      "/chapelle/first-batch.jpg",
+      "/chapelle/second-batch.jpg",
+    ]);
+  });
+
+  it("sorts listed images by filename ascending then creation time descending", async () => {
+    iterateFolderContentsMock.mockReturnValue(
+      createAsyncGenerator([
+        {
+          filename: "/chapelle/zebra.jpg",
+          ctime: "2026-01-01T00:00:00.000Z",
+          width: 640,
+          height: 480,
+          isDirectory: false,
+        },
+        {
+          filename: "/chapelle/arc.jpg",
+          ctime: "2020-01-01T00:00:00.000Z",
+          width: 640,
+          height: 480,
+          isDirectory: false,
+        },
+        {
+          filename: "/chapelle/arc.jpg",
+          ctime: "2026-01-01T00:00:00.000Z",
+          width: 640,
+          height: 480,
+          isDirectory: false,
+        },
+      ]),
+    );
+
+    const source = createSource();
+    const images = await source.listImagesInDirectory("/chapelle");
+
+    expect(images.map((image) => image.path)).toEqual([
+      "/chapelle/arc.jpg",
+      "/chapelle/arc.jpg",
+      "/chapelle/zebra.jpg",
+    ]);
   });
 
   it("connects once when already connected afterwards", async () => {
@@ -88,9 +225,16 @@ describe("SirvGallerySource", () => {
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(true)
       .mockReturnValueOnce(true);
-    readFolderContentsMock.mockResolvedValue({
-      contents: [{ filename: "/chapelle/arc.jpg", width: 1280, height: 720 }],
-    });
+    iterateFolderContentsMock.mockReturnValue(
+      createAsyncGenerator([
+        {
+          filename: "/chapelle/arc.jpg",
+          width: 1280,
+          height: 720,
+          isDirectory: false,
+        },
+      ]),
+    );
 
     const source = createSource();
 
@@ -118,6 +262,7 @@ describe("SirvGallerySource", () => {
       height: 480,
       mtime: "2026-04-25T00:00:00.000Z",
       contentType: "image/jpeg",
+      size: 12_288,
     });
 
     const source = createSource();
@@ -164,6 +309,7 @@ describe("SirvGallerySource", () => {
             "https://archers-chapelle.sirv.com/chapelle/uploaded-arc.jpg?w=240&h=160&q=85",
           width: 640,
           height: 480,
+          size: 12_288,
           mtime: "2026-04-25T00:00:00.000Z",
           mimetype: "image/jpeg",
         },
