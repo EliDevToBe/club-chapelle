@@ -117,7 +117,7 @@
   </UForm>
 
   <ChapWatermark>
-    <img class="opacity-8 size-230" aria-hidden="true" src="/club-logo.svg" />
+    <img class="opacity-15 size-230" aria-hidden="true" src="/club-logo.svg" />
   </ChapWatermark>
 </template>
 

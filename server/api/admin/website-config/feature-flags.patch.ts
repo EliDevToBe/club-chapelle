@@ -13,9 +13,9 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<FeatureFlagsPatchBody>(event);
   const normalisedSettings = parseFeatureFlagsPatchBody(body);
-  const repos = getRepositories();
+  const { websiteConfigRepository } = getRepositories();
   const updateWebsiteConfigHandler = new UpdateWebsiteConfig(
-    repos.websiteConfigRepository,
+    websiteConfigRepository,
   );
   const config = await updateWebsiteConfigHandler.update(
     WEBSITE_CONFIG_KEYS.featureFlags,

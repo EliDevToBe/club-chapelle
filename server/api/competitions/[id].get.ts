@@ -14,9 +14,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const repos = getRepositories();
+  const { competitionRepository } = getRepositories();
   const findCompetitionByIdHandler = new FindCompetitionById(
-    repos.competitionRepository,
+    competitionRepository,
   );
   const competition = await findCompetitionByIdHandler.findById(id);
 

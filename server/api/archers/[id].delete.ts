@@ -13,8 +13,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const repos = getRepositories();
-  const deleteArcherHandler = new DeleteArcher(repos.archerRepository);
+  const { archerRepository } = getRepositories();
+  const deleteArcherHandler = new DeleteArcher(archerRepository);
   const deleted = await deleteArcherHandler.delete(id);
 
   if (!deleted) {

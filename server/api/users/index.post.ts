@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
   const body = await readBody<UserCreateDto>(event);
 
-  const repos = getRepositories();
+  const { userRepository } = getRepositories();
   const config = useRuntimeConfig(event);
 
   const accessSecret = config.authJwtAccessSecret;
@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     accessSecret,
     refreshSecret,
   });
-  const createUserHandler = new CreateUser(repos.userRepository, auth.password);
+  const createUserHandler = new CreateUser(userRepository, auth.password);
   const user = await createUserHandler.create(toCreateUserInput(body));
   return { user: toUserDto(user) };
 });

@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<UserUpdateDto>(event);
-  const repos = getRepositories();
+  const { userRepository } = getRepositories();
   const config = useRuntimeConfig(event);
 
   const accessSecret = config.authJwtAccessSecret;
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     accessSecret,
     refreshSecret,
   });
-  const updateUserHandler = new UpdateUser(repos.userRepository, auth.password);
+  const updateUserHandler = new UpdateUser(userRepository, auth.password);
   const user = await updateUserHandler.update(id, toUpdateUserInput(body));
 
   if (!user) {

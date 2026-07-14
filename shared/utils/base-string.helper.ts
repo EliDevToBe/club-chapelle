@@ -23,6 +23,18 @@ export const asStringOrEmpty = (value: unknown): string => {
   return value;
 };
 
+export const asNumber = (value: unknown): number | null => {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return null;
+  }
+
+  return value;
+};
+
+export const asNumberOrZero = (value: unknown): number => {
+  return asNumber(value) ?? 0;
+};
+
 export const normaliseUrl = (value: string): string => {
   const trimmed = value.trim();
   // Remove one or more trailing slashes (e.g. profile URLs saved with a trailing `/`).

@@ -36,7 +36,7 @@ export const usePictureManagement = () => {
   } = useAsyncData<GalleryResponse>(
     "admin-website-gallery",
     async () => {
-      return $fetch("/api/admin/website/gallery/gallery", {
+      return $fetch<GalleryResponse>("/api/admin/website/gallery/gallery", {
         credentials: "include",
       });
     },
@@ -54,9 +54,12 @@ export const usePictureManagement = () => {
   } = useAsyncData<HomepageCarouselConfigResponse>(
     "admin-homepage-carousel-config",
     async () => {
-      return $fetch("/api/admin/website-config/homepage-carousel", {
-        credentials: "include",
-      });
+      return $fetch<HomepageCarouselConfigResponse>(
+        "/api/admin/website-config/homepage-carousel",
+        {
+          credentials: "include",
+        },
+      );
     },
     {
       server: false,
@@ -65,7 +68,7 @@ export const usePictureManagement = () => {
   );
 
   const getStorageInfo = async (): Promise<WebsiteGalleryInfos> => {
-    return $fetch("/api/admin/website/gallery/infos", {
+    return $fetch<WebsiteGalleryInfos>("/api/admin/website/gallery/infos", {
       credentials: "include",
     });
   };

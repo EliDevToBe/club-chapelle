@@ -14,10 +14,8 @@ export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
   const body = await readBody<CompetitionCreateDto>(event);
 
-  const repos = getRepositories();
-  const createCompetitionHandler = new CreateCompetition(
-    repos.competitionRepository,
-  );
+  const { competitionRepository } = getRepositories();
+  const createCompetitionHandler = new CreateCompetition(competitionRepository);
   const competition = await createCompetitionHandler.create(
     toCreateCompetitionInput(body),
   );

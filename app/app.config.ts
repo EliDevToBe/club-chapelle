@@ -309,8 +309,8 @@ export default defineAppConfig({
           class: {
             indicator: "bg-primary/20! outline outline-primary-500/75!",
             trigger: [
-              "data-[state=active]:text-primary outline-primary/25 focus-visible:outline-3",
-              "in-[[data-slot=list]:not(:has([data-slot=indicator]))]:data-[state=active]:before:bg-primary",
+              "data-[state=active]:text-primary outline-primary-500/75 focus-visible:outline-3",
+              "in-[[data-slot=list]:not(:has([data-slot=indicator]))]:data-[state=active]:before:bg-primary/20",
             ],
           },
         },
@@ -340,6 +340,27 @@ export default defineAppConfig({
           },
         },
       ],
+    },
+
+    pagination: {
+      slots: {
+        prev: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
+        next: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
+        first: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
+        last: [
+          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:opacity-100 aria-disabled:opacity-100",
+        ],
+      },
     },
   },
 });

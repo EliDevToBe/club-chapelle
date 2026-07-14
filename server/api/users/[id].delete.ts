@@ -13,8 +13,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const repos = getRepositories();
-  const deleteUserHandler = new DeleteUser(repos.userRepository);
+  const { userRepository } = getRepositories();
+  const deleteUserHandler = new DeleteUser(userRepository);
   const deleted = await deleteUserHandler.delete(id);
 
   if (!deleted) {

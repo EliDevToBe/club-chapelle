@@ -51,9 +51,9 @@ export default defineEventHandler(async (event) => {
       }),
   );
 
-  const repos = getRepositories();
+  const { websiteConfigRepository } = getRepositories();
   const removeGalleryImagesFromHomepageCarouselHandler =
-    new RemoveGalleryImagesFromHomepageCarousel(repos.websiteConfigRepository);
+    new RemoveGalleryImagesFromHomepageCarousel(websiteConfigRepository);
 
   await removeGalleryImagesFromHomepageCarouselHandler.removeByPaths([
     ...deletedPaths,

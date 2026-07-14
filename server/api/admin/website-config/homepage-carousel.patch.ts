@@ -13,9 +13,9 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<HomepageCarouselPatchBody>(event);
   const normalisedSettings = parseHomepageCarouselPatchBody(body);
-  const repos = getRepositories();
+  const { websiteConfigRepository } = getRepositories();
   const updateWebsiteConfigHandler = new UpdateWebsiteConfig(
-    repos.websiteConfigRepository,
+    websiteConfigRepository,
   );
   const config = await updateWebsiteConfigHandler.update(
     WEBSITE_CONFIG_KEYS.homepageCarousel,

@@ -13,10 +13,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const repos = getRepositories();
-  const deleteCompetitionHandler = new DeleteCompetition(
-    repos.competitionRepository,
-  );
+  const { competitionRepository } = getRepositories();
+  const deleteCompetitionHandler = new DeleteCompetition(competitionRepository);
   const deleted = await deleteCompetitionHandler.delete(id);
 
   if (!deleted) {

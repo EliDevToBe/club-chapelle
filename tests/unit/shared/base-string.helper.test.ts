@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   asNonEmptyString,
+  asNumber,
+  asNumberOrZero,
   asStringOrEmpty,
   asTrimmedString,
   normaliseUrl,
@@ -39,6 +41,38 @@ describe("asStringOrEmpty", () => {
   it("returns empty string for non-strings", () => {
     expect(asStringOrEmpty(null)).toBe("");
     expect(asStringOrEmpty(undefined)).toBe("");
+  });
+});
+
+describe("asNumber", () => {
+  it("returns finite numbers unchanged", () => {
+    expect(asNumber(42)).toBe(42);
+    expect(asNumber(0)).toBe(0);
+    expect(asNumber(-3.5)).toBe(-3.5);
+  });
+
+  it("returns null for non-numbers", () => {
+    expect(asNumber(null)).toBeNull();
+    expect(asNumber(undefined)).toBeNull();
+    expect(asNumber("42")).toBeNull();
+  });
+
+  it("returns null for NaN", () => {
+    expect(asNumber(Number.NaN)).toBeNull();
+  });
+});
+
+describe("asNumberOrZero", () => {
+  it("returns finite numbers unchanged", () => {
+    expect(asNumberOrZero(42)).toBe(42);
+    expect(asNumberOrZero(-3.5)).toBe(-3.5);
+  });
+
+  it("returns zero for invalid values", () => {
+    expect(asNumberOrZero(null)).toBe(0);
+    expect(asNumberOrZero(undefined)).toBe(0);
+    expect(asNumberOrZero("42")).toBe(0);
+    expect(asNumberOrZero(Number.NaN)).toBe(0);
   });
 });
 

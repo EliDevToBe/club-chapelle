@@ -66,7 +66,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const repos = getRepositories();
+  const { userRepository, tokenRepository } = getRepositories();
   const authServices = createAuthServices({
     accessSecret,
     refreshSecret,
@@ -82,8 +82,8 @@ export default defineEventHandler(async (event) => {
   const passwordResetOrigin = (config.passwordResetOrigin as string) || "";
 
   const requestForgotPasswordHandler = new RequestForgotPassword(
-    repos.userRepository,
-    repos.tokenRepository,
+    userRepository,
+    tokenRepository,
     authServices.jwt,
     mailSender,
     {

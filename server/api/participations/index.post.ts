@@ -14,9 +14,9 @@ export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
   const body = await readBody<ParticipationCreateDto>(event);
 
-  const repos = getRepositories();
+  const { participationRepository } = getRepositories();
   const createParticipationHandler = new CreateParticipation(
-    repos.participationRepository,
+    participationRepository,
   );
   const participation = await createParticipationHandler.create(
     toCreateParticipationInput(body),

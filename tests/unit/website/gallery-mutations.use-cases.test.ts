@@ -20,6 +20,7 @@ describe("Gallery mutation use cases", () => {
       mimetype: "image/jpg",
       width: 240,
       height: 160,
+      size: 0,
       mtime: null,
     },
     {
@@ -29,6 +30,7 @@ describe("Gallery mutation use cases", () => {
       mimetype: "image/jpg",
       width: 240,
       height: 160,
+      size: 0,
       mtime: null,
     },
   ];
@@ -65,6 +67,7 @@ describe("Gallery mutation use cases", () => {
           preview_url: "https://cdn.example.com/chapelle/arc.jpg?w=240&h=160",
           width: 240,
           height: 160,
+          size: 0,
           mtime: null,
         },
       },
@@ -86,6 +89,7 @@ describe("Gallery mutation use cases", () => {
       preview_url: "https://cdn.example.com/chapelle/new-name.jpg?w=240&h=160",
       width: 240,
       height: 160,
+      size: 0,
       mtime: null,
     };
     source.renameImage = vi.fn().mockResolvedValue(expected);
@@ -118,6 +122,7 @@ describe("Gallery mutation use cases", () => {
       mimetype: "image/jpg",
       width: 240,
       height: 160,
+      size: 0,
       mtime: null,
     };
     source.renameImage = vi.fn().mockResolvedValue(expected);
@@ -153,6 +158,7 @@ describe("Gallery mutation use cases", () => {
             mimetype: "image/jpg",
             width: 240,
             height: 160,
+            size: 0,
             mtime: null,
           },
           dataSettings[1],

@@ -10,11 +10,11 @@ const allowedRoles: RoleEnum[] = ["member", "manager", "admin"];
 export default defineEventHandler(async (event) => {
   const authUser = requireRoles(event, allowedRoles);
   const parsed = parseCompetitionsListingQuery(event);
-  const repos = getRepositories();
+  const { competitionRepository, participationRepository } = getRepositories();
 
   const listHandler = new ListCompetitionsWithParticipations(
-    repos.competitionRepository,
-    repos.participationRepository,
+    competitionRepository,
+    participationRepository,
   );
 
   const inputFilters = {
