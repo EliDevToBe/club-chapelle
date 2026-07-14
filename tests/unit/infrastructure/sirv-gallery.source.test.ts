@@ -60,7 +60,12 @@ describe("SirvGallerySource", () => {
   it("lists image files and builds preview URLs", async () => {
     readFolderContentsMock.mockResolvedValue({
       contents: [
-        { filename: "/chapelle/arc.jpg", width: 1280, height: 720, size: 245_760 },
+        {
+          filename: "/chapelle/arc.jpg",
+          width: 1280,
+          height: 720,
+          size: 245_760,
+        },
         { filename: "/chapelle/notes.txt" },
       ],
     });
