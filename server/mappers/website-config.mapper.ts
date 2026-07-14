@@ -1,5 +1,9 @@
 import type { WebsiteConfig } from "~~/domain/website/website-config";
-import { asNonEmptyString } from "~~/shared/utils/base-string.helper";
+import {
+  asNonEmptyString,
+  asNumber,
+  asNumberOrZero,
+} from "~~/shared/utils/base-string.helper";
 import { normaliseFeatureFlags } from "~~/shared/website/feature-flags.schema";
 import {
   normaliseSiteSettings,
@@ -15,14 +19,6 @@ import type {
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === "object" && value !== null;
-};
-
-const asNumber = (value: unknown): number | null => {
-  if (typeof value !== "number" || Number.isNaN(value)) {
-    return null;
-  }
-
-  return value;
 };
 
 export const toWebsiteConfigDto = (config: WebsiteConfig): WebsiteConfigDto => {
@@ -54,6 +50,7 @@ export const toHomepageCarouselSettings = (
       const height = asNumber(entry.height);
       const mtime = asNonEmptyString(entry.mtime);
       const mimetype = asNonEmptyString(entry.mimetype);
+      const size = asNumberOrZero(entry.size);
 
       if (
         !label ||
@@ -74,6 +71,7 @@ export const toHomepageCarouselSettings = (
         height,
         mtime,
         mimetype,
+        size,
       };
     })
     .filter((entry): entry is HomepageCarouselItemDto => {

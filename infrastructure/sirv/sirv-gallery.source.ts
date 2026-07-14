@@ -9,6 +9,7 @@ import type {
   WebsiteGallerySource,
   WebsiteGalleryUploadInput,
 } from "~~/application/ports/website-gallery-source.port";
+import { asNumber, asNumberOrZero } from "~~/shared/utils/base-string.helper";
 import type {
   WebsiteGalleryDeleteItemResultDto,
   WebsiteGalleryImageDto,
@@ -34,14 +35,6 @@ const asString = (value: unknown): string | null => {
   }
 
   return trimmed;
-};
-
-const asNumber = (value: unknown): number | null => {
-  if (typeof value !== "number" || Number.isNaN(value)) {
-    return null;
-  }
-
-  return value;
 };
 
 const imageExtensions = ["jpg", "jpeg", "png", "webp", "gif", "avif"] as const;
@@ -463,7 +456,7 @@ export class SirvGallerySource implements WebsiteGallerySource {
       height: asNumber(entryRecord.height) ?? 160,
       mtime: asString(entryRecord.mtime),
       mimetype,
-      size: asNumber(entryRecord.size) ?? 0,
+      size: asNumberOrZero(entryRecord.size),
     };
   };
 
