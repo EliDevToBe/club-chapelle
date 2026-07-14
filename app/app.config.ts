@@ -309,8 +309,8 @@ export default defineAppConfig({
           class: {
             indicator: "bg-primary/20! outline outline-primary-500/75!",
             trigger: [
-              "data-[state=active]:text-primary outline-primary/25 focus-visible:outline-3",
-              "in-[[data-slot=list]:not(:has([data-slot=indicator]))]:data-[state=active]:before:bg-primary",
+              "data-[state=active]:text-primary outline-primary-500/75 focus-visible:outline-3",
+              "in-[[data-slot=list]:not(:has([data-slot=indicator]))]:data-[state=active]:before:bg-primary/20",
             ],
           },
         },
