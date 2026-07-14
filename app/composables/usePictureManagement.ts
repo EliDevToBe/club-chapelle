@@ -68,7 +68,7 @@ export const usePictureManagement = () => {
   );
 
   const getStorageInfo = async (): Promise<WebsiteGalleryInfos> => {
-    return $fetch("/api/admin/website/gallery/infos", {
+    return $fetch<WebsiteGalleryInfos>("/api/admin/website/gallery/infos", {
       credentials: "include",
     });
   };

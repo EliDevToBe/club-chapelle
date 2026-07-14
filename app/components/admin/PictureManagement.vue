@@ -97,7 +97,7 @@
           >
           <span
             v-if="image.size"
-            class="hidden group-hover:block absolute top-2 right-2 text-sm text-primary-600"
+            :class="`hidden group-hover:block absolute ${isSelected(image.url) ? 'top-7 left-2' : 'top-2 right-2'} text-sm text-primary-600`"
             >{{ `${formatBytes(image.size)}` }}</span
           >
 
