@@ -22,7 +22,7 @@
         :alt="image.label"
         width="240"
         height="160"
-        class="h-40 w-40 object-contain"
+        class="h-40 w-40 object-contain select-none"
         loading="lazy"
         decoding="async"
       />
