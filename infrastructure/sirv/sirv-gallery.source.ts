@@ -1,6 +1,5 @@
 import {
   type FileInfo,
-  type FolderContents,
   SirvApiError,
   SirvClient,
   type StorageInfo,
@@ -121,6 +120,39 @@ const splitFilename = (
   };
 };
 
+const getGalleryEntryFilename = (
+  entry: FileInfo,
+  directory: string,
+): string => {
+  const rawPath = asString(entry.filename) ?? asString(entry.basename) ?? "";
+  if (rawPath.startsWith("/")) {
+    return rawPath;
+  }
+
+  return `${directory}/${rawPath}`;
+};
+
+const getGalleryEntryCreationTime = (entry: FileInfo): string => {
+  return asString(entry.ctime) ?? asString(entry.mtime) ?? "";
+};
+
+export const compareGalleryFileEntries = (
+  left: FileInfo,
+  right: FileInfo,
+  directory: string,
+): number => {
+  const leftFilename = getGalleryEntryFilename(left, directory);
+  const rightFilename = getGalleryEntryFilename(right, directory);
+  const filenameCompare = leftFilename.localeCompare(rightFilename, "fr");
+  if (filenameCompare !== 0) {
+    return filenameCompare;
+  }
+
+  const leftTime = getGalleryEntryCreationTime(left);
+  const rightTime = getGalleryEntryCreationTime(right);
+  return rightTime.localeCompare(leftTime, "fr");
+};
+
 export class SirvGallerySource implements WebsiteGallerySource {
   private readonly sirvClient: SirvClient;
   private connectPromise: Promise<void> | null = null;
@@ -145,7 +177,7 @@ export class SirvGallerySource implements WebsiteGallerySource {
   }
 
   /**
-   * List images in a directory, sorted by label and mtime (modification time).
+   * List images in a directory, sorted by filename ascending then creation time descending.
    * @param directory - The directory to list images from.
    * @returns A promise that resolves to an array of WebsiteGalleryImageDto.
    */
@@ -153,23 +185,27 @@ export class SirvGallerySource implements WebsiteGallerySource {
     directory: string,
   ): Promise<WebsiteGalleryImageDto[]> => {
     await this.ensureConnected();
-    const payload = await this.sirvClient.readFolderContents(directory);
-    const entries = this.extractEntries(payload);
+    const safeDirectory = normaliseDirectory(directory);
+    const entries: FileInfo[] = [];
 
-    const dtoEntries = entries
-      .map((entry) => this.toImageDto(entry, directory))
+    // Sirv pagination is handled inside iterateFolderContents via continuation tokens.
+    for await (const entry of this.sirvClient.iterateFolderContents(
+      safeDirectory,
+    )) {
+      entries.push(entry);
+    }
+
+    entries.sort((left, right) => {
+      return compareGalleryFileEntries(left, right, safeDirectory);
+    });
+
+    return entries
+      .map((entry) => {
+        return this.toImageDto(entry, safeDirectory);
+      })
       .filter((entry): entry is WebsiteGalleryImageDto => {
         return entry !== null;
-      })
-      .sort((left, right) => {
-        return (
-          (left.label.localeCompare(right.label, "fr") &&
-            right?.mtime?.localeCompare(left?.mtime ?? "", "fr")) ??
-          0
-        );
       });
-
-    return dtoEntries;
   };
 
   public getStorageInfo = async (): Promise<WebsiteGalleryInfos> => {
@@ -391,14 +427,6 @@ export class SirvGallerySource implements WebsiteGallerySource {
     } finally {
       this.connectPromise = null;
     }
-  };
-
-  private extractEntries = (payload: FolderContents): FileInfo[] => {
-    if (Array.isArray(payload.contents)) {
-      return payload.contents;
-    }
-
-    return [];
   };
 
   private buildCdnUrl = (
