@@ -145,6 +145,25 @@ const ui = {
     "rounded-lg border border-dashed border-default px-4 py-6 text-sm text-muted",
 };
 
+/**
+ * Matches image base names allowed for Sirv rename: letters, digits, spaces, hyphens, underscores.
+ */
+const galleryRenameNamePattern = /^[a-zA-Z0-9\s_-]+$/;
+
+const isValidForRename = (value: string): boolean => {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return false;
+  }
+
+  const baseName = trimmed.replace(/\.[^.]+$/, "");
+  if (baseName.length === 0) {
+    return false;
+  }
+
+  return galleryRenameNamePattern.test(baseName);
+};
+
 const { addToastError, addToastSuccess } = useChapToast();
 const { saveConfig } = useWebsiteConfig();
 const {
@@ -345,6 +364,15 @@ const renameImage = async (path: string, newName: string): Promise<void> => {
     (image) => image.path === path,
   )?.label;
   if (originalName === newName) {
+    return;
+  }
+
+  if (!isValidForRename(newName)) {
+    addToastError({
+      title: "Nom invalide",
+      description:
+        "Le nom ne peut contenir que des lettres, chiffres, espaces, tirets et underscores.",
+    });
     return;
   }
 
