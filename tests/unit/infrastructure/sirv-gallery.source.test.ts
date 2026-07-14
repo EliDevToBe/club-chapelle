@@ -60,7 +60,7 @@ describe("SirvGallerySource", () => {
   it("lists image files and builds preview URLs", async () => {
     readFolderContentsMock.mockResolvedValue({
       contents: [
-        { filename: "/chapelle/arc.jpg", width: 1280, height: 720 },
+        { filename: "/chapelle/arc.jpg", width: 1280, height: 720, size: 245_760 },
         { filename: "/chapelle/notes.txt" },
       ],
     });
@@ -77,6 +77,7 @@ describe("SirvGallerySource", () => {
       url: "https://archers-chapelle.sirv.com/chapelle/arc.jpg",
       width: 1280,
       height: 720,
+      size: 245_760,
     });
     expect(firstImage?.preview_url).toContain("w=240");
     expect(firstImage?.preview_url).toContain("h=160");
@@ -118,6 +119,7 @@ describe("SirvGallerySource", () => {
       height: 480,
       mtime: "2026-04-25T00:00:00.000Z",
       contentType: "image/jpeg",
+      size: 12_288,
     });
 
     const source = createSource();
@@ -164,6 +166,7 @@ describe("SirvGallerySource", () => {
             "https://archers-chapelle.sirv.com/chapelle/uploaded-arc.jpg?w=240&h=160&q=85",
           width: 640,
           height: 480,
+          size: 12_288,
           mtime: "2026-04-25T00:00:00.000Z",
           mimetype: "image/jpeg",
         },

@@ -66,6 +66,7 @@ describe("Website config use cases", () => {
             mimetype: "image/jpg",
             width: 240,
             height: 160,
+            size: 0,
             mtime: null,
           },
           {
@@ -76,6 +77,7 @@ describe("Website config use cases", () => {
             mimetype: "image/jpg",
             width: 240,
             height: 160,
+            size: 0,
             mtime: null,
           },
         ],
@@ -103,6 +105,7 @@ describe("Website config use cases", () => {
           mimetype: "image/jpg",
           width: 240,
           height: 160,
+          size: 0,
           mtime: null,
         },
       ],

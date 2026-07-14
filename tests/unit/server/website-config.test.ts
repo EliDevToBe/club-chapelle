@@ -40,6 +40,7 @@ describe("parseHomepageCarouselPatchBody", () => {
                 "https://archers-chapelle.sirv.com/chapelle/drapeau.jpg?w=240&h=160",
               width: 240,
               height: 160,
+              size: 204_800,
               mtime: "2026-01-01T00:00:00.000Z",
               mimetype: "image/jpeg",
             },
@@ -55,6 +56,42 @@ describe("parseHomepageCarouselPatchBody", () => {
             "https://archers-chapelle.sirv.com/chapelle/drapeau.jpg?w=240&h=160",
           width: 240,
           height: 160,
+          size: 204_800,
+          mtime: "2026-01-01T00:00:00.000Z",
+          mimetype: "image/jpeg",
+        },
+      ],
+    });
+  });
+
+  it("defaults missing size to zero", () => {
+    expect(
+      parseHomepageCarouselPatchBody({
+        settings: {
+          data: [
+            {
+              label: "Drapeau",
+              url: "https://archers-chapelle.sirv.com/chapelle/drapeau.jpg",
+              preview_url:
+                "https://archers-chapelle.sirv.com/chapelle/drapeau.jpg?w=240&h=160",
+              width: 240,
+              height: 160,
+              mtime: "2026-01-01T00:00:00.000Z",
+              mimetype: "image/jpeg",
+            },
+          ],
+        },
+      }),
+    ).toEqual({
+      data: [
+        {
+          label: "Drapeau",
+          url: "https://archers-chapelle.sirv.com/chapelle/drapeau.jpg",
+          preview_url:
+            "https://archers-chapelle.sirv.com/chapelle/drapeau.jpg?w=240&h=160",
+          width: 240,
+          height: 160,
+          size: 0,
           mtime: "2026-01-01T00:00:00.000Z",
           mimetype: "image/jpeg",
         },

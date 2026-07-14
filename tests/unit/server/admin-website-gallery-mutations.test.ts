@@ -141,6 +141,7 @@ beforeEach(() => {
         mimetype: "image/jpg",
         width: 240,
         height: 160,
+        size: 0,
         mtime: null,
       },
     },
@@ -152,6 +153,7 @@ beforeEach(() => {
     preview_url: "https://cdn.example.com/chapelle/arc-renamed.jpg?w=240&h=160",
     width: 240,
     height: 160,
+    size: 0,
     mtime: null,
   });
   deleteImagesMock.mockResolvedValue([
@@ -172,6 +174,7 @@ beforeEach(() => {
           mimetype: "image/jpg",
           width: 240,
           height: 160,
+          size: 0,
           mtime: null,
         },
         {
@@ -181,6 +184,7 @@ beforeEach(() => {
           mimetype: "image/jpg",
           width: 240,
           height: 160,
+          size: 0,
           mtime: null,
         },
       ],
@@ -214,6 +218,7 @@ describe("Admin gallery upload and rename endpoints", () => {
             mimetype: "image/jpg",
             width: 240,
             height: 160,
+            size: 0,
             mtime: null,
           },
         },
@@ -248,6 +253,7 @@ describe("Admin gallery upload and rename endpoints", () => {
           "https://cdn.example.com/chapelle/arc-renamed.jpg?w=240&h=160",
         width: 240,
         height: 160,
+        size: 0,
         mtime: null,
       },
     });
@@ -292,6 +298,7 @@ describe("Admin gallery upload and rename endpoints", () => {
           preview_url: "https://cdn.example.com/chapelle/other.jpg?w=240&h=160",
           width: 240,
           height: 160,
+          size: 0,
           mtime: null,
           mimetype: "image/jpg",
         },
