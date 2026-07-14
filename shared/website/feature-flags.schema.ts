@@ -20,6 +20,10 @@ export const FEATURE_FLAG_REGISTRY = {
     label: "Actualités (fil Facebook)",
     description: "Afficher l’onglet Actualités et le fil Facebook",
   },
+  contact_form: {
+    label: "Formulaire de contact",
+    description: "Activer le formulaire de contact",
+  },
 } as const satisfies Readonly<Record<string, FeatureFlagDefinition>>;
 
 export type FeatureFlagKey = keyof typeof FEATURE_FLAG_REGISTRY;

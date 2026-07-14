@@ -19,7 +19,9 @@ export const useFeatureFlags = () => {
   const { data, pending, error, refresh } = useAsyncData<FeatureFlagsResponse>(
     "feature-flags",
     async () => {
-      return $fetch(WEBSITE_CONFIG_PUBLIC_ENDPOINTS.featureFlags);
+      return $fetch<FeatureFlagsResponse>(
+        WEBSITE_CONFIG_PUBLIC_ENDPOINTS.featureFlags,
+      );
     },
     {
       server: false,
