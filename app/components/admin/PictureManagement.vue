@@ -20,12 +20,13 @@
         @on-confirm="deleteSelection"
       >
         <UButton
-          v-if="selectedImages.length > 0"
           icon="i-ph-trash-duotone"
-          color="error"
+          :color="selectedImages.length ? 'error' : 'neutral'"
           variant="subtle"
           :loading="isSaving"
-          :disabled="isSaving || galleryImages.length === 0"
+          :disabled="
+            isSaving || !galleryImages.length || !selectedImages.length
+          "
         />
       </ChapConfirmModal>
 
