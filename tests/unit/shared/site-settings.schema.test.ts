@@ -6,7 +6,7 @@ import {
 } from "~~/shared/website/site-settings.schema";
 
 const seed = {
-  contact_email: "archerschapelle@gmail.com",
+  contact_email: "club@example.com",
   club_address: "Gymnase Tristan Tzara, 11 rue Tristan Tzara, 75018 PARIS",
   instagram_url: "https://www.instagram.com/les_archers_de_la_chapelle",
   facebook_url: "https://www.facebook.com/archersdelachapelle",
