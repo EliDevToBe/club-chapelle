@@ -65,12 +65,18 @@
           class="w-full sm:w-auto md:w-25 md:min-h-10"
         />
       </div>
+      <p :class="ui.privacyNotice">
+        Les informations envoyées (nom, e-mail, objet, message) servent
+        uniquement à répondre à votre demande. Voir la
+        <ChapLink to="/privacy-policy" label="politique de confidentialité" />.
+      </p>
     </form>
   </ChapSection>
 </template>
 
 <script setup lang="ts">
 import ChapButton from "~/components/ui/ChapButton.vue";
+import ChapLink from "~/components/ui/ChapLink.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useFeatureFlags } from "~/composables/useFeatureFlags";
@@ -81,6 +87,7 @@ const ui = {
   form: "max-w-100 flex flex-col gap-4",
   formInput: "w-full md:w-80",
   formInputHint: "w-full md:w-80 flex items-center justify-end mr-1 gap-1",
+  privacyNotice: "w-full md:w-80 text-sm text-muted ",
 };
 
 const { addToastError, addToastSuccess, addToastInfo } = useChapToast();

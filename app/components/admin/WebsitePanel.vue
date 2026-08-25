@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col gap-3">
     <FeatureManagementAccordion v-if="isDeveloper" />
-    <SiteSettingsManagementAccordion />
     <PictureManagementAccordion />
+    <SiteSettingsManagementAccordion />
   </div>
 </template>
 

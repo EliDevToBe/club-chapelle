@@ -1,4 +1,16 @@
 <template>
+  <div class="flex gap-2 items-center mb-1 px-2">
+    <span class="text-center text-sm"
+      >Stockage&nbsp;({{ maxUnitString }})&nbsp;:&nbsp;</span
+    >
+    <UProgress
+      :color="progressColor"
+      status
+      v-model="usedStorageInfo"
+      :max="maxStorage"
+    />
+  </div>
+
   <ChapAccordionContentWrapper>
     <ChapAccordionContentAction
       description="Sélectionnez les images à afficher dans le carrousel public."
@@ -60,6 +72,13 @@
         />
       </template>
     </ChapAccordionContentAction>
+
+    <Banner
+      message="N’importez des photos de personnes identifiables qu’avec leur accord
+      (droit à l’image), d'autant plus pour les mineur·e·s"
+      color="info"
+      icon="i-ph-warning-duotone"
+    />
 
     <Banner
       v-if="galleryFetchError || carouselConfigFetchError"
@@ -176,10 +195,57 @@ const {
   isLoadingCarouselConfig,
   carouselConfigFetchError,
   refreshCarouselConfig,
+  getStorageInfo,
   uploadPictures,
   renamePicture,
   deletePictures,
 } = usePictureManagement();
+
+const maxStorage = ref(1000 * 1000 * 1000 * 5);
+const usedStorageInfo = ref(0);
+const maxUnitString = ref("");
+
+const formatBytes = (bytes: number): string => {
+  type Unit = "megabyte" | "gigabyte";
+  const unit: Unit = "megabyte";
+  const units: Record<Unit, number> = {
+    megabyte: 1_000_000,
+    gigabyte: 1_000_000_000,
+  };
+
+  return new Intl.NumberFormat("fr-FR", {
+    style: "unit",
+    unit: unit,
+    unitDisplay: "narrow",
+    maximumFractionDigits: 1,
+  }).format(bytes / units[unit]);
+};
+
+const progressColor = computed(() => {
+  const percentage = usedStorageInfo.value / maxStorage.value;
+  if (percentage < 0.8) {
+    return "success";
+  }
+  if (percentage < 0.9) {
+    return "warning";
+  }
+  return "error";
+});
+
+const loadStorageInfo = async (): Promise<void> => {
+  try {
+    const storageInfo = await getStorageInfo();
+    usedStorageInfo.value = storageInfo.used;
+    maxStorage.value = storageInfo.allowance;
+    maxUnitString.value = formatBytes(storageInfo.allowance);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+onMounted(() => {
+  void loadStorageInfo();
+});
 
 const isSaving = ref(false);
 const isUploading = ref(false);
@@ -303,7 +369,11 @@ const selectedImages = computed<HomepageCarouselItemDto[]>(() => {
 
 const refreshAll = async (): Promise<void> => {
   editingPath.value = null;
-  await Promise.all([refreshGallery(), refreshCarouselConfig()]);
+  await Promise.all([
+    refreshGallery(),
+    refreshCarouselConfig(),
+    loadStorageInfo(),
+  ]);
 };
 
 const triggerUploadPicker = (): void => {

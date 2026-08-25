@@ -1,5 +1,8 @@
 import type { SiteSettingsSeed } from "~~/shared/website/site-settings.schema";
-import { DEFAULT_CLUB_ADDRESS } from "~~/shared/website/site-settings.seed";
+import {
+  DEFAULT_CLUB_ADDRESS,
+  EMPTY_LEGAL_IDENTITY_SETTINGS,
+} from "~~/shared/website/site-settings.seed";
 import type { SiteSettingsDto } from "~~/shared/website/website-config.dto";
 import {
   WEBSITE_CONFIG_API_ENDPOINTS,
@@ -18,6 +21,7 @@ const buildClientSiteSettingsSeed = (): SiteSettingsSeed => {
     club_address: DEFAULT_CLUB_ADDRESS,
     instagram_url: config.public.socialInstagram,
     facebook_url: config.public.socialFacebook,
+    ...EMPTY_LEGAL_IDENTITY_SETTINGS,
   };
 };
 
@@ -28,17 +32,14 @@ export const useSiteSettings = () => {
   const { data, pending, error, refresh } = useAsyncData<SiteSettingsResponse>(
     "site-settings",
     async () => {
-      return $fetch(WEBSITE_CONFIG_PUBLIC_ENDPOINTS.siteSettings);
+      return $fetch<SiteSettingsResponse>(
+        WEBSITE_CONFIG_PUBLIC_ENDPOINTS.siteSettings,
+      );
     },
     {
       default: () => {
         return {
-          settings: {
-            contact_email: seed.contact_email,
-            club_address: seed.club_address,
-            instagram_url: seed.instagram_url,
-            facebook_url: seed.facebook_url,
-          },
+          settings: { ...seed },
         };
       },
     },
@@ -64,7 +65,9 @@ export const useSiteSettings = () => {
     return settings.value.facebook_url;
   });
 
-  const saveSettings = async (nextSettings: SiteSettingsDto): Promise<void> => {
+  const saveSettings = async (
+    patch: Partial<SiteSettingsDto>,
+  ): Promise<void> => {
     isSaving.value = true;
 
     try {
@@ -72,7 +75,7 @@ export const useSiteSettings = () => {
         method: "PATCH",
         credentials: "include",
         body: {
-          settings: nextSettings,
+          settings: patch,
         },
       });
 

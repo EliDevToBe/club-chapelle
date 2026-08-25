@@ -69,8 +69,10 @@ import { useChapToast } from "~/composables/useChapToasts";
 import { useSiteSettings } from "~/composables/useSiteSettings";
 import { useZod } from "~/composables/useZod";
 import { normaliseUrl } from "~~/shared/utils/base-string.helper";
-import { parseSiteSettings } from "~~/shared/website/site-settings.schema";
-import type { SiteSettingsDto } from "~~/shared/website/website-config.dto";
+import {
+  type ContactSiteSettings,
+  parseContactSiteSettings,
+} from "~~/shared/website/site-settings.schema";
 
 const ui = {
   rootWrapper: "flex flex-col gap-3 px-2 pb-2",
@@ -83,7 +85,7 @@ const { addToastError, addToastSuccess } = useChapToast();
 const { getZodIssues } = useZod();
 const { settings, saveSettings, isSaving, pending } = useSiteSettings();
 
-const formState = reactive<SiteSettingsDto>({
+const formState = reactive<ContactSiteSettings>({
   contact_email: "",
   club_address: "",
   instagram_url: "",
@@ -105,10 +107,10 @@ const onSubmit = async (): Promise<void> => {
   formState.instagram_url = normaliseUrl(formState.instagram_url);
   formState.facebook_url = normaliseUrl(formState.facebook_url);
 
-  let validatedSettings: SiteSettingsDto;
+  let validatedSettings: ContactSiteSettings;
 
   try {
-    validatedSettings = parseSiteSettings({
+    validatedSettings = parseContactSiteSettings({
       contact_email: formState.contact_email,
       club_address: formState.club_address,
       instagram_url: formState.instagram_url,
