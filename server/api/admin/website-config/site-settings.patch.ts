@@ -1,10 +1,12 @@
-import { UpdateWebsiteConfig } from "~~/application/website/update-website-config.use-case";
+import { PatchSiteSettings } from "~~/application/website/patch-site-settings.use-case";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { toWebsiteConfigDto } from "~~/server/mappers/website-config.mapper";
 import { requireRoles } from "~~/server/utils/rbac";
 import { buildSiteSettingsSeed } from "~~/server/utils/site-settings-seed";
-import { parseSiteSettingsPatchBody } from "~~/server/utils/website-config";
-import { WEBSITE_CONFIG_KEYS } from "~~/shared/website/website-config.keys";
+import {
+  mapSiteSettingsPatchError,
+  parseSiteSettingsPatchBody,
+} from "~~/server/utils/website-config";
 
 type SiteSettingsPatchBody = {
   settings?: unknown;
@@ -15,18 +17,21 @@ export default defineEventHandler(async (event) => {
 
   const seed = buildSiteSettingsSeed(event);
   const body = await readBody<SiteSettingsPatchBody>(event);
-  const normalisedSettings = parseSiteSettingsPatchBody(body, seed);
+  const patch = parseSiteSettingsPatchBody(body);
   const { websiteConfigRepository } = getRepositories();
-  const updateWebsiteConfigHandler = new UpdateWebsiteConfig(
+  const patchSiteSettingsHandler = new PatchSiteSettings(
     websiteConfigRepository,
-  );
-  const config = await updateWebsiteConfigHandler.update(
-    WEBSITE_CONFIG_KEYS.siteSettings,
-    normalisedSettings,
+    seed,
   );
 
-  return {
-    website_config: toWebsiteConfigDto(config),
-    settings: normalisedSettings,
-  };
+  try {
+    const { config, settings } = await patchSiteSettingsHandler.patch(patch);
+
+    return {
+      website_config: toWebsiteConfigDto(config),
+      settings,
+    };
+  } catch (error) {
+    return mapSiteSettingsPatchError(error);
+  }
 });
