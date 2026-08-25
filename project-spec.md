@@ -21,12 +21,14 @@ This document describes goals, functional requirements, role permissions, domain
 ## 2. Public website
 
 
-| Area           | Purpose                                                                                              |
-| -------------- | ---------------------------------------------------------------------------------------------------- |
-| **Landing**    | First impression, key messages, entry to the rest of the site.                                       |
-| **Infos**      | Practical and club information (schedule, pricing, club philosophy—see **Editable public content**). |
-| **Contact**    | How to reach the club: **site settings** (email, address, social links) plus the **contact form**; not a CMS page. |
-| **Actualités** | Public **Facebook feed** (v0.8): read-only recent posts with links to each post on Facebook.         |
+| Area                    | Purpose                                                                                              |
+| ----------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Landing**             | First impression, key messages, entry to the rest of the site.                                       |
+| **Infos**               | Practical and club information (schedule, pricing, club philosophy—see **Editable public content**). |
+| **Contact**             | How to reach the club: **site settings** (email, address, social links) plus the **contact form**; not a CMS page. |
+| **Actualités**          | Public **Facebook feed** (v0.8): read-only recent posts with links to each post on Facebook.         |
+| **Legal notice**        | LCEN publisher and host identification (`/legal-notice`); identity fields from **site settings**. |
+| **Privacy policy**      | GDPR/CNIL privacy policy (`/privacy-policy`), including strictly necessary session cookies.         |
 
 
 **Navigation**
@@ -43,10 +45,19 @@ This document describes goals, functional requirements, role permissions, domain
 
 **Site settings (v1.1)**
 
-- **Admin-managed** values stored in JSON **`website_config`** (same pattern as the landing carousel): contact **email**, club **address**, **Instagram** and **Facebook** profile URLs.
-- The **Contact** page **displays** these settings; it is not a surface for editable content blocks.
-- Runtime config or environment variables may provide **seed defaults** until settings are saved; public social **display** URLs should ultimately come from admin-managed settings.
+- **Admin-managed** values stored in JSON **`website_config`** (same pattern as the landing carousel): contact **email**, club **address** (practice venue, e.g. gymnasium), **Instagram** and **Facebook** profile URLs, plus **legal identity** used on mentions légales: **registered office** (siège social — **not** the gymnasium address), **publication director**, **RNA**, optional **SIRET**, and **hosting provider** name, address, and phone.
+- The **Contact** page **displays** contact email, club address, and social links; it is not a surface for editable content blocks.
+- Runtime config or environment variables may provide **seed defaults** until settings are saved; public social **display** URLs should ultimately come from admin-managed settings. Legal identity fields may start **empty** and must be filled before a public production launch.
 - Facebook **API secrets** for the feed remain server-side env only.
+
+**Legal pages and GDPR (pre-v2)**
+
+- Public routes **`/legal-notice`** and **`/privacy-policy`**; footer links on every page (default layout). Copy is **versioned in code**; identity interpolates from site settings.
+- The **contact form** shows an **information notice** (GDPR art. 13) and a link to `/privacy-policy`. **Do not** add an “I accept the GDPR” checkbox (false consent).
+- Member space is **invitation-only** (no public self-registration). **No public terms of use (CGU).** When invitations ship (v1.5), the invitation e-mail and activation form must link to `/privacy-policy` (information only — still no CGU checkbox).
+- Session cookies `club-access` and `club-refresh` are **strictly necessary**; document them in the privacy policy. **No cookie banner** unless a tracker, pixel, or client-side Facebook SDK is added.
+- **No terms of sale (CGV)** until the site takes online payment or distance selling.
+- Internal processing record and bureau checklist: [`docs/legal/registre-des-traitements.md`](docs/legal/registre-des-traitements.md), [`docs/legal/checklist-bureau.md`](docs/legal/checklist-bureau.md).
 
 **Editable public content (v1.2)**
 
@@ -299,6 +310,7 @@ Evolve the Listener into an **AI-oriented workflow** that:
 - **Simplicity:** favour a **small** surface area over feature sprawl in early releases.
 - **Accessibility:** baseline WCAG-minded patterns (exact audit scope TBD).
 - **Security:** role checks on **every** sensitive action; protect **PII** and session boundaries.
+- **Legal / GDPR:** public LCEN mentions and a CNIL-aligned privacy policy (purposes, legal bases, retention, processors, rights, CNIL complaint). Keep processing minimised. Update [`docs/legal/registre-des-traitements.md`](docs/legal/registre-des-traitements.md) when a new purpose is added.
 
 ---
 
@@ -313,7 +325,7 @@ Evolve the Listener into an **AI-oriented workflow** that:
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **MVP**  | **Public showcase:** **landing**, **infos**, **contact**, configurable **Instagram** and **Facebook** links. **Plus:** **Admin-managed landing gallery**—upload images and **curate which appear** (and in which order, if required) on the landing **carousel**; public site reads that curated set. |
 | **v0.8** | Public **Facebook feed** (**Actualités** tab): read-only recent posts with outbound links; server fetch + cache; degraded mode when API unavailable.        |
-| **v1.1** | **Site settings** (Admin): contact email, club address, social profile URLs; **Contact** page wired to settings.                                            |
+| **v1.1** | **Site settings** (Admin): contact email, club address, social profile URLs, **legal identity** (registered office, publication director, RNA/SIRET, host); **Contact** page wired to settings. |
 | **v1.2** | **Editable public content** (Admin): Accueil welcome + Infos hybrid blocks (text + structured créneaux/tarifs).                                           |
 | **v1**   | **Back-office:** archers (internal shell), **competitions**, **participations**—**without** email linking yet (Archer before full Member implementation). |
 | **v1.5** | **Member invitation**, **role management**, **Admin** panel **overview**.                                                                                 |
