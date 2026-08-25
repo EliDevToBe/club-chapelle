@@ -5,8 +5,7 @@ import {
   toHomepageCarouselSettings,
 } from "~~/server/mappers/website-config.mapper";
 import { formatZodValidationError } from "~~/shared/utils/format-zod-error";
-import type { SiteSettingsSeed } from "~~/shared/website/site-settings.schema";
-import { parseSiteSettings } from "~~/shared/website/site-settings.schema";
+import { hasSiteSettingsPatchFields } from "~~/shared/website/site-settings.schema";
 
 type HomepageCarouselPatchBody = {
   settings?: unknown;
@@ -48,8 +47,7 @@ export const parseFeatureFlagsPatchBody = (
 
 export const parseSiteSettingsPatchBody = (
   body: SiteSettingsPatchBody | null | undefined,
-  seed: SiteSettingsSeed,
-) => {
+): Record<string, unknown> => {
   if (!body || typeof body !== "object") {
     throw createError({
       statusCode: 400,
@@ -57,16 +55,31 @@ export const parseSiteSettingsPatchBody = (
     });
   }
 
-  try {
-    return parseSiteSettings(body.settings ?? seed);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: formatZodValidationError(error, "Invalid site settings"),
-      });
-    }
-
-    throw error;
+  if (typeof body.settings !== "object" || body.settings === null) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid site settings",
+    });
   }
+
+  const patch = body.settings as Record<string, unknown>;
+  if (!hasSiteSettingsPatchFields(patch)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid site settings",
+    });
+  }
+
+  return patch;
+};
+
+export const mapSiteSettingsPatchError = (error: unknown): never => {
+  if (error instanceof ZodError) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: formatZodValidationError(error, "Invalid site settings"),
+    });
+  }
+
+  throw error;
 };

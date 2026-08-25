@@ -1,9 +1,31 @@
 <template>
   <UFooter>
     <template #left>
-      <p class="text-muted text-sm">
-        Copyright © {{ new Date().getFullYear() }} Les Archers de La Chapelle
+      <p class="text-muted text-xs">
+        Copyright © {{ new Date().getFullYear() }}
+        {{ associationName }}
       </p>
+    </template>
+
+    <template #default>
+      <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+        <UButton
+          size="xs"
+          color="neutral"
+          variant="link"
+          to="/legal-notice"
+          label="Mentions légales"
+          class="text-muted"
+        />
+        <UButton
+          size="xs"
+          color="neutral"
+          variant="link"
+          to="/privacy-policy"
+          label="Confidentialité"
+          class="text-muted"
+        />
+      </div>
     </template>
 
     <template #right>
@@ -21,6 +43,8 @@
   </UFooter>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ASSOCIATION_LEGAL_NAME } from "~~/shared/website/site-settings.seed";
 
-<style scoped lang=""></style>
+const associationName = ASSOCIATION_LEGAL_NAME;
+</script>
