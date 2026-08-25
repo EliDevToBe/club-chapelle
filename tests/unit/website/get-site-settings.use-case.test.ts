@@ -4,7 +4,7 @@ import { GetSiteSettings } from "~~/application/website/get-site-settings.use-ca
 import { WEBSITE_CONFIG_KEYS } from "~~/shared/website/website-config.keys";
 
 const seed = {
-  contact_email: "archerschapelle@gmail.com",
+  contact_email: "club@example.com",
   club_address: "Gymnase Tristan Tzara, 11 rue Tristan Tzara, 75018 PARIS",
   instagram_url: "https://www.instagram.com/les_archers_de_la_chapelle",
   facebook_url: "https://www.facebook.com/archersdelachapelle/",
@@ -34,7 +34,7 @@ describe("GetSiteSettings", () => {
     repo.findByKey = vi.fn().mockResolvedValue({
       key: WEBSITE_CONFIG_KEYS.siteSettings,
       settings: {
-        contact_email: "club@example.com",
+        contact_email: "admin@example.com",
       },
       createdAt: new Date("2026-01-01T00:00:00.000Z"),
       updatedAt: new Date("2026-01-01T00:00:00.000Z"),
@@ -43,7 +43,7 @@ describe("GetSiteSettings", () => {
     const getSiteSettingsHandler = new GetSiteSettings(repo, seed);
     await expect(getSiteSettingsHandler.get()).resolves.toEqual({
       ...seed,
-      contact_email: "club@example.com",
+      contact_email: "admin@example.com",
     });
   });
 });

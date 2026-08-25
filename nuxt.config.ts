@@ -1,7 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
-const defaultContactEmail =
-  process.env.CONTACT_FORM_TO_EMAIL ?? "archerschapelle@gmail.com";
+const defaultContactEmail = process.env.DEFAULT_CONTACT_EMAIL ?? "";
 
 export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
@@ -23,7 +22,6 @@ export default defineNuxtConfig({
     mailtrapFromEmail: process.env.MAILTRAP_FROM_EMAIL ?? "",
     mailtrapFromName:
       process.env.MAILTRAP_FROM_NAME ?? "Les Archers de la Chapelle",
-    contactFormToEmail: defaultContactEmail,
     /** Public site origin for password recovery links (no trailing slash). */
     passwordResetOrigin: process.env.PASSWORD_RESET_ORIGIN,
 
