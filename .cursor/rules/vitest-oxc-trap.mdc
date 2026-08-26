@@ -1,0 +1,26 @@
+---
+description: Do not debug oxc-walker/parseSync when Vitest fails to load; use Node 22
+alwaysApply: true
+---
+
+# Vitest oxc-walker trap
+
+If Vitest fails to load `vitest.config.ts` with:
+
+`oxc-walker: could not resolve a parseSync implementation`
+
+**Stop.** This is a **Node version** mismatch (agent default is often Node 20; this repo’s `.nvmrc` is **22**). It is **not** a missing dependency and **not** a Vitest/Nuxt config bug.
+
+## Do not
+
+- Install `oxc-parser`, `rolldown`, or related packages
+- Rewrite `vitest.config.ts`, change `envDir`, or split unit/Nuxt projects to “work around” oxc
+- Chase Nuxt `getRouteMeta` / `defineVitestProject` internals
+
+## Do
+
+1. Switch to Node 22 (`nvm use` / `.nvmrc`) and retry **once**.
+2. Prefer **`npm run test -- --run`** (or an already-running `npm run test` watch session).
+3. If it still fails for environment reasons (sandbox `.env`, user skipped permissions), **leave Vitest alone**, say tests were not executed, and finish the task.
+
+Fix **our** test failures only (assertions, schema, use cases). Never “fix” oxc.

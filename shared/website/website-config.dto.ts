@@ -1,10 +1,13 @@
 import type { FeatureFlags } from "~~/shared/website/feature-flags.schema";
+import type { OpeningHours } from "~~/shared/website/opening-hours.schema";
 import type { SiteSettings } from "~~/shared/website/site-settings.schema";
 import type { WebsiteConfigKey } from "~~/shared/website/website-config.keys";
 
 export type FeatureFlagsDto = FeatureFlags;
 
 export type SiteSettingsDto = SiteSettings;
+
+export type OpeningHoursDto = OpeningHours;
 
 export type WebsiteConfigDto = {
   key: string;

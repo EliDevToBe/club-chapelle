@@ -13,7 +13,7 @@ When requirements are ambiguous, **cite or quote** **README** and **project-spec
 ## Testing
 
 - **Default**: when changing behaviour, **add or update tests**; **create** a test file if none exists for the unit under test—see `.cursor/rules/tests-required.mdc` (Vitest layout: `tests/unit/<bounded-context>/`, `tests/nuxt/` when the Nuxt runtime is required).
-- Run **`npm run test:run`** before treating work as done (unless the user explicitly excludes tests).
+- Run **`npm run test -- --run`** on **Node 22** (`.nvmrc`) before treating work as done (unless the user explicitly excludes tests). If Vitest fails with **oxc-walker `parseSync`**, do **not** debug it—see `.cursor/rules/vitest-oxc-trap.mdc`.
 
 ## Delegation
 

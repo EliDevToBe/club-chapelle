@@ -18,5 +18,6 @@ Whenever you **add or materially change** code under **`domain/`**, **`applicati
 
 ## Before finishing
 
-- Run **`npm run test:run`** (or **`npm run test:coverage`** when coverage is relevant) and fix failures.
+- Switch to **Node 22** (`.nvmrc`) if needed, then run **`npm run test -- --run`** (or **`npm run test:coverage`** when coverage is relevant) and fix **our** test failures.
+- If Vitest fails to load with **`oxc-walker` / `parseSync`**, do **not** debug Nuxt or install oxc packages—see `.cursor/rules/vitest-oxc-trap.mdc`. Retry once on Node 22; otherwise skip and say why.
 - If you skip tests, **say why** in the summary (e.g. spike only, blocked dependency).

@@ -5,6 +5,7 @@ import {
   toHomepageCarouselSettings,
 } from "~~/server/mappers/website-config.mapper";
 import { formatZodValidationError } from "~~/shared/utils/format-zod-error";
+import { hasOpeningHoursDocumentFields } from "~~/shared/website/opening-hours.schema";
 import { hasSiteSettingsPatchFields } from "~~/shared/website/site-settings.schema";
 
 type HomepageCarouselPatchBody = {
@@ -16,6 +17,10 @@ type FeatureFlagsPatchBody = {
 };
 
 type SiteSettingsPatchBody = {
+  settings?: unknown;
+};
+
+type OpeningHoursPatchBody = {
   settings?: unknown;
 };
 
@@ -78,6 +83,45 @@ export const mapSiteSettingsPatchError = (error: unknown): never => {
     throw createError({
       statusCode: 400,
       statusMessage: formatZodValidationError(error, "Invalid site settings"),
+    });
+  }
+
+  throw error;
+};
+
+export const parseOpeningHoursPatchBody = (
+  body: OpeningHoursPatchBody | null | undefined,
+): Record<string, unknown> => {
+  if (!body || typeof body !== "object") {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid request body",
+    });
+  }
+
+  if (typeof body.settings !== "object" || body.settings === null) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid opening hours",
+    });
+  }
+
+  const patch = body.settings as Record<string, unknown>;
+  if (!hasOpeningHoursDocumentFields(patch)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid opening hours",
+    });
+  }
+
+  return patch;
+};
+
+export const mapOpeningHoursPatchError = (error: unknown): never => {
+  if (error instanceof ZodError) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: formatZodValidationError(error, "Invalid opening hours"),
     });
   }
 

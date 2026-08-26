@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   parseFeatureFlagsPatchBody,
   parseHomepageCarouselPatchBody,
+  parseOpeningHoursPatchBody,
   parseSiteSettingsPatchBody,
 } from "~~/server/utils/website-config";
 import { defaultFeatureFlags } from "~~/shared/website/feature-flags.schema";
+import { DEFAULT_OPENING_HOURS } from "~~/shared/website/opening-hours.seed";
 
 describe("parseHomepageCarouselPatchBody", () => {
   it("rejects empty payloads", () => {
@@ -168,5 +170,35 @@ describe("parseSiteSettingsPatchBody", () => {
       publication_director: "Jane Doe",
       rna_number: "W123456789",
     });
+  });
+});
+
+describe("parseOpeningHoursPatchBody", () => {
+  it("rejects empty payloads", () => {
+    expect(() => {
+      return parseOpeningHoursPatchBody(null);
+    }).toThrowError("Invalid request body");
+  });
+
+  it("rejects a missing settings object", () => {
+    expect(() => {
+      return parseOpeningHoursPatchBody({ settings: undefined });
+    }).toThrowError("Invalid opening hours");
+  });
+
+  it("rejects a patch missing document fields", () => {
+    expect(() => {
+      return parseOpeningHoursPatchBody({
+        settings: { intro: "Intro only" },
+      });
+    }).toThrowError("Invalid opening hours");
+  });
+
+  it("returns a full opening-hours document", () => {
+    expect(
+      parseOpeningHoursPatchBody({
+        settings: DEFAULT_OPENING_HOURS,
+      }),
+    ).toEqual(DEFAULT_OPENING_HOURS);
   });
 });

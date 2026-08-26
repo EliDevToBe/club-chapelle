@@ -15,7 +15,7 @@ Club life today mixes a public showcase (photos, news, contact) with operational
 ## What you get
 
 **Public site (simple and clear)**  
-A small set of main areas—**landing**, **infos**, **contact**, and (from **v0.8**) **Actualités**—with room for club photos, a read-only **Facebook feed** of recent posts (each linking out to Facebook), and links to Instagram and Facebook profiles. **Admins** will be able to edit welcome copy and Infos content blocks (**v1.2**) and contact settings such as email, address, and social URLs (**v1.1**) without code changes—see [project-spec.md](project-spec.md) and [project-roadmap.md](project-roadmap.md).
+A small set of main areas—**landing**, **infos**, **contact**, and (from **v0.8**) **Actualités**—with room for club photos, a read-only **Facebook feed** of recent posts (each linking out to Facebook), and links to Instagram and Facebook profiles. **Admins** can edit **Infos créneaux** in place on the Infos page (v1.2 POC) and contact settings such as email, address, and social URLs (**v1.1**) without code changes; remaining Infos/Accueil copy blocks follow later v1.2 slices—see [project-spec.md](project-spec.md) and [project-roadmap.md](project-roadmap.md).
 
 **Signed-in members**  
 Browse available competitions and see **their** participations in a **list/card view** at `/competitions` (date range, search, and a **Les miennes** filter; own fee and registration status where the role allows). **Calendar-style** views are planned for a later phase—see [project-spec.md](project-spec.md) and [project-roadmap.md](project-roadmap.md).
