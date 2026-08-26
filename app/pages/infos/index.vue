@@ -12,52 +12,7 @@
       </ContentTextWrapper>
     </ChapSection>
 
-    <ChapSection title="Les créneaux">
-      <ContentTextWrapper>
-        <p>
-          Actuellement nous bénéficions de
-          <span class="text-primary-500 font-semibold">quatre créneaux</span> au
-          gymnase Tristan Tzara dans le 18ème :
-        </p>
-
-        <ul :class="ui.listWrapper">
-          <ChapListItem>
-            <span :class="ui.listMainElement"
-              >le lundi soir de 19h30 à minuit :
-            </span>
-            <span>ouvert uniquement aux archer·e·s confirmé·e·s</span>
-          </ChapListItem>
-
-          <ChapListItem>
-            <span :class="[ui.listMainElement, 'text-primary-500']"
-              >le mercredi soir de 19h30 à minuit :
-            </span>
-            <span class="text-secondary-300 font-semibold underline"
-              >dédié à l'initiation</span
-            >
-            <span> mais ouvert à toutes et tous</span>
-          </ChapListItem>
-
-          <ChapListItem>
-            <span :class="ui.listMainElement"
-              >le jeudi soir de 18h à 20h :</span
-            >
-            <span> ouvert uniquement aux archer·e·s confirmé·e·s</span>
-          </ChapListItem>
-
-          <ChapListItem>
-            <span :class="ui.listMainElement"
-              >le dimanche matin de 9h à 11h :</span
-            >
-            <span> ouvert uniquement aux archer·e·s confirmé·e·s</span>
-          </ChapListItem>
-        </ul>
-
-        <p>
-          {{ content.openingHours.epilogue }}
-        </p>
-      </ContentTextWrapper>
-    </ChapSection>
+    <OpeningHoursSection />
 
     <ChapSection title="Tarifs">
       <ContentTextWrapper>
@@ -133,6 +88,7 @@
 import ContactSection from "~/components/contact/ContactSection.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ContentTextWrapper from "~/components/layout/ContentTextWrapper.vue";
+import OpeningHoursSection from "~/components/opening-hours/OpeningHoursSection.vue";
 import SocialSection from "~/components/social/SocialSection.vue";
 import ChapListItem from "~/components/ui/ChapListItem.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
@@ -151,9 +107,5 @@ const content = {
     "Notre club de tir à l'arc compte une cinquantaine d'archers et archères de tous âges. À noter que nous n'accueillons les plus jeunes qu'à partir de 14 ans.",
     "Nous pratiquons et enseignons le tir à l'arc.",
   ],
-  openingHours: {
-    epilogue:
-      "Nous pratiquons plusieurs types de tir au sein du club. La plupart d'entre nous participent à des compétitions mais le mot d'ordre de notre association est d'échanger autour de ce sport et de passer un moment agréable et convivial.",
-  },
 };
 </script>
