@@ -1,4 +1,4 @@
-import { createError, type H3Event } from "h3";
+import { createError, getRouterParam, type H3Event } from "h3";
 import { ZodError } from "zod";
 import {
   toFeatureFlagsSettings,
