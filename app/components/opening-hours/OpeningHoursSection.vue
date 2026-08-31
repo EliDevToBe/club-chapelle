@@ -166,7 +166,8 @@ const ui = {
 const { addToastError, addToastSuccess } = useChapToast();
 const { getZodIssues } = useZod();
 const { isAdmin, hydrateIfNeeded } = useAuthUser();
-const { openingHours, saveOpeningHours, isSaving, pending } = useOpeningHours();
+const { openingHours, saveOpeningHours, isSaving, pending } =
+  await useOpeningHours();
 
 const isEditing = ref(false);
 const formState = reactive<OpeningHours>({

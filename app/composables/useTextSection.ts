@@ -14,21 +14,14 @@ type TextSectionResponse = {
   settings: TextSectionDto;
 };
 
-export const useTextSection = (sectionKey: TextSectionKey) => {
+export const useTextSection = async (sectionKey: TextSectionKey) => {
   const isSaving = ref(false);
   const seed = cloneTextSection(getTextSectionSeed(sectionKey));
 
-  const { data, pending, error, refresh } = useAsyncData<TextSectionResponse>(
+  const { data, pending, error, refresh } = await useAsyncData<TextSectionResponse>(
     `text-section-${sectionKey}`,
     async () => {
       return $fetch<TextSectionResponse>(textSectionPublicEndpoint(sectionKey));
-    },
-    {
-      default: () => {
-        return {
-          settings: cloneTextSection(seed),
-        };
-      },
     },
   );
 

@@ -124,7 +124,7 @@ const ui = {
 
 const { addToastError, addToastSuccess } = useChapToast();
 const { getZodIssues } = useZod();
-const { settings, saveSettings, isSaving, pending } = useSiteSettings();
+const { settings, saveSettings, isSaving, pending } = await useSiteSettings();
 const { isDeveloper } = useAuthUser();
 
 const formState = reactive<LegalIdentitySettings>({

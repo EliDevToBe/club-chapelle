@@ -10,21 +10,14 @@ type TarifsResponse = {
   settings: TarifsDto;
 };
 
-export const useTarifs = () => {
+export const useTarifs = async () => {
   const isSaving = ref(false);
   const seed = cloneTarifs(DEFAULT_TARIFS);
 
-  const { data, pending, error, refresh } = useAsyncData<TarifsResponse>(
+  const { data, pending, error, refresh } = await useAsyncData<TarifsResponse>(
     "tarifs",
     async () => {
       return $fetch<TarifsResponse>(WEBSITE_CONFIG_PUBLIC_ENDPOINTS.tarifs);
-    },
-    {
-      default: () => {
-        return {
-          settings: cloneTarifs(seed),
-        };
-      },
     },
   );
 

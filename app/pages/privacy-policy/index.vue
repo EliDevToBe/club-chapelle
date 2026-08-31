@@ -298,7 +298,7 @@ useHead({
   title: "Politique de confidentialité - Arc18",
 });
 
-const { contactEmail } = useSiteSettings();
+const { contactEmail } = await useSiteSettings();
 const { isEnabled } = useFeatureFlags();
 const competitionFlag = isEnabled("competition_dashboard");
 const facebookFeedFlag = isEnabled("facebook_feed");

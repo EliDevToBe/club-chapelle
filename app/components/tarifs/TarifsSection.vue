@@ -222,8 +222,8 @@ const ui = {
 const { addToastError, addToastSuccess } = useChapToast();
 const { getZodIssues } = useZod();
 const { isAdmin, hydrateIfNeeded } = useAuthUser();
-const { contactEmail } = useSiteSettings();
-const { tarifs, saveTarifs, isSaving, pending } = useTarifs();
+const { contactEmail } = await useSiteSettings();
+const { tarifs, saveTarifs, isSaving, pending } = await useTarifs();
 
 const isEditing = ref(false);
 const formState = reactive<Tarifs>({

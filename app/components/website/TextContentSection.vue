@@ -139,7 +139,7 @@ const ui = {
 const { addToastError, addToastSuccess } = useChapToast();
 const { getZodIssues } = useZod();
 const { isAdmin, hydrateIfNeeded } = useAuthUser();
-const { textSection, saveTextSection, isSaving, pending } = useTextSection(
+const { textSection, saveTextSection, isSaving, pending } = await useTextSection(
   props.sectionKey,
 );
 
