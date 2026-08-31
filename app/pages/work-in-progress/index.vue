@@ -47,4 +47,8 @@ import ChapWatermark from "~/components/ui/ChapWatermark.vue";
 definePageMeta({
   layout: "default",
 });
+
+useHead({
+  title: "Travaux en cours - Arc18",
+});
 </script>

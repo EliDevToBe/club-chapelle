@@ -81,6 +81,10 @@ definePageMeta({
   layout: "default",
 });
 
+useHead({
+  title: "Contact - Arc18",
+});
+
 const ui = {
   listWrapper: "flex flex-col gap-2",
 };

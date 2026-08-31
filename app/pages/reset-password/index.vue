@@ -40,6 +40,10 @@ definePageMeta({
   layout: "default",
 });
 
+useHead({
+  title: "Nouveau mot de passe - Arc18",
+});
+
 const route = useRoute();
 const { user, setUser } = useAuthUser();
 const { addToastError, addToastSuccess } = useChapToast();

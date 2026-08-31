@@ -29,6 +29,10 @@ import WebsitePanel from "~/components/admin/WebsitePanel.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 
+useHead({
+  title: "Admin - Arc18",
+});
+
 const tabs = [
   {
     label: "Gestion du club",

@@ -96,7 +96,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Mentions légales",
+  title: "Mentions légales - Arc18",
 });
 
 const { settings, contactEmail } = useSiteSettings();

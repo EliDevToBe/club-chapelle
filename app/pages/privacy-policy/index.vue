@@ -295,7 +295,7 @@ import { useSiteSettings } from "~/composables/useSiteSettings";
 import { ASSOCIATION_LEGAL_NAME } from "~~/shared/website/site-settings.seed";
 
 useHead({
-  title: "Politique de confidentialité",
+  title: "Politique de confidentialité - Arc18",
 });
 
 const { contactEmail } = useSiteSettings();

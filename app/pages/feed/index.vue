@@ -71,6 +71,10 @@ definePageMeta({
   layout: "default",
 });
 
+useHead({
+  title: "Actualités - Arc18",
+});
+
 const { facebookUrl } = useSiteSettings();
 const socialFacebook = facebookUrl;
 

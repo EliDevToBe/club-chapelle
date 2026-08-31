@@ -31,4 +31,8 @@ import { TEXT_SECTION_KEYS } from "~~/shared/website/website-config.keys";
 definePageMeta({
   layout: "default",
 });
+
+useHead({
+  title: "Infos - Arc18",
+});
 </script>
