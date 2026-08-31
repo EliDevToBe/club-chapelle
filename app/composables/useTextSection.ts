@@ -18,12 +18,15 @@ export const useTextSection = async (sectionKey: TextSectionKey) => {
   const isSaving = ref(false);
   const seed = cloneTextSection(getTextSectionSeed(sectionKey));
 
-  const { data, pending, error, refresh } = await useAsyncData<TextSectionResponse>(
-    `text-section-${sectionKey}`,
-    async () => {
-      return $fetch<TextSectionResponse>(textSectionPublicEndpoint(sectionKey));
-    },
-  );
+  const { data, pending, error, refresh } =
+    await useAsyncData<TextSectionResponse>(
+      `text-section-${sectionKey}`,
+      async () => {
+        return $fetch<TextSectionResponse>(
+          textSectionPublicEndpoint(sectionKey),
+        );
+      },
+    );
 
   const textSection = computed((): TextSection => {
     return data.value?.settings ?? seed;

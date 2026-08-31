@@ -17,14 +17,12 @@ export const useOpeningHours = async () => {
   const isSaving = ref(false);
   const seed = cloneOpeningHours(DEFAULT_OPENING_HOURS);
 
-  const { data, pending, error, refresh } = await useAsyncData<OpeningHoursResponse>(
-    "opening-hours",
-    async () => {
+  const { data, pending, error, refresh } =
+    await useAsyncData<OpeningHoursResponse>("opening-hours", async () => {
       return $fetch<OpeningHoursResponse>(
         WEBSITE_CONFIG_PUBLIC_ENDPOINTS.openingHours,
       );
-    },
-  );
+    });
 
   const openingHours = computed((): OpeningHours => {
     return data.value?.settings ?? seed;

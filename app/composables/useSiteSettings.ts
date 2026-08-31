@@ -29,14 +29,12 @@ export const useSiteSettings = async () => {
   const isSaving = ref(false);
   const seed = buildClientSiteSettingsSeed();
 
-  const { data, pending, error, refresh } = await useAsyncData<SiteSettingsResponse>(
-    "site-settings",
-    async () => {
+  const { data, pending, error, refresh } =
+    await useAsyncData<SiteSettingsResponse>("site-settings", async () => {
       return $fetch<SiteSettingsResponse>(
         WEBSITE_CONFIG_PUBLIC_ENDPOINTS.siteSettings,
       );
-    },
-  );
+    });
 
   const settings = computed(() => {
     return data.value?.settings ?? seed;
