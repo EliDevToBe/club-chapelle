@@ -4,16 +4,26 @@ type AuthSessionResponse = {
   session: SessionUser | null;
 };
 
-let hydration: Promise<SessionUser | null> | null = null;
+/** Client-only: dedupe concurrent hydrations in the same tab. Never share across SSR requests. */
+let clientHydration: Promise<SessionUser | null> | null = null;
 
 export const useAuthUser = () => {
-  const user = useState<SessionUser | null>("auth-user", () => null);
-  const hydrated = useState<boolean>("auth-user-hydrated", () => false);
+  const user = useState<SessionUser | null>("auth-user", () => {
+    return null;
+  });
+  const hydrated = useState<boolean>("auth-user-hydrated", () => {
+    return false;
+  });
 
-  const isDeveloper = computed(() => user.value?.roles.includes("developer"));
+  const isDeveloper = computed(() => {
+    return user.value?.roles.includes("developer");
+  });
   const isAdmin = computed(() => {
-    if (isDeveloper.value) return true;
-    return user.value?.roles.includes("admin");
+    if (isDeveloper.value) {
+      return true;
+    }
+
+    return user.value?.roles.includes("admin") ?? false;
   });
 
   const setUser = (sessionSnapshot: SessionUser | null) => {
@@ -29,9 +39,9 @@ export const useAuthUser = () => {
    * Fetches the current session snapshot for both SSR and client navigation.
    *
    * On SSR, we forward the incoming `cookie` header to the same-origin
-   * `/api/auth/session` endpoint so route middleware can resolve auth state
-   * before redirect guards run (avoids auth flicker on deep links).
-   * This does not expose cookies to the browser or third parties.
+   * `/api/auth/session` endpoint so the layout can render the real auth state
+   * (avoids a logged-out flash on refresh). This does not expose cookies to
+   * the browser or third parties.
    */
   const fetchSession = async () => {
     const headers = import.meta.server
@@ -47,23 +57,27 @@ export const useAuthUser = () => {
   };
 
   const hydrateIfNeeded = async () => {
-    if (hydrated.value || user.value !== null) {
+    if (hydrated.value) {
       return user.value;
     }
 
-    if (hydration) {
-      return hydration;
+    if (import.meta.server) {
+      return fetchSession();
     }
 
-    hydration = (async () => {
+    if (clientHydration) {
+      return clientHydration;
+    }
+
+    clientHydration = (async () => {
       try {
-        const session = await fetchSession();
-        return session;
+        return await fetchSession();
       } finally {
-        hydration = null;
+        clientHydration = null;
       }
     })();
-    return hydration;
+
+    return clientHydration;
   };
 
   const login = async (email: string, password: string) => {
@@ -93,7 +107,9 @@ export const useAuthUser = () => {
     user,
     isDeveloper,
     isAdmin,
-    hydrated: computed(() => hydrated.value),
+    hydrated: computed(() => {
+      return hydrated.value;
+    }),
     hydrateIfNeeded,
     fetchSession,
     setUser,

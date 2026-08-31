@@ -20,12 +20,10 @@ export default defineNuxtRouteMiddleware(async (to, _from) => {
     preventAuthRoutes.includes(to.path) ||
     preventAuthRoutes.some((route) => to.path.startsWith(`${route}/`));
 
-  if (isAuthRequiredRoute || isAdminRoute || isPreventAuthRoute) {
-    try {
-      await hydrateIfNeeded();
-    } catch {
-      // Continue as unauthenticated
-    }
+  try {
+    await hydrateIfNeeded();
+  } catch {
+    // Continue as unauthenticated
   }
 
   // Prevent auth user from accessing key public routes
