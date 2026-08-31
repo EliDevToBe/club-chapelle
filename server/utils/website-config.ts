@@ -1,4 +1,4 @@
-import { createError } from "h3";
+import { createError, type H3Event } from "h3";
 import { ZodError } from "zod";
 import {
   toFeatureFlagsSettings,
@@ -7,6 +7,12 @@ import {
 import { formatZodValidationError } from "~~/shared/utils/format-zod-error";
 import { hasOpeningHoursDocumentFields } from "~~/shared/website/opening-hours.schema";
 import { hasSiteSettingsPatchFields } from "~~/shared/website/site-settings.schema";
+import { hasTarifsDocumentFields } from "~~/shared/website/tarifs.schema";
+import { hasTextSectionDocumentFields } from "~~/shared/website/text-section.schema";
+import {
+  asTextSectionKey,
+  type TextSectionKey,
+} from "~~/shared/website/website-config.keys";
 
 type HomepageCarouselPatchBody = {
   settings?: unknown;
@@ -22,6 +28,26 @@ type SiteSettingsPatchBody = {
 
 type OpeningHoursPatchBody = {
   settings?: unknown;
+};
+
+type TextSectionPatchBody = {
+  settings?: unknown;
+};
+
+type TarifsPatchBody = {
+  settings?: unknown;
+};
+
+export const requireTextSectionKey = (event: H3Event): TextSectionKey => {
+  const sectionKey = asTextSectionKey(getRouterParam(event, "sectionKey"));
+  if (!sectionKey) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid text section",
+    });
+  }
+
+  return sectionKey;
 };
 
 export const parseHomepageCarouselPatchBody = (
@@ -122,6 +148,84 @@ export const mapOpeningHoursPatchError = (error: unknown): never => {
     throw createError({
       statusCode: 400,
       statusMessage: formatZodValidationError(error, "Invalid opening hours"),
+    });
+  }
+
+  throw error;
+};
+
+export const parseTextSectionPatchBody = (
+  body: TextSectionPatchBody | null | undefined,
+): Record<string, unknown> => {
+  if (!body || typeof body !== "object") {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid request body",
+    });
+  }
+
+  if (typeof body.settings !== "object" || body.settings === null) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid text section",
+    });
+  }
+
+  const patch = body.settings as Record<string, unknown>;
+  if (!hasTextSectionDocumentFields(patch)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid text section",
+    });
+  }
+
+  return patch;
+};
+
+export const mapTextSectionPatchError = (error: unknown): never => {
+  if (error instanceof ZodError) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: formatZodValidationError(error, "Invalid text section"),
+    });
+  }
+
+  throw error;
+};
+
+export const parseTarifsPatchBody = (
+  body: TarifsPatchBody | null | undefined,
+): Record<string, unknown> => {
+  if (!body || typeof body !== "object") {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid request body",
+    });
+  }
+
+  if (typeof body.settings !== "object" || body.settings === null) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid tarifs",
+    });
+  }
+
+  const patch = body.settings as Record<string, unknown>;
+  if (!hasTarifsDocumentFields(patch)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid tarifs",
+    });
+  }
+
+  return patch;
+};
+
+export const mapTarifsPatchError = (error: unknown): never => {
+  if (error instanceof ZodError) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: formatZodValidationError(error, "Invalid tarifs"),
     });
   }
 

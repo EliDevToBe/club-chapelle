@@ -4,9 +4,13 @@ import {
   parseHomepageCarouselPatchBody,
   parseOpeningHoursPatchBody,
   parseSiteSettingsPatchBody,
+  parseTarifsPatchBody,
+  parseTextSectionPatchBody,
 } from "~~/server/utils/website-config";
 import { defaultFeatureFlags } from "~~/shared/website/feature-flags.schema";
 import { DEFAULT_OPENING_HOURS } from "~~/shared/website/opening-hours.seed";
+import { DEFAULT_TARIFS } from "~~/shared/website/tarifs.seed";
+import { DEFAULT_INFOS_INTRODUCTION } from "~~/shared/website/text-section.seed";
 
 describe("parseHomepageCarouselPatchBody", () => {
   it("rejects empty payloads", () => {
@@ -200,5 +204,53 @@ describe("parseOpeningHoursPatchBody", () => {
         settings: DEFAULT_OPENING_HOURS,
       }),
     ).toEqual(DEFAULT_OPENING_HOURS);
+  });
+});
+
+describe("parseTextSectionPatchBody", () => {
+  it("rejects empty payloads", () => {
+    expect(() => {
+      return parseTextSectionPatchBody(null);
+    }).toThrowError("Invalid request body");
+  });
+
+  it("rejects a patch missing document fields", () => {
+    expect(() => {
+      return parseTextSectionPatchBody({
+        settings: { title: "Titre only" },
+      });
+    }).toThrowError("Invalid text section");
+  });
+
+  it("returns a full text-section document", () => {
+    expect(
+      parseTextSectionPatchBody({
+        settings: DEFAULT_INFOS_INTRODUCTION,
+      }),
+    ).toEqual(DEFAULT_INFOS_INTRODUCTION);
+  });
+});
+
+describe("parseTarifsPatchBody", () => {
+  it("rejects empty payloads", () => {
+    expect(() => {
+      return parseTarifsPatchBody(null);
+    }).toThrowError("Invalid request body");
+  });
+
+  it("rejects a patch missing document fields", () => {
+    expect(() => {
+      return parseTarifsPatchBody({
+        settings: { title: "Tarifs only" },
+      });
+    }).toThrowError("Invalid tarifs");
+  });
+
+  it("returns a full tarifs document", () => {
+    expect(
+      parseTarifsPatchBody({
+        settings: DEFAULT_TARIFS,
+      }),
+    ).toEqual(DEFAULT_TARIFS);
   });
 });

@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import { z } from "zod";
 import {
   asNonEmptyString,
@@ -15,12 +14,16 @@ export type OpeningHoursSlot = {
 };
 
 export type OpeningHours = {
+  title: string;
+  subtitle: string;
   intro: string;
   slots: OpeningHoursSlot[];
   epilogue: string;
 };
 
 export const OPENING_HOURS_FIELD_KEYS = [
+  "title",
+  "subtitle",
   "intro",
   "slots",
   "epilogue",
@@ -36,6 +39,8 @@ export const openingHoursSlotSchema = z.object({
 });
 
 export const openingHoursSchema = z.object({
+  title: z.string().min(1, "Le titre est requis"),
+  subtitle: z.string(),
   intro: z.string(),
   slots: z.array(openingHoursSlotSchema),
   epilogue: z.string(),
@@ -67,6 +72,8 @@ const prepareOpeningHoursRecord = (
   const slotsRaw = record.slots;
 
   return {
+    title: asTrimmedString(record.title),
+    subtitle: asTrimmedString(record.subtitle),
     intro: asTrimmedString(record.intro),
     epilogue: asTrimmedString(record.epilogue),
     slots: Array.isArray(slotsRaw)
@@ -83,22 +90,13 @@ export const defaultOpeningHours = (seed: OpeningHours): OpeningHours => {
 
 export const cloneOpeningHours = (value: OpeningHours): OpeningHours => {
   return {
+    title: value.title,
+    subtitle: value.subtitle,
     intro: value.intro,
     epilogue: value.epilogue,
     slots: value.slots.map((slot) => {
       return { ...slot };
     }),
-  };
-};
-
-export const createEmptyOpeningHoursSlot = (): OpeningHoursSlot => {
-  return {
-    id: crypto.randomUUID(),
-    label: "",
-    time_range: "",
-    audience: "",
-    highlight: false,
-    highlight_text: "",
   };
 };
 
@@ -112,6 +110,11 @@ export const normaliseOpeningHours = (
 
   const slotsRaw = raw.slots;
   const merged: Record<string, unknown> = {
+    title: asNonEmptyString(raw.title) ?? seed.title,
+    subtitle:
+      typeof raw.subtitle === "string"
+        ? asTrimmedString(raw.subtitle)
+        : seed.subtitle,
     intro: asNonEmptyString(raw.intro) ?? seed.intro,
     epilogue: asNonEmptyString(raw.epilogue) ?? seed.epilogue,
     slots: Array.isArray(slotsRaw)
