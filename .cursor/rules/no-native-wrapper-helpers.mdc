@@ -45,3 +45,7 @@ export const asNonEmptyString = (value: unknown): string | null => {
 
 - Wrappers that combine steps, narrow types, or encode domain meaning.
 - Thin re-exports for module boundaries (separate from this rule).
+
+## Regex
+
+Add a human-readable comment above any regex explaining what it matches.

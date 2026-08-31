@@ -62,10 +62,10 @@ This document describes goals, functional requirements, role permissions, domain
 **Editable public content (v1.2)**
 
 - **Admin-managed** content blocks, also in JSON **`website_config`**:
-  - **Accueil:** welcome / foreword text.
-  - **Infos:** introduction (text); **créneaux** (structured availability list — **POC shipped** under `website_config` key **`opening_hours`**); **tarifs** (structured pricing list); club philosophy (text).
-- **Hybrid editing model:** paragraphs are **text blocks**; créneaux and tarifs are **structured lists** with typed fields (labels, times, amounts)—not a single WYSIWYG page per section.
-- **Schedule authority:** créneaux detail lives on **Infos**; **Admins** edit them **in place** on that page (gear beside the section title). Contact **Quand ?** reads the same `opening_hours` list **read-only**. Accueil welcome, Infos introduction, tarifs, and philosophy remain hard-coded until later v1.2 slices.
+  - **Accueil:** welcome / foreword (`homepage_welcome`) — title, optional subtitle, paragraphs.
+  - **Infos:** introduction (`infos_introduction`); **créneaux** (structured availability list under **`opening_hours`**, including the Infos section title and optional subtitle); **tarifs** (structured pricing list under **`tarifs`**: title, optional subtitle, intro, label/amount rows, styled callout segments); club philosophy (`club_philosophy`).
+- **Hybrid editing model:** paragraphs are **text blocks**; créneaux and tarifs are **structured lists** with typed fields (labels, times, amounts)—not a single WYSIWYG page per section. Tarifs callout copy is a list of styled segments (`plain` / `highlight` / `emphasis`); a segment may insert the site-settings **contact email** as a `mailto:` link rather than storing an address.
+- **Schedule authority:** créneaux detail lives on **Infos**; **Admins** edit them **in place** on that page (gear beside the section title). Contact **Quand ?** reads the same `opening_hours` **slots** read-only and keeps its own heading. Accueil welcome, Infos introduction, tarifs, and philosophy are Admin-editable **in place** on the public pages.
 
 **Media**
 
@@ -326,7 +326,7 @@ Evolve the Listener into an **AI-oriented workflow** that:
 | **MVP**  | **Public showcase:** **landing**, **infos**, **contact**, configurable **Instagram** and **Facebook** links. **Plus:** **Admin-managed landing gallery**—upload images and **curate which appear** (and in which order, if required) on the landing **carousel**; public site reads that curated set. |
 | **v0.8** | Public **Facebook feed** (**Actualités** tab): read-only recent posts with outbound links; server fetch + cache; degraded mode when API unavailable.        |
 | **v1.1** | **Site settings** (Admin): contact email, club address, social profile URLs, **legal identity** (registered office, publication director, RNA/SIRET, host); **Contact** page wired to settings. |
-| **v1.2** | **Editable public content** (Admin): Infos **créneaux** in-place on `/infos`; remaining Accueil welcome + Infos intro/tarifs/philosophy. |
+| **v1.2** | **Editable public content** (Admin): Infos **créneaux**, Accueil welcome, Infos intro / tarifs / philosophy, in-place on the public pages. |
 | **v1**   | **Back-office:** archers (internal shell), **competitions**, **participations**—**without** email linking yet (Archer before full Member implementation). |
 | **v1.5** | **Member invitation**, **role management**, **Admin** panel **overview**.                                                                                 |
 | **v2**   | **Calendar** overview (public competitions + member participations as specified).                                                                         |
