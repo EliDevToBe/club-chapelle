@@ -1,6 +1,8 @@
 import type { FeatureFlags } from "~~/shared/website/feature-flags.schema";
 import type { OpeningHours } from "~~/shared/website/opening-hours.schema";
 import type { SiteSettings } from "~~/shared/website/site-settings.schema";
+import type { Tarifs } from "~~/shared/website/tarifs.schema";
+import type { TextSection } from "~~/shared/website/text-section.schema";
 import type { WebsiteConfigKey } from "~~/shared/website/website-config.keys";
 
 export type FeatureFlagsDto = FeatureFlags;
@@ -8,6 +10,10 @@ export type FeatureFlagsDto = FeatureFlags;
 export type SiteSettingsDto = SiteSettings;
 
 export type OpeningHoursDto = OpeningHours;
+
+export type TextSectionDto = TextSection;
+
+export type TarifsDto = Tarifs;
 
 export type WebsiteConfigDto = {
   key: string;

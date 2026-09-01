@@ -78,12 +78,12 @@ const ui = {
   rootWrapper: "flex flex-col gap-3 px-2 pb-2",
   formWrapper: "flex flex-col md:flex-row gap-20",
   fieldsWrapper: "flex flex-col gap-8 w-full",
-  actionsWrapper: "flex justify-end",
+  actionsWrapper: "flex justify-end pt-4",
 };
 
 const { addToastError, addToastSuccess } = useChapToast();
 const { getZodIssues } = useZod();
-const { settings, saveSettings, isSaving, pending } = useSiteSettings();
+const { settings, saveSettings, isSaving, pending } = await useSiteSettings();
 
 const formState = reactive<ContactSiteSettings>({
   contact_email: "",

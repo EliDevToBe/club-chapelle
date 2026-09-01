@@ -72,13 +72,17 @@ import ChapSection from "~/components/ui/ChapSection.vue";
 import { useOpeningHours } from "~/composables/useOpeningHours";
 import { useSiteSettings } from "~/composables/useSiteSettings";
 
-const { contactEmail, clubAddress, facebookUrl } = useSiteSettings();
-const { openingHours } = useOpeningHours();
+const { contactEmail, clubAddress, facebookUrl } = await useSiteSettings();
+const { openingHours } = await useOpeningHours();
 
 const socialFacebook = facebookUrl;
 
 definePageMeta({
   layout: "default",
+});
+
+useHead({
+  title: "Contact - Arc18",
 });
 
 const ui = {

@@ -22,6 +22,8 @@ Use separate slices (e.g. per context: `domain`, `application`, `infrastructure`
 - **archer** — internal Archer records and optional linkage to a user account.
 - **competitions** — competition events (metadata, lifecycle).
 - **participations** — participation records (Archer ↔ Competition), including **fee status** per participation.
+- **website** — public site content and JSON `website_config` (site settings, opening hours, tarifs, text sections, gallery).
+- **file** — stored files and related metadata (e.g. competition documents; not the landing-gallery CDN flow).
 
 Cross-context calls go through application-layer orchestration or explicit anti-corruption layers—avoid “god” imports across contexts.
 

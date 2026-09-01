@@ -71,7 +71,11 @@ definePageMeta({
   layout: "default",
 });
 
-const { facebookUrl } = useSiteSettings();
+useHead({
+  title: "Actualités - Arc18",
+});
+
+const { facebookUrl } = await useSiteSettings();
 const socialFacebook = facebookUrl;
 
 const { posts, pending, error } = useFacebookFeed();

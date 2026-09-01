@@ -1,0 +1,39 @@
+---
+description: Shared schema files are contracts only — no editor helpers, draft factories, or Node built-ins
+globs: shared/**/*.schema.ts
+alwaysApply: false
+---
+
+# Shared schema files stay isomorphic contracts
+
+`shared/**/*.schema.ts` is the client/server contract: types, Zod schemas, `prepare` / `parse` / `normalise` / `clone`, and field-key helpers used at HTTP boundaries.
+
+## Do not put in schema files
+
+- Editor draft factories (`createEmpty…`, blank rows, client-only ids)
+- UI-only helpers with a **single caller** (visibility, presentation, form defaults)
+- `node:` built-ins (`node:crypto`, `node:fs`, …) — Vite externalises them and they throw in the browser
+
+## Where single-caller helpers go
+
+Keep them at the call site (the Vue component). Use the Web Crypto global for ids:
+
+```typescript
+const createEmptyItem = (): Item => {
+  return {
+    id: crypto.randomUUID(),
+    label: "",
+  };
+};
+```
+
+Do **not** extract a composable for a pure factory with no reactive state.
+
+Promote to `shared/` only when a **second** caller (another component, use case, or handler) needs the same helper **and** it is part of the document contract, not the editor.
+
+## Allowed in schema files
+
+- Types and Zod schemas
+- Normalise-then-parse helpers (see `zod-validation-only.mdc`)
+- Deep `clone` used by both UI and server
+- Field-key / document-shape checks used by PATCH handlers

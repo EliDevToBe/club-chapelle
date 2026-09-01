@@ -64,10 +64,40 @@ describe("normaliseOpeningHours", () => {
         DEFAULT_OPENING_HOURS,
       ),
     ).toEqual({
+      title: DEFAULT_OPENING_HOURS.title,
+      subtitle: DEFAULT_OPENING_HOURS.subtitle,
       intro: DEFAULT_OPENING_HOURS.intro,
       slots: [],
       epilogue: DEFAULT_OPENING_HOURS.epilogue,
     });
+  });
+
+  it("keeps an empty stored subtitle instead of the seed", () => {
+    expect(
+      normaliseOpeningHours(
+        {
+          title: DEFAULT_OPENING_HOURS.title,
+          subtitle: "",
+          intro: DEFAULT_OPENING_HOURS.intro,
+          slots: DEFAULT_OPENING_HOURS.slots,
+          epilogue: DEFAULT_OPENING_HOURS.epilogue,
+        },
+        { ...DEFAULT_OPENING_HOURS, subtitle: "Ancien sous-titre" },
+      ).subtitle,
+    ).toBe("");
+  });
+
+  it("falls back to the seed title when stored settings omit it", () => {
+    expect(
+      normaliseOpeningHours(
+        {
+          intro: DEFAULT_OPENING_HOURS.intro,
+          slots: DEFAULT_OPENING_HOURS.slots,
+          epilogue: DEFAULT_OPENING_HOURS.epilogue,
+        },
+        DEFAULT_OPENING_HOURS,
+      ).title,
+    ).toBe(DEFAULT_OPENING_HOURS.title);
   });
 
   it("falls back to seed when a stored slot is invalid", () => {
@@ -111,6 +141,8 @@ describe("normaliseOpeningHours", () => {
         DEFAULT_OPENING_HOURS,
       ),
     ).toEqual({
+      title: DEFAULT_OPENING_HOURS.title,
+      subtitle: DEFAULT_OPENING_HOURS.subtitle,
       intro: "Intro",
       epilogue: "Outro",
       slots: [
@@ -131,6 +163,8 @@ describe("parseOpeningHours", () => {
   it("parses and trims a valid document", () => {
     expect(
       parseOpeningHours({
+        title: "  Les créneaux  ",
+        subtitle: "  Horaires  ",
         intro: "  Intro  ",
         epilogue: "  Outro  ",
         slots: [
@@ -145,6 +179,8 @@ describe("parseOpeningHours", () => {
         ],
       }),
     ).toEqual({
+      title: "Les créneaux",
+      subtitle: "Horaires",
       intro: "Intro",
       epilogue: "Outro",
       slots: [
@@ -163,6 +199,7 @@ describe("parseOpeningHours", () => {
   it("allows an empty highlight_text", () => {
     expect(
       parseOpeningHours({
+        title: "Les créneaux",
         intro: "Intro",
         epilogue: "Outro",
         slots: [
@@ -182,6 +219,7 @@ describe("parseOpeningHours", () => {
   it("rejects an empty slot label", () => {
     expect(() => {
       return parseOpeningHours({
+        title: "Les créneaux",
         intro: "Intro",
         epilogue: "Outro",
         slots: [
@@ -201,6 +239,7 @@ describe("parseOpeningHours", () => {
   it("rejects an empty slot time_range", () => {
     expect(() => {
       return parseOpeningHours({
+        title: "Les créneaux",
         intro: "Intro",
         epilogue: "Outro",
         slots: [
@@ -219,9 +258,11 @@ describe("parseOpeningHours", () => {
 });
 
 describe("hasOpeningHoursDocumentFields", () => {
-  it("requires intro, slots, and epilogue", () => {
+  it("requires title, subtitle, intro, slots, and epilogue", () => {
     expect(
       hasOpeningHoursDocumentFields({
+        title: "Les créneaux",
+        subtitle: "",
         intro: "Intro",
         slots: [],
         epilogue: "Outro",
@@ -230,6 +271,7 @@ describe("hasOpeningHoursDocumentFields", () => {
     expect(
       hasOpeningHoursDocumentFields({
         intro: "Intro",
+        slots: [],
         epilogue: "Outro",
       }),
     ).toBe(false);

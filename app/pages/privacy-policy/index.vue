@@ -295,10 +295,10 @@ import { useSiteSettings } from "~/composables/useSiteSettings";
 import { ASSOCIATION_LEGAL_NAME } from "~~/shared/website/site-settings.seed";
 
 useHead({
-  title: "Politique de confidentialité",
+  title: "Politique de confidentialité - Arc18",
 });
 
-const { contactEmail } = useSiteSettings();
+const { contactEmail } = await useSiteSettings();
 const { isEnabled } = useFeatureFlags();
 const competitionFlag = isEnabled("competition_dashboard");
 const facebookFeedFlag = isEnabled("facebook_feed");

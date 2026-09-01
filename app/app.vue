@@ -18,7 +18,11 @@ const toaster: ToasterProps = {
   progress: false,
 };
 
-onMounted(() => {
-  void useAuthUser().hydrateIfNeeded();
-});
+const { hydrateIfNeeded } = useAuthUser();
+
+try {
+  await hydrateIfNeeded();
+} catch {
+  // Render as a visitor if the session cannot be resolved.
+}
 </script>

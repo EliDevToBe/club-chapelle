@@ -1,6 +1,8 @@
 import type { OpeningHours } from "~~/shared/website/opening-hours.schema";
 
 export const DEFAULT_OPENING_HOURS: OpeningHours = {
+  title: "Les créneaux",
+  subtitle: "",
   intro:
     "Actuellement nous bénéficions de quatre créneaux au gymnase Tristan Tzara dans le 18ème :",
   slots: [
