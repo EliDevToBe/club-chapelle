@@ -4,6 +4,7 @@ import type {
   DistanceEnum,
   PaymentStatusEnum,
   RegistrationStatusEnum,
+  RoleEnum,
   TargetEnum,
 } from "~~/shared/db-enums";
 
@@ -53,4 +54,11 @@ export const translateCompetitionType: Record<CompetitionTypeEnum, string> = {
   field: "Field",
   nature: "Nature",
   d3: "D3",
+} as const;
+
+export const translateRole: Record<RoleEnum, string> = {
+  member: "Membre",
+  manager: "Manager",
+  admin: "Admin",
+  developer: "Développeur",
 } as const;

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { sortRolesByOrder, userHasRoleAccess } from "~~/domain/user/role";
+import {
+  highestRoleRank,
+  sortRolesByOrder,
+  userHasRoleAccess,
+} from "~~/domain/user/role";
 
 describe("sortRolesByOrder", () => {
   it("dedupes and orders by ROLE_ORDER", () => {
@@ -7,6 +11,17 @@ describe("sortRolesByOrder", () => {
       "member",
       "admin",
     ]);
+  });
+});
+
+describe("highestRoleRank", () => {
+  it("returns -1 for an empty list", () => {
+    expect(highestRoleRank([])).toBe(-1);
+  });
+
+  it("returns the highest ROLE_ORDER index", () => {
+    expect(highestRoleRank(["member", "admin"])).toBe(2);
+    expect(highestRoleRank(["developer"])).toBe(3);
   });
 });
 

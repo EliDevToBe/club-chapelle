@@ -22,6 +22,8 @@ describe("resolveAuthContextFromCookies", () => {
       signRefresh: vi.fn(),
       signForgotPasswordToken: vi.fn(),
       verifyForgotPasswordToken: vi.fn(),
+      signInvitationToken: vi.fn(),
+      verifyInvitationToken: vi.fn(),
       verifyAccess: vi.fn(),
       verifyRefresh: vi.fn(),
     };

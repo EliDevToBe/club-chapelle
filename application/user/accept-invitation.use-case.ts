@@ -1,0 +1,70 @@
+import type { AcceptInvitationPersistence } from "~~/application/ports/accept-invitation-persistence.port";
+import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port";
+import type { PasswordHasher } from "~~/application/ports/password-hasher.port";
+import type { UserRepository } from "~~/application/ports/user-repository.port";
+import type { SessionUser } from "~~/shared/auth/session-user";
+
+export type AcceptInvitationResult =
+  | {
+      ok: true;
+      accessToken: string;
+      refreshToken: string;
+      session: SessionUser;
+    }
+  | { ok: false; reason: string };
+
+export class AcceptInvitation {
+  constructor(
+    private readonly users: UserRepository,
+    private readonly passwords: PasswordHasher,
+    private readonly jwt: JwtAuthService,
+    private readonly persistence: AcceptInvitationPersistence,
+  ) {}
+
+  public accept = async (input: {
+    token: string;
+    password: string;
+  }): Promise<AcceptInvitationResult> => {
+    const token = input.token.trim();
+    if (!token || !input.password) {
+      return { ok: false, reason: "Invalid link or password" };
+    }
+
+    const userId = this.jwt.verifyInvitationToken(token);
+    if (!userId) {
+      return { ok: false, reason: "Invalid or expired link" };
+    }
+
+    const row = await this.users.findForPasswordResetById(userId);
+    if (!row || row.authenticated) {
+      return { ok: false, reason: "Invalid or expired link" };
+    }
+
+    const passwordHash = await this.passwords.hash(input.password);
+    const persisted = await this.persistence.completeInvitation({
+      authUserId: userId,
+      tokenValue: token,
+      passwordHash,
+    });
+
+    if (!persisted) {
+      return { ok: false, reason: "Invalid or expired link" };
+    }
+
+    const user = await this.users.findById(userId);
+    if (!user) {
+      return { ok: false, reason: "Invalid or expired link" };
+    }
+
+    return {
+      ok: true,
+      accessToken: this.jwt.signAccess(userId),
+      refreshToken: this.jwt.signRefresh(userId),
+      session: {
+        id: user.id,
+        name: user.name,
+        roles: user.roles,
+      },
+    };
+  };
+}

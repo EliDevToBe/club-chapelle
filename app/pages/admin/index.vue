@@ -7,14 +7,7 @@
     >
       <UTabs :items="tabs" default-value="club" class="w-full">
         <template #content="{ item }">
-          <div
-            v-if="item.value === 'club'"
-            class="rounded-lg border border-default p-4"
-          >
-            <p class="text-sm text-muted">
-              Les outils de gestion du club arriveront dans cette section.
-            </p>
-          </div>
+          <ClubPanel v-if="item.value === 'club'" />
 
           <WebsitePanel v-else />
         </template>
@@ -25,6 +18,7 @@
 
 <script setup lang="ts">
 import type { TabsItem } from "@nuxt/ui";
+import ClubPanel from "~/components/admin/ClubPanel.vue";
 import WebsitePanel from "~/components/admin/WebsitePanel.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
