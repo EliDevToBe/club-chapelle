@@ -96,10 +96,10 @@ definePageMeta({
 });
 
 useHead({
-  title: "Mentions légales",
+  title: "Mentions légales - Arc18",
 });
 
-const { settings, contactEmail } = useSiteSettings();
+const { settings, contactEmail } = await useSiteSettings();
 const associationName = ASSOCIATION_LEGAL_NAME;
 
 const displayOrUnspecified = (value: string): string => {

@@ -103,6 +103,10 @@ import { useAuthUser } from "~/composables/useAuthUser";
 import { calendarDateToYmd, YmdToCalendarDate } from "~/utils";
 import type { CompetitionListingDto } from "~~/shared/competitions/competition-listing.dto";
 
+useHead({
+  title: "Compétitions - Arc18",
+});
+
 type CompetitionsFilters = {
   start?: string;
   end?: string;

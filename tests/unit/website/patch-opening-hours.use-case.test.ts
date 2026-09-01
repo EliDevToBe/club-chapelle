@@ -6,6 +6,8 @@ import { DEFAULT_OPENING_HOURS } from "~~/shared/website/opening-hours.seed";
 import { WEBSITE_CONFIG_KEYS } from "~~/shared/website/website-config.keys";
 
 const nextHours = {
+  title: "Les créneaux",
+  subtitle: "Horaires du gymnase",
   intro: "Nous proposons cinq créneaux :",
   epilogue: "Nouveau mot de la fin.",
   slots: [

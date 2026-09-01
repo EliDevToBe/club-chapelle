@@ -66,8 +66,10 @@
         />
       </div>
       <p :class="ui.privacyNotice">
-        Les informations envoyées (nom, e-mail, objet, message) servent
-        uniquement à répondre à votre demande. Voir la
+        Les informations envoyées servent uniquement à répondre à votre demande.
+      </p>
+      <p :class="ui.privacyNotice">
+        Voir la
         <ChapLink to="/privacy-policy" label="politique de confidentialité" />.
       </p>
     </form>

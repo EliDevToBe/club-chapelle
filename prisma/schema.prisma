@@ -122,7 +122,7 @@ model auth_user {
 }
 
 model auth_user_role {
-  auth_user_id String    @db.Uuid
+  auth_user_id String    @id @db.Uuid
   role         role      @default(member)
   auth_user    auth_user @relation(fields: [auth_user_id], references: [id], onDelete: Cascade)
 

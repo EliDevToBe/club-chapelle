@@ -19,4 +19,8 @@ import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 definePageMeta({
   layout: "default",
 });
+
+useHead({
+  title: "Arc18 La Chapelle",
+});
 </script>

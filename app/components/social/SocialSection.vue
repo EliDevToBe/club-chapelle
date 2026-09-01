@@ -29,7 +29,7 @@ import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 import { useSiteSettings } from "~/composables/useSiteSettings";
 
-const { instagramUrl, facebookUrl } = useSiteSettings();
+const { instagramUrl, facebookUrl } = await useSiteSettings();
 
 const socialInstagram = instagramUrl;
 const socialFacebook = facebookUrl;

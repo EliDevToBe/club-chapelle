@@ -24,6 +24,10 @@ definePageMeta({
   layout: "default",
 });
 
+useHead({
+  title: "Connexion - Arc18",
+});
+
 const route = useRoute();
 const { addToastError, addToastSuccess } = useChapToast();
 const { login, user } = useAuthUser();
