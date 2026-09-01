@@ -5,8 +5,8 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  quality:
-    name: Quality check
+  checks:
+    name: Checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -26,5 +26,22 @@ jobs:
           npm run check:schema
 
       - run: npm run check:ts
+
+  tests:
+    name: Test suites
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx prisma generate
 
       - run: npm run test:run
