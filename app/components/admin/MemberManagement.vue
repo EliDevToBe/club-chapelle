@@ -20,9 +20,13 @@
     <div v-else-if="errorMessage" class="text-sm text-error">
       {{ errorMessage }}
     </div>
-    <p v-else-if="rows.length === 0" class="text-sm text-muted">
-      Aucun compte pour le moment.
-    </p>
+    <Banner
+      color="secondary"
+      icon="i-ph-info-duotone"
+      message="Aucun compte pour le moment."
+      v-else-if="rows.length === 0"
+    >
+    </Banner>
     <template v-else>
       <UTable :data="visibleRows" :columns="columns">
         <template #name-cell="{ row }">
