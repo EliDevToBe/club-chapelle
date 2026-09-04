@@ -3,7 +3,7 @@
     <template #trailing v-if="clearable && !!model">
       <div
         class="cursor-pointer text-secondary hover:text-secondary-500 flex justify-center items-center shrink-0"
-        @click="model = undefined"
+        @click="model = ''"
       >
         <UIcon name="i-ph-x-bold" class="size-4" />
       </div>
