@@ -52,14 +52,14 @@
     <Banner
       color="secondary"
       icon="i-ph-info-duotone"
-      message="Aucun compte pour le moment."
+      message="Aucun compte pour le moment"
       v-else-if="!isLoading && !hasActiveFilters && total === 0"
     >
     </Banner>
     <Banner
       color="secondary"
       icon="i-ph-magnifying-glass-duotone"
-      message="Aucun résultat pour ces filtres."
+      message="Aucun résultat pour ces filtres"
       v-else-if="!isLoading && hasActiveFilters && total === 0"
     >
     </Banner>

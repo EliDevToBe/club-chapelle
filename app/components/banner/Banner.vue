@@ -13,7 +13,7 @@ const props = defineProps<{
 }>();
 
 const ui = {
-  base: "rounded-md border px-3 py-2 text-sm flex items-center gap-2",
+  base: "rounded-md border px-3 py-2 text-sm flex items-center justify-center gap-2",
   color: "border-$color/40 bg-$color/10 text-$color",
 };
 
