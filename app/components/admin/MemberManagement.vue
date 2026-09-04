@@ -32,6 +32,7 @@
           v-model="filter.status"
           :items="statusFilterItems"
           placeholder="Tous"
+          class="w-full"
         />
       </UFormField>
 
@@ -40,32 +41,33 @@
           v-model="filter.role"
           :items="roleFilterItems"
           placeholder="Tous"
+          class="w-full"
         />
       </UFormField>
     </div>
 
-    <div v-if="isLoading" class="text-sm text-muted">Chargement…</div>
-    <div v-else-if="errorMessage" class="text-sm text-error">
+    <div v-if="errorMessage" class="text-sm text-error">
       {{ errorMessage }}
     </div>
     <Banner
       color="secondary"
       icon="i-ph-info-duotone"
       message="Aucun compte pour le moment."
-      v-else-if="!hasActiveFilters && total === 0"
+      v-else-if="!isLoading && !hasActiveFilters && total === 0"
     >
     </Banner>
     <Banner
       color="secondary"
       icon="i-ph-magnifying-glass-duotone"
       message="Aucun résultat pour ces filtres."
-      v-else-if="hasActiveFilters && total === 0"
+      v-else-if="!isLoading && hasActiveFilters && total === 0"
     >
     </Banner>
     <template v-else>
-      <UTable :data="rows" :columns="columns">
+      <UTable :data="tableRows" :columns="columns">
         <template #name-cell="{ row }">
-          <div v-if="row.original.archer_id" class="min-w-40">
+          <USkeleton v-if="isLoading" class="h-4 w-28" />
+          <div v-else-if="row.original.archer_id" class="min-w-40">
             <UInput
               v-if="editingArcherId === row.original.archer_id"
               v-model="editingPublicName"
@@ -87,8 +89,14 @@
           </div>
           <span v-else>{{ row.original.public_name }}</span>
         </template>
+        <template #email-cell="{ row }">
+          <USkeleton v-if="isLoading" class="h-4 w-40" />
+          <span v-else>{{ row.original.email ?? "—" }}</span>
+        </template>
         <template #status-cell="{ row }">
+          <USkeleton v-if="isLoading" class="h-6 w-16 rounded-lg" />
           <UBadge
+            v-else
             size="sm"
             variant="subtle"
             :color="statusBadgeColor(row.original.status)"
@@ -98,8 +106,9 @@
           </UBadge>
         </template>
         <template #roles-cell="{ row }">
+          <USkeleton v-if="isLoading" class="h-6 w-24 rounded-lg" />
           <div
-            v-if="row.original.roles.length > 0"
+            v-else-if="row.original.roles.length > 0"
             class="flex flex-wrap gap-1.5 whitespace-nowrap"
           >
             <UBadge
@@ -116,8 +125,9 @@
           <span v-else class="text-muted">—</span>
         </template>
         <template #actions-cell="{ row }">
+          <USkeleton v-if="isLoading" class="h-6 w-6 rounded-md" />
           <UDropdownMenu
-            v-if="hasActionsForRow(row.original)"
+            v-else-if="hasActionsForRow(row.original)"
             :items="buildActionItemsForRow(row.original)"
             :content="{ align: 'end' }"
           >
@@ -140,6 +150,7 @@
           v-model:page="currentPage"
           :total="total"
           :items-per-page="pageSize"
+          :disabled="isLoading"
           show-edges
           color="primary"
         />
@@ -254,6 +265,11 @@ const ui = {
     "rounded-lg border border-default",
     "bg-neutral-800/30",
   ],
+  colName: "min-w-40",
+  colEmail: "min-w-48",
+  colStatus: "min-w-24 whitespace-nowrap",
+  colRoles: "min-w-28 whitespace-nowrap",
+  colActions: "w-12",
 };
 
 const statusFilterItems: ChapSelectMenuItem[] = [
@@ -277,47 +293,44 @@ const pageSize = computed(() => {
     : MEMBER_ROSTER_PAGE_SIZE_MOBILE;
 });
 
+const columnCellClass = (className: string) => {
+  return {
+    class: {
+      th: className,
+      td: className,
+    },
+  };
+};
+
 const columns: TableColumn<MemberRow>[] = [
   {
     id: "name",
     accessorKey: "public_name",
     header: "Nom",
+    meta: columnCellClass(ui.colName),
   },
   {
+    id: "email",
     accessorKey: "email",
     header: "E-mail",
-    cell: ({ row }) => {
-      return row.original.email ?? "—";
-    },
+    meta: columnCellClass(ui.colEmail),
   },
   {
     id: "status",
     accessorKey: "status",
     header: "Statut",
-    meta: {
-      class: {
-        td: "whitespace-nowrap",
-      },
-    },
+    meta: columnCellClass(ui.colStatus),
   },
   {
     id: "roles",
     accessorKey: "roles",
     header: "Rôles",
-    meta: {
-      class: {
-        td: "whitespace-nowrap",
-      },
-    },
+    meta: columnCellClass(ui.colRoles),
   },
   {
     id: "actions",
     header: "",
-    meta: {
-      class: {
-        td: "w-12",
-      },
-    },
+    meta: columnCellClass(ui.colActions),
   },
 ];
 
@@ -359,6 +372,35 @@ const statusBadgeColor = (
 
 const rows = computed((): MemberRow[] => {
   return items.value;
+});
+
+const skeletonRowCount = computed(() => {
+  if (total.value === 0) {
+    return pageSize.value;
+  }
+
+  const remaining = total.value - (currentPage.value - 1) * pageSize.value;
+  return Math.min(pageSize.value, Math.max(remaining, 1));
+});
+
+const skeletonRows = computed((): MemberRow[] => {
+  return Array.from({ length: skeletonRowCount.value }, (_, index) => {
+    return {
+      status: "shell",
+      user_id: null,
+      archer_id: `skeleton-${index}`,
+      email: null,
+      public_name: "",
+      roles: [],
+    };
+  });
+});
+
+const tableRows = computed((): MemberRow[] => {
+  if (isLoading.value) {
+    return skeletonRows.value;
+  }
+  return rows.value;
 });
 
 const hasActiveFilters = computed(() => {
