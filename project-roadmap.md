@@ -162,7 +162,7 @@ _Order: persistence and authenticated Admin surfaces before exposing mutations; 
 - [x] ✅ **Admin competition creation** from browse: modal (title, place, dates, category, type, championship, price) via `useCompetition` → `POST /api/competitions`; `season_year` inferred server-side from `start_date`.
 - [x] ✅ **Archer search + create** from the placement combobox (`ArcherSelect` / `useArcher` `listPage` + `create`) — no dedicated roster page.
 - [ ] **Edit / delete competition** from browse (`PATCH`/`DELETE /api/competitions/:id` exist; `useCompetition` is create-only).
-- [ ] **Archer roster + edit / delete** (`PATCH`/`DELETE /api/archers/:id` exist; create-only combobox today).
+- [ ] **Archer roster + edit / delete** — member roster: inline `public_name` edit + shell delete with participation cascade (`DELETE /api/archers/:id`, Admin Gestion du club). Competition browse combobox remains create-only for archers.
 - [ ] **Update / remove participation** from browse, including fee and registration status (`useParticipation.update` / `remove` unused; `CompetitionParticipant` badges are read-only).
 - [x] ✅ **Admin Gestion du club** ClubPanel + member list/invite (`/admin` club tab). Archer roster and other staff ops remain open above.
 
