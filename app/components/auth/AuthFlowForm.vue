@@ -113,6 +113,20 @@
           class="w-full sm:w-auto px-4"
         />
       </div>
+
+      <template v-if="mode === 'invitationRegister'">
+        <p :class="ui.privacyNotice">
+          En créant votre compte, le club conserve vos données pour gérer
+          l’espace membre.
+        </p>
+        <p :class="ui.privacyNotice">
+          Voir la
+          <ChapLink
+            to="/privacy-policy"
+            label="politique de confidentialité"
+          />.
+        </p>
+      </template>
     </div>
   </UForm>
 
@@ -123,6 +137,7 @@
 
 <script setup lang="ts">
 import ChapButton from "~/components/ui/ChapButton.vue";
+import ChapLink from "~/components/ui/ChapLink.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useZod } from "~/composables/useZod";
 import {
@@ -181,6 +196,7 @@ const ui = {
   formInput: "w-full md:w-80",
   formActions: "w-full md:w-80 mt-4 flex items-center justify-end",
   rowBetween: "w-full md:w-80 flex justify-start",
+  privacyNotice: "w-full md:w-80 text-sm text-muted mt-3",
 };
 
 const form = reactive({

@@ -3,10 +3,18 @@ import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port"
 import {
   ACCESS_TOKEN_MAX_AGE_SECONDS,
   FORGOT_PASSWORD_TOKEN_MAX_AGE_SECONDS,
+  INVITATION_TOKEN_MAX_AGE_SECONDS,
   REFRESH_TOKEN_MAX_AGE_SECONDS,
 } from "~~/shared/auth/jwt-lifetimes";
 
-type AccessPayload = jwt.JwtPayload & { forgot_password?: boolean };
+type AccessPayload = jwt.JwtPayload & {
+  forgot_password?: boolean;
+  invitation?: boolean;
+};
+
+const isMagicLinkPayload = (payload: AccessPayload): boolean => {
+  return payload.forgot_password === true || payload.invitation === true;
+};
 
 const readSub = (payload: jwt.JwtPayload): string | null => {
   if (typeof payload.sub === "string" && payload.sub.length > 0) {
@@ -54,10 +62,29 @@ export class JsonWebTokenAuthService implements JwtAuthService {
     }
   };
 
+  public signInvitationToken = (userId: string): string => {
+    return jwt.sign({ invitation: true }, this.accessSecret, {
+      subject: userId,
+      expiresIn: INVITATION_TOKEN_MAX_AGE_SECONDS,
+    });
+  };
+
+  public verifyInvitationToken = (token: string): string | null => {
+    try {
+      const payload = jwt.verify(token, this.accessSecret) as AccessPayload;
+      if (payload.invitation !== true) {
+        return null;
+      }
+      return readSub(payload);
+    } catch {
+      return null;
+    }
+  };
+
   public verifyAccess = (token: string): string | null => {
     try {
       const payload = jwt.verify(token, this.accessSecret) as AccessPayload;
-      if (payload.forgot_password === true) {
+      if (isMagicLinkPayload(payload)) {
         return null;
       }
       return readSub(payload);

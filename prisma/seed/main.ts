@@ -61,7 +61,7 @@ const main = async () => {
         name: spec.public_name,
         email: spec.email,
         password: null,
-        authenticated: true,
+        authenticated: spec.authenticated,
         roles: {
           create: { role: spec.role },
         },

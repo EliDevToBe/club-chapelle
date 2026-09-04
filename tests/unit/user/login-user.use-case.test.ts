@@ -35,6 +35,8 @@ beforeEach(() => {
     signRefresh: vi.fn().mockReturnValue("refresh-jwt"),
     signForgotPasswordToken: vi.fn(),
     verifyForgotPasswordToken: vi.fn(),
+    signInvitationToken: vi.fn(),
+    verifyInvitationToken: vi.fn(),
     verifyAccess: vi.fn(),
     verifyRefresh: vi.fn(),
   };

@@ -6,3 +6,6 @@ export const REFRESH_TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 3;
 
 /** Forgot-password recovery JWT lifetime in seconds (1 hour). */
 export const FORGOT_PASSWORD_TOKEN_MAX_AGE_SECONDS = 60 * 60;
+
+/** Invitation JWT lifetime in seconds (7 days). */
+export const INVITATION_TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
