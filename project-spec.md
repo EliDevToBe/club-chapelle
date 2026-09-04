@@ -129,6 +129,7 @@ Capabilities are cumulative by level.
 - **Creating competitions** and **assigning participants** is **Admin-only** (not Manager) per current spec.
 - **MVP landing gallery:** only **Admin** may **upload** images or **curate** the public landing **carousel** set (Manager upload is **out of scope** for MVP; revisit after MVP if the club wants to widen who may publish visuals).
 - **Member invitation (shipped):** the matrix still lists **Manager** as an intended inviter, but **current delivery is Admin-only** (`POST /api/invitations`, ClubPanel on `/admin`). `/admin` is Admin-gated; Manager invite waits for a Manager-accessible surface. **Admin** may also **bind an existing unlinked Archer shell** via `POST /api/invitations/bind-archer` from the member roster (email only; `public_name` stays on the Archer). The admin roster list is **server-filtered and paginated** via `GET /api/members/roster` (`search`, `status`, `role`, `limit`, `offset`).
+- **Admin member roster (shipped):** archer-centric rows (`active`, `invited`, `shell`) in **Gestion du club**. Linked accounts with the **`developer`** role are **omitted** from the roster (maintainer role, not club-facing). **Admin** may **edit `public_name` inline** (`PATCH /api/archers/:id`), **re-invite** pending members, **revoke** linked accounts (`POST /api/users/:id/revoke`), and **delete unlinked shells** only (`DELETE /api/archers/:id`; participations for that Archer are removed in the same transaction; blocked when an account is still linked).
 
 ### 3.3 Technical session model (reference)
 
@@ -189,6 +190,7 @@ An **Archer** is an internal entity representing a person in the club’s data m
 
 - Holds **historical** links to **participations** and related records.
 - When a **Member** account is **revoked**, the **user** is unlinked from the Archer; the **Archer** and past participations remain for audit and continuity.
+- **Admin** may **delete** an **unlinked shell** Archer (`DELETE /api/archers/:id`); participations for that Archer are removed in the same transaction. Deletion is rejected when the Archer is still linked to an account (revoke first).
 
 ### 4.2 Member (authenticated user)
 
