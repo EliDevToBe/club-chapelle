@@ -128,7 +128,7 @@ Capabilities are cumulative by level.
 - Only **Admin** may **revoke** and **unlink** accounts from the **Archer** shell (preserving history).
 - **Creating competitions** and **assigning participants** is **Admin-only** (not Manager) per current spec.
 - **MVP landing gallery:** only **Admin** may **upload** images or **curate** the public landing **carousel** set (Manager upload is **out of scope** for MVP; revisit after MVP if the club wants to widen who may publish visuals).
-- **Member invitation (shipped):** the matrix still lists **Manager** as an intended inviter, but **current delivery is Admin-only** (`POST /api/invitations`, ClubPanel on `/admin`). `/admin` is Admin-gated; Manager invite waits for a Manager-accessible surface. Binding an existing unlinked **Archer** shell is **out of scope** for this slice (invite **creates** a new Archer).
+- **Member invitation (shipped):** the matrix still lists **Manager** as an intended inviter, but **current delivery is Admin-only** (`POST /api/invitations`, ClubPanel on `/admin`). `/admin` is Admin-gated; Manager invite waits for a Manager-accessible surface. **Admin** may also **bind an existing unlinked Archer shell** via `POST /api/invitations/bind-archer` from the member roster (email only; `public_name` stays on the Archer).
 
 ### 3.3 Technical session model (reference)
 
@@ -143,8 +143,9 @@ This subsection documents how the **implemented** HTTP session works today (**co
 - **Middleware (Nitro):** On `/api/**` routes (except `POST /api/auth/login`), the server verifies the access JWT from `club-access`, loads the user from the database by `sub`, and sets server **`event.context`** for RBAC. If access is missing or invalid but `club-refresh` verifies, the server issues a **new** access JWT, sets **`Set-Cookie`** for `club-access`, then continues with the same user resolution.
 - **Login / logout:** `POST /api/auth/login` validates email and password and sets both cookies. `POST /api/auth/logout` clears both cookies (no database session row to delete).
 - **Password recovery:** `POST /api/auth/forgot-password` sends a transactional e-mail with a **recovery JWT** (separate verification from session access tokens) and records a **`token`** row (`forgot_password`). `POST /api/auth/reset-password` updates `auth_user.password` and sets that row’s **`used_at`** in one transaction, then issues new access and refresh cookies like a successful login.
-- **Member invitation:** `POST /api/invitations` (**Admin**) creates an invited `auth_user` (`authenticated: false`) and a linked Archer, issues an **invitation JWT** (`token_type.invitation`, 7 days; not valid as a session access token), and sends template mail. `POST /api/auth/accept-invitation` sets the password, marks the user authenticated, consumes the token, and issues session cookies. See §3.2 exclusion (Admin-only delivery; no bind-existing-shell).
-- **Revocation limits:** Without server-side refresh/session storage, revoking **all** devices for a user is not automatic beyond password change or future token blocklists.
+- **Member invitation:** `POST /api/invitations` (**Admin**) creates an invited `auth_user` (`authenticated: false`) and a linked Archer, issues an **invitation JWT** (`token_type.invitation`, 7 days; not valid as a session access token), and sends template mail. `POST /api/invitations/bind-archer` (**Admin**) links an **existing unlinked** Archer shell to a new or pending invited account (same mail/token flow). `POST /api/auth/accept-invitation` sets the password, marks the user authenticated, consumes the token, and issues session cookies. See §3.2 (Admin-only delivery).
+- **Member revoke:** `POST /api/users/:id/revoke` (**Admin**) unlinks all Archers from the user, clears the password, sets `authenticated: false`, and revokes unused tokens; the `auth_user` row and Archer history remain. Self-revoke is rejected. Session JWTs are not blocklisted (see revocation limits below).
+- **Revocation limits:** Without server-side refresh/session storage, revoking **all** devices for a user is not automatic beyond password change, revoke (clears password), or future token blocklists.
 
 ```mermaid
 sequenceDiagram
@@ -191,7 +192,7 @@ An **Archer** is an internal entity representing a person in the club’s data m
 
 ### 4.2 Member (authenticated user)
 
-A **Member** is a user account that may be **linked** to an Archer. The shipped **Admin** invite flow **creates** a new Archer (`public_name` = invitee name) and links it to the new account. Binding an existing unlinked Archer shell is later (see §3.2 exclusions).
+A **Member** is a user account that may be **linked** to an Archer. The shipped **Admin** invite flow **creates** a new Archer (`public_name` = invitee name) and links it to the new account. **Admin** may also invite an **existing unlinked Archer shell** (`POST /api/invitations/bind-archer`) from the member roster.
 
 ### 4.3 Competition & participation
 

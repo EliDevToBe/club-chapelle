@@ -179,11 +179,11 @@ _Order: persistence and authenticated Admin surfaces before exposing mutations; 
 
 **Depends on:** v0.5 (auth foundation) and v1 (data to attach people to).
 
-- [x] ✅ **Email-based invitation** for **Admin** to onboard **Members**: create `auth_user` (invited) + linked archer, `POST /api/invitations`, invitation JWT + `token` row, Mailtrap template, **`/accept-invite`**. **Not** Manager invite; **not** binding an existing archer shell.
+- [x] ✅ **Email-based invitation** for **Admin** to onboard **Members**: create `auth_user` (invited) + linked archer, `POST /api/invitations`, invitation JWT + `token` row, Mailtrap template, **`/accept-invite`**. **Not** Manager invite. **Also:** bind existing unlinked archer shell via `POST /api/invitations/bind-archer` from the admin member roster.
 - [x] ✅ **Invitation privacy notice:** e-mail template variables include **`privacy_policy_url`**; activation form shows an **information** notice + `/privacy-policy` (no public CGU checkbox).
 - [ ] **RBAC** matches **inheritance** (Admin > Manager > Member) **or** document a deliberate exception and get product sign-off — today’s `requireRoles` uses **explicit** role lists (`server/utils/rbac.ts`).
 - [ ] **Promote** Member → Manager; **demote** Manager → Member (Admin-only per matrix).
-- [ ] **Revoke** access and **unlink** login from **Archer** without deleting historical participations (Admin-only; **Archer shell** invariant in §4.1).
+- [x] ✅ **Revoke** access and **unlink** login from **Archer** without deleting historical participations (Admin-only; **Archer shell** invariant in §4.1): `POST /api/users/:id/revoke`, roster `...` menu + confirm modal; disables login and keeps `auth_user`.
 - [ ] **Admin overview** surface: consolidated management for members, roles, and quick paths toward fee workflows (see also v2.5).
 
 ---
