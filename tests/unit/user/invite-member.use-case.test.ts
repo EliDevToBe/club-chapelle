@@ -55,6 +55,7 @@ describe("InviteMember", () => {
         ok: true,
         user: invitedUser,
       }),
+      bindInvitedMemberToArcher: vi.fn(),
     };
     tokens = { issueToken: vi.fn() };
     jwt = {
@@ -149,7 +150,7 @@ describe("InviteMember", () => {
     expect(tokens.issueToken).not.toHaveBeenCalled();
   });
 
-  it("resends when the user is already invited", async () => {
+  it("resends when the user is already invited and allowResent is true", async () => {
     users.findByEmailForPasswordReset = vi.fn().mockResolvedValue({
       id: existingInvited.id,
       email: existingInvited.email,
@@ -170,6 +171,7 @@ describe("InviteMember", () => {
     const result = await handler.invite({
       name: "Ignored Name",
       email: existingInvited.email,
+      allowResent: true,
     });
 
     expect(result).toEqual({
@@ -180,6 +182,37 @@ describe("InviteMember", () => {
     });
     expect(persistence.createInvitedMember).not.toHaveBeenCalled();
     expect(jwt.signInvitationToken).toHaveBeenCalledWith(existingInvited.id);
+  });
+
+  it("rejects a pending invite when allowResent is false", async () => {
+    users.findByEmailForPasswordReset = vi.fn().mockResolvedValue({
+      id: existingInvited.id,
+      email: existingInvited.email,
+      name: existingInvited.name,
+      authenticated: false,
+      passwordHash: null,
+    });
+
+    const handler = new InviteMember(
+      users,
+      persistence,
+      tokens,
+      jwt,
+      mail,
+      options,
+    );
+    const result = await handler.invite({
+      name: "Ignored Name",
+      email: existingInvited.email,
+      allowResent: false,
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      reason: "already_invited",
+    });
+    expect(persistence.createInvitedMember).not.toHaveBeenCalled();
+    expect(tokens.issueToken).not.toHaveBeenCalled();
   });
 
   it("rejects when the public name is already taken", async () => {

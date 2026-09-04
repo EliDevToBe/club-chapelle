@@ -15,6 +15,21 @@ describe("prepareInviteMemberBody", () => {
     ).toEqual({
       name: "Alex Archer",
       email: "alex@club.test",
+      allow_resent: false,
+    });
+  });
+
+  it("keeps allow_resent when provided", () => {
+    expect(
+      prepareInviteMemberBody({
+        name: "Alex",
+        email: "alex@club.test",
+        allow_resent: true,
+      }),
+    ).toEqual({
+      name: "Alex",
+      email: "alex@club.test",
+      allow_resent: true,
     });
   });
 });
@@ -29,6 +44,7 @@ describe("parseInviteMemberBody", () => {
     ).toEqual({
       name: "Alex",
       email: "alex@club.test",
+      allow_resent: false,
     });
   });
 

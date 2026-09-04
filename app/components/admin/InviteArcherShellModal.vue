@@ -3,7 +3,7 @@
     <template #content>
       <div :class="ui.root">
         <div :class="ui.header">
-          <span :class="ui.title">Inviter un·e membre</span>
+          <span :class="ui.title">Inviter {{ publicName }}</span>
           <UButton
             icon="i-ph-x-bold"
             variant="link"
@@ -19,15 +19,10 @@
         </div>
 
         <div :class="ui.body">
-          <UFormField label="Nom" required>
-            <ChapInput
-              :class="name.trim() ? ui.validField : ''"
-              v-model="name"
-              placeholder="Robin H."
-              class="w-full"
-            />
-          </UFormField>
-
+          <p class="text-sm text-muted">
+            L’archer·ère existe déjà. Indiquez l’e-mail pour créer le compte et
+            envoyer l’invitation.
+          </p>
           <UFormField label="E-mail" required>
             <ChapInput
               :class="email.trim() ? ui.validField : ''"
@@ -56,9 +51,14 @@ import ChapInput from "~/components/ui/ChapInput.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useMemberManagement } from "~/composables/useMemberManagement";
 import {
-  inviteMemberBodySchema,
-  prepareInviteMemberBody,
-} from "~~/shared/invitation/invite-member.schema";
+  inviteArcherShellBodySchema,
+  prepareInviteArcherShellBody,
+} from "~~/shared/invitation/invite-archer-shell.schema";
+
+const props = defineProps<{
+  archerId: string;
+  publicName: string;
+}>();
 
 const emit = defineEmits<{
   invited: [];
@@ -66,10 +66,9 @@ const emit = defineEmits<{
 
 const isOpen = defineModel<boolean>("open");
 
-const name = ref("");
 const email = ref("");
 
-const { invite, isInviting } = useMemberManagement();
+const { inviteShell, isInviting } = useMemberManagement();
 const { addToastError, addToastSuccess } = useChapToast();
 
 const ui = {
@@ -82,11 +81,10 @@ const ui = {
 };
 
 const canSubmit = computed(() => {
-  return name.value.trim().length > 0 && email.value.trim().length > 0;
+  return email.value.trim().length > 0;
 });
 
 const resetForm = (): void => {
-  name.value = "";
   email.value = "";
 };
 
@@ -113,29 +111,31 @@ const statusMessageFromError = (error: unknown): string | undefined => {
 };
 
 const onInvite = async (): Promise<void> => {
-  const parsed = inviteMemberBodySchema.safeParse(
-    prepareInviteMemberBody({
-      name: name.value,
+  const parsed = inviteArcherShellBodySchema.safeParse(
+    prepareInviteArcherShellBody({
+      archer_id: props.archerId,
       email: email.value,
     }),
   );
   if (!parsed.success) {
     addToastError({
-      description: "Vérifiez le nom et l’adresse e-mail.",
+      description: "Vérifiez l’adresse e-mail.",
     });
     return;
   }
 
   try {
-    const result = await invite({
-      ...parsed.data,
-      allow_resent: false,
-    });
+    const result = await inviteShell(parsed.data);
     if (!result.mail_sent) {
       addToastError({
-        title: "Membre créé",
+        title: result.resent ? "Invitation enregistrée" : "Compte lié",
         description:
           "Le compte existe, mais l’e-mail n’a pas pu être envoyé. Réessayez plus tard.",
+      });
+    } else if (result.resent) {
+      addToastSuccess({
+        title: "Invitation renvoyée",
+        description: "Un nouvel e-mail a été envoyé.",
       });
     } else {
       addToastSuccess({
@@ -154,16 +154,19 @@ const onInvite = async (): Promise<void> => {
       });
       return;
     }
-    if (statusCode === 409 && statusMessage === "Account already invited") {
+    if (statusCode === 409 && statusMessage === "Archer already linked") {
       addToastError({
-        description:
-          "Une invitation est déjà en cours pour cette adresse. Utilisez « Renvoyer l’invitation » dans la liste.",
+        description: "Cet·te archer·ère est déjà lié·e à un compte.",
       });
       return;
     }
-    if (statusCode === 409 && statusMessage === "Public name already taken") {
+    if (
+      statusCode === 409 &&
+      statusMessage === "Email already linked to another archer"
+    ) {
       addToastError({
-        description: "Ce nom est déjà utilisé par un·e archer·ère.",
+        description:
+          "Cette adresse e-mail est déjà liée à un·e autre archer·ère.",
       });
       return;
     }

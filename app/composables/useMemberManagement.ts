@@ -1,19 +1,26 @@
+import type { ArcherDto } from "~~/shared/archer/archer.dto";
+import type { InviteArcherShellResponseDto } from "~~/shared/invitation/invite-archer-shell.dto";
 import type { InviteMemberResponseDto } from "~~/shared/invitation/invite-member.dto";
-import type { UserDto } from "~~/shared/user/user.dto";
+import type { MemberRosterItemDto } from "~~/shared/member/member-roster.dto";
 
 export const useMemberManagement = () => {
   const isLoading = ref(false);
   const isInviting = ref(false);
-  const users = ref<UserDto[]>([]);
+  const isRevoking = ref(false);
+  const isUpdatingPublicName = ref(false);
+  const items = ref<MemberRosterItemDto[]>([]);
 
-  const list = async (): Promise<UserDto[]> => {
+  const listRoster = async (): Promise<MemberRosterItemDto[]> => {
     isLoading.value = true;
     try {
-      const response = await $fetch<{ users: UserDto[] }>("/api/users", {
-        credentials: "include",
-      });
-      users.value = response.users;
-      return response.users;
+      const response = await $fetch<{ items: MemberRosterItemDto[] }>(
+        "/api/members/roster",
+        {
+          credentials: "include",
+        },
+      );
+      items.value = response.items;
+      return response.items;
     } finally {
       isLoading.value = false;
     }
@@ -22,6 +29,7 @@ export const useMemberManagement = () => {
   const invite = async (body: {
     name: string;
     email: string;
+    allow_resent?: boolean;
   }): Promise<InviteMemberResponseDto> => {
     isInviting.value = true;
     try {
@@ -39,11 +47,68 @@ export const useMemberManagement = () => {
     }
   };
 
+  const inviteShell = async (body: {
+    archer_id: string;
+    email: string;
+  }): Promise<InviteArcherShellResponseDto> => {
+    isInviting.value = true;
+    try {
+      const response = await $fetch<InviteArcherShellResponseDto>(
+        "/api/invitations/bind-archer",
+        {
+          method: "POST",
+          credentials: "include",
+          body,
+        },
+      );
+      return response;
+    } finally {
+      isInviting.value = false;
+    }
+  };
+
+  const revoke = async (userId: string): Promise<void> => {
+    isRevoking.value = true;
+    try {
+      await $fetch(`/api/users/${userId}/revoke`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      isRevoking.value = false;
+    }
+  };
+
+  const updatePublicName = async (
+    archerId: string,
+    publicName: string,
+  ): Promise<ArcherDto> => {
+    isUpdatingPublicName.value = true;
+    try {
+      const response = await $fetch<{ archer: ArcherDto }>(
+        `/api/archers/${archerId}`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          body: { public_name: publicName },
+        },
+      );
+      return response.archer;
+    } finally {
+      isUpdatingPublicName.value = false;
+    }
+  };
+
   return {
-    users,
+    items,
     isLoading,
     isInviting,
-    list,
+    isRevoking,
+    isUpdatingPublicName,
+    listRoster,
     invite,
+    inviteShell,
+    revoke,
+    updatePublicName,
   };
 };

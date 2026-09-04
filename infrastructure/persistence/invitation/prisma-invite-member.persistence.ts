@@ -1,4 +1,6 @@
 import type {
+  BindInvitedMemberToArcherInput,
+  BindInvitedMemberToArcherResult,
   CreateInvitedMemberInput,
   CreateInvitedMemberResult,
   InviteMemberPersistence,
@@ -74,6 +76,89 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
       }
       if (uniqueTargetIncludes(error, "public_name")) {
         return { ok: false, reason: "public_name_taken" };
+      }
+      throw error;
+    }
+  };
+
+  public bindInvitedMemberToArcher = async (
+    input: BindInvitedMemberToArcherInput,
+  ): Promise<BindInvitedMemberToArcherResult> => {
+    try {
+      return await prismaClient.$transaction(async (tx) => {
+        const archer = await tx.archer.findUnique({
+          where: { id: input.archerId },
+        });
+        if (!archer) {
+          return { ok: false, reason: "archer_not_found" };
+        }
+        if (archer.auth_user_id) {
+          return { ok: false, reason: "archer_already_linked" };
+        }
+
+        const existingUser = await tx.auth_user.findFirst({
+          where: {
+            email: { equals: input.email, mode: "insensitive" },
+          },
+          include: {
+            roles: true,
+            archers: { select: { id: true } },
+          },
+        });
+
+        if (existingUser) {
+          if (existingUser.authenticated) {
+            return { ok: false, reason: "already_authenticated" };
+          }
+
+          const linkedElsewhere = existingUser.archers.some(
+            (linkedArcher) => linkedArcher.id !== input.archerId,
+          );
+          if (linkedElsewhere) {
+            return { ok: false, reason: "email_linked_elsewhere" };
+          }
+
+          await tx.archer.update({
+            where: { id: input.archerId },
+            data: { auth_user_id: existingUser.id },
+          });
+
+          const updated = await tx.auth_user.update({
+            where: { id: existingUser.id },
+            data: {
+              name: input.name,
+              authenticated: false,
+              password: null,
+            },
+            include: { roles: true },
+          });
+
+          return { ok: true, user: toDomain(updated), resent: true };
+        }
+
+        const created = await tx.auth_user.create({
+          data: {
+            email: input.email,
+            name: input.name,
+            authenticated: false,
+            password: null,
+            roles: {
+              create: { role: "member" },
+            },
+          },
+          include: { roles: true },
+        });
+
+        await tx.archer.update({
+          where: { id: input.archerId },
+          data: { auth_user_id: created.id },
+        });
+
+        return { ok: true, user: toDomain(created), resent: false };
+      });
+    } catch (error) {
+      if (uniqueTargetIncludes(error, "email")) {
+        return { ok: false, reason: "email_taken" };
       }
       throw error;
     }

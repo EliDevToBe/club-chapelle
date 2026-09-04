@@ -1,5 +1,6 @@
 import { createError } from "h3";
-import { InviteMember } from "~~/application/user/invite-member.use-case";
+import { FindArcherById } from "~~/application/archer/find-archer-by-id.use-case";
+import { InviteArcherShell } from "~~/application/user/invite-archer-shell.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
 import {
   createMailtrapTransactionalMailSender,
@@ -9,11 +10,11 @@ import { getRepositories } from "~~/infrastructure/persistence/repositories.prov
 import { toUserDto } from "~~/server/mappers/user.mapper";
 import { requireRoles } from "~~/server/utils/rbac";
 import type { RoleEnum } from "~~/shared/db-enums";
-import type { InviteMemberResponseDto } from "~~/shared/invitation/invite-member.dto";
+import type { InviteArcherShellResponseDto } from "~~/shared/invitation/invite-archer-shell.dto";
 import {
-  inviteMemberBodySchema,
-  prepareInviteMemberBody,
-} from "~~/shared/invitation/invite-member.schema";
+  inviteArcherShellBodySchema,
+  prepareInviteArcherShellBody,
+} from "~~/shared/invitation/invite-archer-shell.schema";
 
 const allowedRoles: RoleEnum[] = ["admin"];
 
@@ -69,8 +70,8 @@ export default defineEventHandler(async (event) => {
     typeof body === "object" && body !== null
       ? body
       : ({} as Record<string, unknown>);
-  const parsed = inviteMemberBodySchema.safeParse(
-    prepareInviteMemberBody(record),
+  const parsed = inviteArcherShellBodySchema.safeParse(
+    prepareInviteArcherShellBody(record),
   );
 
   if (!parsed.success) {
@@ -80,8 +81,18 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { userRepository, tokenRepository, inviteMemberPersistence } =
+  const { archerRepository, tokenRepository, inviteMemberPersistence } =
     getRepositories();
+
+  const findArcherByIdHandler = new FindArcherById(archerRepository);
+  const archer = await findArcherByIdHandler.findById(parsed.data.archer_id);
+  if (!archer) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Archer not found",
+    });
+  }
+
   const authServices = createAuthServices({
     accessSecret,
     refreshSecret,
@@ -94,8 +105,7 @@ export default defineEventHandler(async (event) => {
 
   const inviteOrigin = (config.passwordResetOrigin as string) || "";
 
-  const inviteMemberHandler = new InviteMember(
-    userRepository,
+  const inviteArcherShellHandler = new InviteArcherShell(
     inviteMemberPersistence,
     tokenRepository,
     authServices.jwt,
@@ -108,10 +118,10 @@ export default defineEventHandler(async (event) => {
     },
   );
 
-  const result = await inviteMemberHandler.invite({
-    name: parsed.data.name,
+  const result = await inviteArcherShellHandler.invite({
+    archerId: parsed.data.archer_id,
     email: parsed.data.email,
-    allowResent: parsed.data.allow_resent === true,
+    publicName: archer.publicName,
   });
 
   if (!result.ok) {
@@ -121,16 +131,22 @@ export default defineEventHandler(async (event) => {
         statusMessage: "Account already active",
       });
     }
-    if (result.reason === "already_invited") {
+    if (result.reason === "archer_already_linked") {
       throw createError({
         statusCode: 409,
-        statusMessage: "Account already invited",
+        statusMessage: "Archer already linked",
       });
     }
-    if (result.reason === "public_name_taken") {
+    if (result.reason === "email_linked_elsewhere") {
       throw createError({
         statusCode: 409,
-        statusMessage: "Public name already taken",
+        statusMessage: "Email already linked to another archer",
+      });
+    }
+    if (result.reason === "archer_not_found") {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Archer not found",
       });
     }
     throw createError({
@@ -139,7 +155,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const response: InviteMemberResponseDto = {
+  const response: InviteArcherShellResponseDto = {
     user: toUserDto(result.user),
     mail_sent: result.mailSent,
     resent: result.resent,
