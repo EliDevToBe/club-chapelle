@@ -13,11 +13,17 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const { archerRepository } = getRepositories();
-  const deleteArcherHandler = new DeleteArcher(archerRepository);
-  const deleted = await deleteArcherHandler.delete(id);
+  const { deleteArcherPersistence } = getRepositories();
+  const deleteArcherHandler = new DeleteArcher(deleteArcherPersistence);
+  const result = await deleteArcherHandler.delete(id);
 
-  if (!deleted) {
+  if (!result.ok) {
+    if (result.reason === "archer_linked") {
+      throw createError({
+        statusCode: 409,
+        statusMessage: "Archer is linked to an account",
+      });
+    }
     throw createError({ statusCode: 404, statusMessage: "Archer not found" });
   }
 

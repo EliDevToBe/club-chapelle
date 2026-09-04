@@ -1,4 +1,5 @@
 import { PrismaArcherRepository } from "./archer/prisma-archer.repository";
+import { PrismaDeleteArcherPersistence } from "./archer/prisma-delete-archer.persistence";
 import { PrismaCompetitionRepository } from "./competitions/prisma-competition.repository";
 import { PrismaAcceptInvitationPersistence } from "./invitation/prisma-accept-invitation.persistence";
 import { PrismaInviteMemberPersistence } from "./invitation/prisma-invite-member.persistence";
@@ -16,6 +17,7 @@ const createRepositories = () => ({
   inviteMemberPersistence: new PrismaInviteMemberPersistence(),
   acceptInvitationPersistence: new PrismaAcceptInvitationPersistence(),
   revokeMemberAccessPersistence: new PrismaRevokeMemberAccessPersistence(),
+  deleteArcherPersistence: new PrismaDeleteArcherPersistence(),
   archerRepository: new PrismaArcherRepository(),
   competitionRepository: new PrismaCompetitionRepository(),
   participationRepository: new PrismaParticipationRepository(),

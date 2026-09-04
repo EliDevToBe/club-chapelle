@@ -124,6 +124,12 @@
       description="Le compte ne pourra plus se connecter. L’archer·ère et l’historique des participations sont conservés."
       @on-confirm="confirmRevoke"
     />
+    <ChapConfirmModal
+      v-model:open="showDeleteModal"
+      title="⚠️ Supprimer l’archer·ère ?"
+      description="L’archer·ère et l’historique des participations seront supprimés définitivement. Cette action est irréversible."
+      @on-confirm="confirmDelete"
+    />
   </ChapAccordionContentWrapper>
 </template>
 
@@ -158,6 +164,7 @@ const {
   listRoster,
   invite,
   revoke,
+  deleteArcher,
   updatePublicName,
 } = useMemberManagement();
 const { user: sessionUser } = useAuthUser();
@@ -166,11 +173,14 @@ const { addToastError, addToastSuccess } = useChapToast();
 const showInviteModal = ref(false);
 const showShellInviteModal = ref(false);
 const showRevokeModal = ref(false);
+const showDeleteModal = ref(false);
+
 const shellInviteTarget = ref<{
   archer_id: string;
   public_name: string;
 } | null>(null);
 const revokeTargetUserId = ref<string | null>(null);
+const deleteTargetArcherId = ref<string | null>(null);
 const errorMessage = ref<string | null>(null);
 const currentPage = ref(1);
 const editingArcherId = ref<string | null>(null);
@@ -419,6 +429,48 @@ const confirmRevoke = async (): Promise<void> => {
   }
 };
 
+const openDeleteConfirm = (row: MemberRow): void => {
+  if (row.status !== "shell" || !row.archer_id) {
+    return;
+  }
+  deleteTargetArcherId.value = row.archer_id;
+  showDeleteModal.value = true;
+};
+
+const confirmDelete = async (): Promise<void> => {
+  const archerId = deleteTargetArcherId.value;
+  deleteTargetArcherId.value = null;
+  if (!archerId) {
+    return;
+  }
+
+  try {
+    await deleteArcher(archerId);
+    addToastSuccess({
+      title: "Archer·ère supprimé·e",
+    });
+    await loadRoster();
+  } catch (error) {
+    const statusMessage =
+      typeof error === "object" &&
+      error !== null &&
+      "statusMessage" in error &&
+      typeof (error as { statusMessage: unknown }).statusMessage === "string"
+        ? (error as { statusMessage: string }).statusMessage
+        : undefined;
+    if (statusMessage === "Archer is linked to an account") {
+      addToastError({
+        description:
+          "Impossible de supprimer un·e archer·ère lié·e à un compte. Révoquez l’accès d’abord.",
+      });
+      return;
+    }
+    addToastError({
+      description: "Impossible de supprimer l’archer·ère. Réessayez plus tard.",
+    });
+  }
+};
+
 const renewInvite = async (row: MemberRow): Promise<void> => {
   if (!row.email) {
     return;
@@ -490,6 +542,20 @@ const buildActionItemsForRow = (row: MemberRow): DropdownMenuItem[][] => {
         color: "error",
         onSelect: () => {
           openRevokeConfirm(row);
+        },
+      },
+    ]);
+  }
+
+  const canDelete = row.status === "shell" && Boolean(row.archer_id);
+  if (canDelete) {
+    groups.push([
+      {
+        icon: "i-ph-trash-duotone",
+        color: "error",
+        label: "Supprimer l’archer·ère",
+        onSelect: () => {
+          openDeleteConfirm(row);
         },
       },
     ]);

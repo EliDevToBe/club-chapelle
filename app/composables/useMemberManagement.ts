@@ -7,6 +7,7 @@ export const useMemberManagement = () => {
   const isLoading = ref(false);
   const isInviting = ref(false);
   const isRevoking = ref(false);
+  const isDeleting = ref(false);
   const isUpdatingPublicName = ref(false);
   const items = ref<MemberRosterItemDto[]>([]);
 
@@ -79,6 +80,18 @@ export const useMemberManagement = () => {
     }
   };
 
+  const deleteArcher = async (archerId: string): Promise<void> => {
+    isDeleting.value = true;
+    try {
+      await $fetch(`/api/archers/${archerId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+    } finally {
+      isDeleting.value = false;
+    }
+  };
+
   const updatePublicName = async (
     archerId: string,
     publicName: string,
@@ -104,11 +117,13 @@ export const useMemberManagement = () => {
     isLoading,
     isInviting,
     isRevoking,
+    isDeleting,
     isUpdatingPublicName,
     listRoster,
     invite,
     inviteShell,
     revoke,
+    deleteArcher,
     updatePublicName,
   };
 };
