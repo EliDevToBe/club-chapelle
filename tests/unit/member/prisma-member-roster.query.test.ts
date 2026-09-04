@@ -6,7 +6,9 @@ import {
 
 describe("buildMemberRosterWhere", () => {
   it("always excludes archers linked to a developer account", () => {
-    expect(buildMemberRosterWhere({})).toEqual(excludeDeveloperFromRosterWhere());
+    expect(buildMemberRosterWhere({})).toEqual(
+      excludeDeveloperFromRosterWhere(),
+    );
     expect(excludeDeveloperFromRosterWhere()).toEqual({
       auth_user: {
         isNot: {

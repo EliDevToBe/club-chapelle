@@ -6,7 +6,9 @@ import type { ArcherId } from "~~/domain/archer/archer";
 import { prismaClient } from "~~/infrastructure/persistence/prisma.client";
 
 export class PrismaDeleteArcherPersistence implements DeleteArcherPersistence {
-  public deleteShell = async (id: ArcherId): Promise<DeleteArcherShellResult> => {
+  public deleteShell = async (
+    id: ArcherId,
+  ): Promise<DeleteArcherShellResult> => {
     return prismaClient.$transaction(async (tx) => {
       const archer = await tx.archer.findUnique({
         where: { id },

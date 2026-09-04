@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
-  clampMemberRosterPage,
-  getMemberRosterPageSlice,
-} from "~~/shared/member/member-roster-pagination";
-import {
   inviteArcherShellBodySchema,
   prepareInviteArcherShellBody,
 } from "~~/shared/invitation/invite-archer-shell.schema";
+import {
+  clampMemberRosterPage,
+  getMemberRosterPageSlice,
+} from "~~/shared/member/member-roster-pagination";
 
 describe("prepareInviteArcherShellBody", () => {
   it("trims archer_id and normalises email", () => {
