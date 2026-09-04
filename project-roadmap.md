@@ -164,7 +164,7 @@ _Order: persistence and authenticated Admin surfaces before exposing mutations; 
 - [ ] **Edit / delete competition** from browse (`PATCH`/`DELETE /api/competitions/:id` exist; `useCompetition` is create-only).
 - [ ] **Archer roster + edit / delete** — member roster: inline `public_name` edit + shell delete with participation cascade (`DELETE /api/archers/:id`, Admin Gestion du club). Competition browse combobox remains create-only for archers.
 - [ ] **Update / remove participation** from browse, including fee and registration status (`useParticipation.update` / `remove` unused; `CompetitionParticipant` badges are read-only).
-- [x] ✅ **Admin Gestion du club** ClubPanel + member list/invite (`/admin` club tab). Archer roster and other staff ops remain open above.
+- [x] ✅ **Admin Gestion du club** ClubPanel + member list/invite (`/admin` club tab). Roster list is **server-filtered and paginated** (`GET /api/members/roster` with `search`, `status`, `role`, `limit`, `offset`). Archer roster and other staff ops remain open above.
 
 ### Permission reality check (spec §3.2)
 

@@ -1,84 +1,65 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ArcherRepository } from "~~/application/ports/archer-repository.port";
-import type { UserRepository } from "~~/application/ports/user-repository.port";
+import { describe, expect, it, vi } from "vitest";
+import type {
+  MemberRosterQuery,
+  MemberRosterQueryRow,
+} from "~~/application/ports/member-roster-query.port";
 import { ListMemberRoster } from "~~/application/user/list-member-roster.use-case";
-import type { Archer } from "~~/domain/archer/archer";
-import type { User } from "~~/domain/user/user";
 
-const activeUser: User = {
-  id: "u-active",
-  email: "active@club.test",
-  name: "Active",
-  roles: ["admin", "member"],
-  authenticated: true,
-  createdAt: new Date("2026-01-01"),
-};
-
-const invitedUser: User = {
-  id: "u-invited",
-  email: "invited@club.test",
-  name: "Invited",
-  roles: ["member"],
-  authenticated: false,
-  createdAt: new Date("2026-02-01"),
-};
-
-const linkedActive: Archer = {
-  id: "a-active",
+const activeRow: MemberRosterQueryRow = {
+  archerId: "a-active",
   publicName: "Robin H.",
   authUserId: "u-active",
-  createdAt: new Date("2026-01-01"),
-  offboardedAt: null,
+  user: {
+    id: "u-active",
+    email: "active@club.test",
+    authenticated: true,
+    roles: ["admin", "member"],
+  },
 };
 
-const linkedInvited: Archer = {
-  id: "a-invited",
+const invitedRow: MemberRosterQueryRow = {
+  archerId: "a-invited",
   publicName: "Pat Pending",
   authUserId: "u-invited",
-  createdAt: new Date("2026-02-01"),
-  offboardedAt: null,
+  user: {
+    id: "u-invited",
+    email: "invited@club.test",
+    authenticated: false,
+    roles: ["member"],
+  },
 };
 
-const shell: Archer = {
-  id: "a-shell",
+const shellRow: MemberRosterQueryRow = {
+  archerId: "a-shell",
   publicName: "Shell Archer",
   authUserId: null,
-  createdAt: new Date("2026-03-01"),
-  offboardedAt: null,
+  user: null,
+};
+
+const brokenLinkRow: MemberRosterQueryRow = {
+  archerId: "a-broken",
+  publicName: "Broken Link",
+  authUserId: "missing-user",
+  user: null,
 };
 
 describe("ListMemberRoster", () => {
-  let users: UserRepository;
-  let archers: ArcherRepository;
-
-  beforeEach(() => {
-    users = {
-      create: vi.fn(),
-      findById: vi.fn(),
-      findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn(),
-      findForPasswordResetById: vi.fn(),
-      findMany: vi.fn().mockResolvedValue([activeUser, invitedUser]),
-      update: vi.fn(),
-      delete: vi.fn(),
-    };
-    archers = {
-      create: vi.fn(),
-      findById: vi.fn(),
-      findMany: vi
-        .fn()
-        .mockResolvedValue([linkedActive, linkedInvited, shell]),
-      findPage: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-    };
-  });
-
   it("returns active, invited, and shell rows sorted by status then role then name", async () => {
-    const handler = new ListMemberRoster(users, archers);
-    const items = await handler.findMany();
+    const rosterQuery: MemberRosterQuery = {
+      findMatching: vi.fn().mockResolvedValue({
+        rows: [shellRow, invitedRow, activeRow],
+      }),
+    };
 
-    expect(items).toEqual([
+    const handler = new ListMemberRoster(rosterQuery);
+    const page = await handler.findPage({
+      limit: 10,
+      offset: 0,
+    });
+
+    expect(rosterQuery.findMatching).toHaveBeenCalledWith({});
+    expect(page.total).toBe(3);
+    expect(page.items).toEqual([
       {
         status: "active",
         userId: "u-active",
@@ -107,26 +88,68 @@ describe("ListMemberRoster", () => {
   });
 
   it("treats a broken auth_user_id link as a shell", async () => {
-    archers.findMany = vi.fn().mockResolvedValue([
-      {
-        ...linkedActive,
-        authUserId: "missing-user",
-      },
-    ]);
-    users.findMany = vi.fn().mockResolvedValue([]);
+    const rosterQuery: MemberRosterQuery = {
+      findMatching: vi.fn().mockResolvedValue({
+        rows: [brokenLinkRow],
+      }),
+    };
 
-    const handler = new ListMemberRoster(users, archers);
-    const items = await handler.findMany();
+    const handler = new ListMemberRoster(rosterQuery);
+    const page = await handler.findPage({
+      limit: 10,
+      offset: 0,
+    });
 
-    expect(items).toEqual([
+    expect(page.items).toEqual([
       {
         status: "shell",
         userId: null,
-        archerId: "a-active",
+        archerId: "a-broken",
         email: null,
-        publicName: "Robin H.",
+        publicName: "Broken Link",
         roles: [],
       },
     ]);
+  });
+
+  it("passes search, status, and role filters to the query port", async () => {
+    const rosterQuery: MemberRosterQuery = {
+      findMatching: vi.fn().mockResolvedValue({
+        rows: [activeRow],
+      }),
+    };
+
+    const handler = new ListMemberRoster(rosterQuery);
+    await handler.findPage({
+      limit: 10,
+      offset: 0,
+      search: "robin",
+      status: "active",
+      role: "admin",
+    });
+
+    expect(rosterQuery.findMatching).toHaveBeenCalledWith({
+      search: "robin",
+      status: "active",
+      role: "admin",
+    });
+  });
+
+  it("slices the sorted roster using limit and offset", async () => {
+    const rosterQuery: MemberRosterQuery = {
+      findMatching: vi.fn().mockResolvedValue({
+        rows: [activeRow, invitedRow, shellRow],
+      }),
+    };
+
+    const handler = new ListMemberRoster(rosterQuery);
+    const page = await handler.findPage({
+      limit: 1,
+      offset: 1,
+    });
+
+    expect(page.total).toBe(3);
+    expect(page.items).toHaveLength(1);
+    expect(page.items[0]?.status).toBe("invited");
   });
 });

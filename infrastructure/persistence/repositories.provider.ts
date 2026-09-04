@@ -6,6 +6,7 @@ import { PrismaInviteMemberPersistence } from "./invitation/prisma-invite-member
 import { PrismaParticipationRepository } from "./participations/prisma-participation.repository";
 import { PrismaPasswordResetPersistence } from "./password-reset/prisma-password-reset.persistence";
 import { PrismaTokenRepository } from "./token/prisma-token.repository";
+import { PrismaMemberRosterQuery } from "./user/prisma-member-roster.query";
 import { PrismaRevokeMemberAccessPersistence } from "./user/prisma-revoke-member-access.persistence";
 import { PrismaUserRepository } from "./user/prisma-user.repository";
 import { PrismaWebsiteConfigRepository } from "./website/prisma-website-config.repository";
@@ -25,6 +26,7 @@ const createRepositories = () => ({
   passwordResetPersistence: new PrismaPasswordResetPersistence(),
   acceptInvitationPersistence: new PrismaAcceptInvitationPersistence(),
   revokeMemberAccessPersistence: new PrismaRevokeMemberAccessPersistence(),
+  memberRosterQuery: new PrismaMemberRosterQuery(),
 });
 
 export type Repositories = ReturnType<typeof createRepositories>;

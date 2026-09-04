@@ -1,7 +1,8 @@
 import type { ArcherDto } from "~~/shared/archer/archer.dto";
 import type { InviteArcherShellResponseDto } from "~~/shared/invitation/invite-archer-shell.dto";
 import type { InviteMemberResponseDto } from "~~/shared/invitation/invite-member.dto";
-import type { MemberRosterItemDto } from "~~/shared/member/member-roster.dto";
+import type { MemberRosterResponseDto } from "~~/shared/member/member-roster.dto";
+import type { MemberRosterListQuery } from "~~/shared/member/member-roster-list.schema";
 
 export const useMemberManagement = () => {
   const isLoading = ref(false);
@@ -9,19 +10,24 @@ export const useMemberManagement = () => {
   const isRevoking = ref(false);
   const isDeleting = ref(false);
   const isUpdatingPublicName = ref(false);
-  const items = ref<MemberRosterItemDto[]>([]);
+  const items = ref<MemberRosterResponseDto["items"]>([]);
+  const total = ref(0);
 
-  const listRoster = async (): Promise<MemberRosterItemDto[]> => {
+  const listRoster = async (
+    query: MemberRosterListQuery,
+  ): Promise<MemberRosterResponseDto> => {
     isLoading.value = true;
     try {
-      const response = await $fetch<{ items: MemberRosterItemDto[] }>(
+      const response = await $fetch<MemberRosterResponseDto>(
         "/api/members/roster",
         {
           credentials: "include",
+          query,
         },
       );
       items.value = response.items;
-      return response.items;
+      total.value = response.total;
+      return response;
     } finally {
       isLoading.value = false;
     }
@@ -114,6 +120,7 @@ export const useMemberManagement = () => {
 
   return {
     items,
+    total,
     isLoading,
     isInviting,
     isRevoking,

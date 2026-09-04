@@ -14,4 +14,5 @@ export type MemberRosterItemDto = {
 
 export type MemberRosterResponseDto = {
   items: MemberRosterItemDto[];
+  total: number;
 };

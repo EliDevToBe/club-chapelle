@@ -58,7 +58,7 @@ export const translateCompetitionType: Record<CompetitionTypeEnum, string> = {
 
 export const translateRole: Record<RoleEnum, string> = {
   member: "Membre",
-  manager: "Manager",
+  manager: "Organisateur",
   admin: "Admin",
   developer: "Développeur",
 } as const;

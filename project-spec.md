@@ -128,7 +128,7 @@ Capabilities are cumulative by level.
 - Only **Admin** may **revoke** and **unlink** accounts from the **Archer** shell (preserving history).
 - **Creating competitions** and **assigning participants** is **Admin-only** (not Manager) per current spec.
 - **MVP landing gallery:** only **Admin** may **upload** images or **curate** the public landing **carousel** set (Manager upload is **out of scope** for MVP; revisit after MVP if the club wants to widen who may publish visuals).
-- **Member invitation (shipped):** the matrix still lists **Manager** as an intended inviter, but **current delivery is Admin-only** (`POST /api/invitations`, ClubPanel on `/admin`). `/admin` is Admin-gated; Manager invite waits for a Manager-accessible surface. **Admin** may also **bind an existing unlinked Archer shell** via `POST /api/invitations/bind-archer` from the member roster (email only; `public_name` stays on the Archer).
+- **Member invitation (shipped):** the matrix still lists **Manager** as an intended inviter, but **current delivery is Admin-only** (`POST /api/invitations`, ClubPanel on `/admin`). `/admin` is Admin-gated; Manager invite waits for a Manager-accessible surface. **Admin** may also **bind an existing unlinked Archer shell** via `POST /api/invitations/bind-archer` from the member roster (email only; `public_name` stays on the Archer). The admin roster list is **server-filtered and paginated** via `GET /api/members/roster` (`search`, `status`, `role`, `limit`, `offset`).
 
 ### 3.3 Technical session model (reference)
 

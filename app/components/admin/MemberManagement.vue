@@ -16,6 +16,34 @@
       </template>
     </ChapAccordionContentAction>
 
+    <div :class="ui.filterWrapper">
+      <UFormField label="Recherche" class="min-w-30 flex-1">
+        <ChapInput
+          v-model="filter.search"
+          placeholder="Nom ou e-mail…"
+          icon="i-ph-magnifying-glass-duotone"
+          class="w-full text-sm! md:text-base"
+          clearable
+        />
+      </UFormField>
+
+      <UFormField label="Statut">
+        <ChapSelectMenu
+          v-model="filter.status"
+          :items="statusFilterItems"
+          placeholder="Tous"
+        />
+      </UFormField>
+
+      <UFormField label="Rôle">
+        <ChapSelectMenu
+          v-model="filter.role"
+          :items="roleFilterItems"
+          placeholder="Tous"
+        />
+      </UFormField>
+    </div>
+
     <div v-if="isLoading" class="text-sm text-muted">Chargement…</div>
     <div v-else-if="errorMessage" class="text-sm text-error">
       {{ errorMessage }}
@@ -24,11 +52,18 @@
       color="secondary"
       icon="i-ph-info-duotone"
       message="Aucun compte pour le moment."
-      v-else-if="rows.length === 0"
+      v-else-if="!hasActiveFilters && total === 0"
+    >
+    </Banner>
+    <Banner
+      color="secondary"
+      icon="i-ph-magnifying-glass-duotone"
+      message="Aucun résultat pour ces filtres."
+      v-else-if="hasActiveFilters && total === 0"
     >
     </Banner>
     <template v-else>
-      <UTable :data="visibleRows" :columns="columns">
+      <UTable :data="rows" :columns="columns">
         <template #name-cell="{ row }">
           <div v-if="row.original.archer_id" class="min-w-40">
             <UInput
@@ -103,7 +138,7 @@
           variant="ghost"
           active-variant="outline"
           v-model:page="currentPage"
-          :total="rows.length"
+          :total="total"
           :items-per-page="pageSize"
           show-edges
           color="primary"
@@ -139,12 +174,20 @@
 
 <script setup lang="ts">
 import type { DropdownMenuItem, TableColumn } from "@nuxt/ui";
-import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+import {
+  breakpointsTailwind,
+  useBreakpoints,
+  watchDebounced,
+} from "@vueuse/core";
 import InviteArcherShellModal from "~/components/admin/InviteArcherShellModal.vue";
 import InviteMemberModal from "~/components/admin/InviteMemberModal.vue";
 import ChapAccordionContentAction from "~/components/ui/ChapAccordionContentAction.vue";
 import ChapAccordionContentWrapper from "~/components/ui/ChapAccordionContentWrapper.vue";
 import ChapConfirmModal from "~/components/ui/ChapConfirmModal.vue";
+import ChapInput from "~/components/ui/ChapInput.vue";
+import ChapSelectMenu, {
+  type ChapSelectMenuItem,
+} from "~/components/ui/ChapSelectMenu.vue";
 import { useAuthUser } from "~/composables/useAuthUser";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useMemberManagement } from "~/composables/useMemberManagement";
@@ -152,9 +195,10 @@ import { translateRole } from "~/utils/translate";
 import { sortRolesByOrder } from "~~/domain/user/role";
 import type { RoleEnum } from "~~/shared/db-enums";
 import type { MemberRosterItemDto } from "~~/shared/member/member-roster.dto";
+import type { MemberRosterRoleFilter } from "~~/shared/member/member-roster-list.dto";
+import type { MemberRosterListQuery } from "~~/shared/member/member-roster-list.schema";
 import {
   clampMemberRosterPage,
-  getMemberRosterPageSlice,
   MEMBER_ROSTER_PAGE_SIZE_DESKTOP,
   MEMBER_ROSTER_PAGE_SIZE_MOBILE,
 } from "~~/shared/member/member-roster-pagination";
@@ -163,6 +207,7 @@ type MemberRow = MemberRosterItemDto;
 
 const {
   items,
+  total,
   isLoading,
   isUpdatingPublicName,
   listRoster,
@@ -190,6 +235,40 @@ const currentPage = ref(1);
 const editingArcherId = ref<string | null>(null);
 const editingPublicName = ref("");
 const isSavingPublicName = ref(false);
+
+type MemberRosterFilters = {
+  search: string;
+  status: MemberRosterItemDto["status"] | null;
+  role: MemberRosterRoleFilter | null;
+};
+
+const filter = reactive<MemberRosterFilters>({
+  search: "",
+  status: null,
+  role: null,
+});
+
+const ui = {
+  filterWrapper: [
+    "flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4 mb-6 p-4",
+    "rounded-lg border border-default",
+    "bg-neutral-800/30",
+  ],
+};
+
+const statusFilterItems: ChapSelectMenuItem[] = [
+  { label: "Tous", value: null },
+  { label: "Actif", value: "active" },
+  { label: "Invité", value: "invited" },
+  { label: "Sans compte", value: "shell" },
+];
+
+const roleFilterItems: ChapSelectMenuItem[] = [
+  { label: "Tous", value: null },
+  { label: translateRole.admin, value: "admin" },
+  { label: translateRole.manager, value: "manager" },
+  { label: translateRole.member, value: "member" },
+];
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const pageSize = computed(() => {
@@ -282,37 +361,43 @@ const rows = computed((): MemberRow[] => {
   return items.value;
 });
 
-const visibleRows = computed((): MemberRow[] => {
-  return getMemberRosterPageSlice(
-    rows.value,
-    currentPage.value,
-    pageSize.value,
+const hasActiveFilters = computed(() => {
+  return (
+    filter.search.trim().length > 0 ||
+    filter.status !== null ||
+    filter.role !== null
   );
 });
 
 const showPagination = computed(() => {
-  return rows.value.length > pageSize.value;
+  return total.value > pageSize.value;
 });
 
-watch(
-  () => rows.value.length,
-  () => {
-    currentPage.value = 1;
-  },
-);
+const buildRosterQuery = (): MemberRosterListQuery => {
+  const trimmedSearch = filter.search.trim();
 
-watch(pageSize, (nextPageSize) => {
-  currentPage.value = clampMemberRosterPage(
-    currentPage.value,
-    rows.value.length,
-    nextPageSize,
-  );
-});
+  const query: MemberRosterListQuery = {
+    limit: pageSize.value,
+    offset: (currentPage.value - 1) * pageSize.value,
+  };
+
+  if (trimmedSearch.length > 0) {
+    query.search = trimmedSearch;
+  }
+  if (filter.status) {
+    query.status = filter.status;
+  }
+  if (filter.role) {
+    query.role = filter.role;
+  }
+
+  return query;
+};
 
 const loadRoster = async (): Promise<void> => {
   errorMessage.value = null;
   try {
-    await listRoster();
+    await listRoster(buildRosterQuery());
   } catch {
     errorMessage.value =
       "Impossible de charger les membres. Réessayez plus tard.";
@@ -412,6 +497,11 @@ const confirmRevoke = async (): Promise<void> => {
       title: "Accès révoqué",
       description: "L’archer·ère est conservé·e sans compte lié.",
     });
+    currentPage.value = clampMemberRosterPage(
+      currentPage.value,
+      Math.max(0, total.value - 1),
+      pageSize.value,
+    );
     await loadRoster();
   } catch (error) {
     const statusMessage =
@@ -453,6 +543,11 @@ const confirmDelete = async (): Promise<void> => {
     addToastSuccess({
       title: "Archer·ère supprimé·e",
     });
+    currentPage.value = clampMemberRosterPage(
+      currentPage.value,
+      Math.max(0, total.value - 1),
+      pageSize.value,
+    );
     await loadRoster();
   } catch (error) {
     const statusMessage =
@@ -571,6 +666,43 @@ const buildActionItemsForRow = (row: MemberRow): DropdownMenuItem[][] => {
 const hasActionsForRow = (row: MemberRow): boolean => {
   return buildActionItemsForRow(row).length > 0;
 };
+
+watchDebounced(
+  () => filter.search,
+  () => {
+    if (currentPage.value !== 1) {
+      currentPage.value = 1;
+      return;
+    }
+    void loadRoster();
+  },
+  { debounce: 300 },
+);
+
+watch([() => filter.status, () => filter.role], () => {
+  if (currentPage.value !== 1) {
+    currentPage.value = 1;
+    return;
+  }
+  void loadRoster();
+});
+
+watch(currentPage, () => {
+  void loadRoster();
+});
+
+watch(pageSize, (nextPageSize) => {
+  const nextPage = clampMemberRosterPage(
+    currentPage.value,
+    total.value,
+    nextPageSize,
+  );
+  if (nextPage !== currentPage.value) {
+    currentPage.value = nextPage;
+    return;
+  }
+  void loadRoster();
+});
 
 onMounted(() => {
   void loadRoster();

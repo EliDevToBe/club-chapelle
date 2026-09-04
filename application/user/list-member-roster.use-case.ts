@@ -1,61 +1,69 @@
-import type { ArcherRepository } from "~~/application/ports/archer-repository.port";
-import type { UserRepository } from "~~/application/ports/user-repository.port";
+import type {
+  FindMemberRosterQueryInput,
+  MemberRosterQuery,
+  MemberRosterQueryRow,
+} from "~~/application/ports/member-roster-query.port";
 import type {
   MemberRosterItem,
   MemberRosterStatus,
 } from "~~/domain/user/member-roster-item";
 import { highestRoleRank, sortRolesByOrder } from "~~/domain/user/role";
-import type { User } from "~~/domain/user/user";
+import type { MemberRosterListQuery } from "~~/shared/member/member-roster-list.schema";
+
+export type FindMemberRosterPageResult = {
+  items: MemberRosterItem[];
+  total: number;
+};
 
 /**
  * Builds an archer-centric roster: each archer is one row (linked active/invited
  * or unlinked shell). Orphan auth users without an archer are omitted.
  */
 export class ListMemberRoster {
-  constructor(
-    private readonly users: UserRepository,
-    private readonly archers: ArcherRepository,
-  ) {}
+  constructor(private readonly rosterQuery: MemberRosterQuery) {}
 
-  public findMany = async (): Promise<MemberRosterItem[]> => {
-    const [userRows, archerRows] = await Promise.all([
-      this.users.findMany(),
-      this.archers.findMany(),
-    ]);
+  public findPage = async (
+    query: MemberRosterListQuery,
+  ): Promise<FindMemberRosterPageResult> => {
+    const filterInput: FindMemberRosterQueryInput = {
+      search: query.search,
+      status: query.status,
+      role: query.role,
+    };
 
-    const usersById = new Map<string, User>();
-    for (const user of userRows) {
-      usersById.set(user.id, user);
-    }
+    const { rows } = await this.rosterQuery.findMatching(filterInput);
+    const items = rows.map(toMemberRosterItem).sort(compareRosterItems);
+    const total = items.length;
+    const pageItems = items.slice(query.offset, query.offset + query.limit);
 
-    const items: MemberRosterItem[] = archerRows.map((archer) => {
-      if (archer.authUserId) {
-        const linked = usersById.get(archer.authUserId);
-        if (linked) {
-          return {
-            status: linked.authenticated ? "active" : "invited",
-            userId: linked.id,
-            archerId: archer.id,
-            email: linked.email,
-            publicName: archer.publicName,
-            roles: sortRolesByOrder(linked.roles),
-          };
-        }
-      }
-
-      return {
-        status: "shell",
-        userId: null,
-        archerId: archer.id,
-        email: null,
-        publicName: archer.publicName,
-        roles: [],
-      };
-    });
-
-    return items.sort(compareRosterItems);
+    return {
+      items: pageItems,
+      total,
+    };
   };
 }
+
+const toMemberRosterItem = (row: MemberRosterQueryRow): MemberRosterItem => {
+  if (row.authUserId && row.user) {
+    return {
+      status: row.user.authenticated ? "active" : "invited",
+      userId: row.user.id,
+      archerId: row.archerId,
+      email: row.user.email,
+      publicName: row.publicName,
+      roles: sortRolesByOrder(row.user.roles),
+    };
+  }
+
+  return {
+    status: "shell",
+    userId: null,
+    archerId: row.archerId,
+    email: null,
+    publicName: row.publicName,
+    roles: [],
+  };
+};
 
 const rosterStatusOrder: Record<MemberRosterStatus, number> = {
   active: 0,
@@ -77,5 +85,8 @@ const compareRosterItems = (
   if (rankDelta !== 0) {
     return rankDelta;
   }
+
   return left.publicName.localeCompare(right.publicName, "fr");
 };
+
+export { compareRosterItems, toMemberRosterItem };
