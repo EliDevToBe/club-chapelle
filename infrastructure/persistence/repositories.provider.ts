@@ -11,17 +11,20 @@ import { PrismaUserRepository } from "./user/prisma-user.repository";
 import { PrismaWebsiteConfigRepository } from "./website/prisma-website-config.repository";
 
 const createRepositories = () => ({
+  // Entities
   userRepository: new PrismaUserRepository(),
   tokenRepository: new PrismaTokenRepository(),
-  passwordResetPersistence: new PrismaPasswordResetPersistence(),
-  inviteMemberPersistence: new PrismaInviteMemberPersistence(),
-  acceptInvitationPersistence: new PrismaAcceptInvitationPersistence(),
-  revokeMemberAccessPersistence: new PrismaRevokeMemberAccessPersistence(),
-  deleteArcherPersistence: new PrismaDeleteArcherPersistence(),
   archerRepository: new PrismaArcherRepository(),
   competitionRepository: new PrismaCompetitionRepository(),
   participationRepository: new PrismaParticipationRepository(),
   websiteConfigRepository: new PrismaWebsiteConfigRepository(),
+
+  // Flows
+  deleteArcherPersistence: new PrismaDeleteArcherPersistence(),
+  inviteMemberPersistence: new PrismaInviteMemberPersistence(),
+  passwordResetPersistence: new PrismaPasswordResetPersistence(),
+  acceptInvitationPersistence: new PrismaAcceptInvitationPersistence(),
+  revokeMemberAccessPersistence: new PrismaRevokeMemberAccessPersistence(),
 });
 
 export type Repositories = ReturnType<typeof createRepositories>;
