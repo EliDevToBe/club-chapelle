@@ -1,4 +1,4 @@
-import { createError, defineEventHandler, readBody } from "h3";
+import { defineEventHandler, readBody } from "h3";
 import { useRuntimeConfig } from "nitropack/runtime";
 import {
   type DeleteGalleryImagesBody,
@@ -7,8 +7,10 @@ import {
 import { RemoveGalleryImagesFromHomepageCarousel } from "~~/application/website/remove-gallery-images-from-homepage-carousel.use-case";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { SirvGallerySource } from "~~/infrastructure/sirv/sirv-gallery.source";
+import { ApiError } from "~~/server/utils/api-error";
 import { requireRoles } from "~~/server/utils/rbac";
 import { parseDeleteGalleryImagesBody } from "~~/server/utils/website-gallery";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 export default defineEventHandler(async (event) => {
   requireRoles(event, ["admin"]);
@@ -20,10 +22,7 @@ export default defineEventHandler(async (event) => {
   const directory = config.sirvDirectory;
 
   if (!clientId || !clientSecret || !cdnDomain || !directory) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Sirv runtime configuration is missing",
-    });
+    throw ApiError(API_ERROR_REASON.website.sirv_not_configured);
   }
 
   const body = await readBody<DeleteGalleryImagesBody>(event);

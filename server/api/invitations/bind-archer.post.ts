@@ -1,4 +1,3 @@
-import { createError } from "h3";
 import { FindArcherById } from "~~/application/archer/find-archer-by-id.use-case";
 import { InviteArcherShell } from "~~/application/user/invite-archer-shell.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
@@ -8,7 +7,9 @@ import {
 } from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { toUserDto } from "~~/server/mappers/user.mapper";
+import { ApiError } from "~~/server/utils/api-error";
 import { requireRoles } from "~~/server/utils/rbac";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import type { RoleEnum } from "~~/shared/db-enums";
 import type { InviteArcherShellResponseDto } from "~~/shared/invitation/invite-archer-shell.dto";
 import {
@@ -33,34 +34,22 @@ export default defineEventHandler(async (event) => {
   const sandbox = Boolean(config.mailtrapUseSandbox);
 
   if (!apiKey) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Mail is not configured",
-    });
+    throw ApiError(API_ERROR_REASON.mail.not_configured);
   }
 
   if (!fromEmail) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Mail sender is not configured",
-    });
+    throw ApiError(API_ERROR_REASON.mail.sender_not_configured);
   }
 
   if (!accessSecret || !refreshSecret || accessSecret === refreshSecret) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Authentication is not configured",
-    });
+    throw ApiError(API_ERROR_REASON.auth.not_configured);
   }
 
   let testInboxId: number | undefined;
   if (sandbox) {
     const parsedInbox = Number.parseInt(inboxIdRaw, 10);
     if (!Number.isFinite(parsedInbox) || parsedInbox <= 0) {
-      throw createError({
-        statusCode: 500,
-        statusMessage: "Mail sandbox inbox is not configured",
-      });
+      throw ApiError(API_ERROR_REASON.mail.sandbox_inbox_not_configured);
     }
     testInboxId = parsedInbox;
   }
@@ -75,10 +64,7 @@ export default defineEventHandler(async (event) => {
   );
 
   if (!parsed.success) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Invalid request",
-    });
+    throw ApiError(API_ERROR_REASON.common.invalid_request);
   }
 
   const { archerRepository, tokenRepository, inviteMemberPersistence } =
@@ -87,10 +73,7 @@ export default defineEventHandler(async (event) => {
   const findArcherByIdHandler = new FindArcherById(archerRepository);
   const archer = await findArcherByIdHandler.findById(parsed.data.archer_id);
   if (!archer) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Archer not found",
-    });
+    throw ApiError(API_ERROR_REASON.common.not_found);
   }
 
   const authServices = createAuthServices({
@@ -125,34 +108,7 @@ export default defineEventHandler(async (event) => {
   });
 
   if (!result.ok) {
-    if (result.reason === "already_authenticated") {
-      throw createError({
-        statusCode: 409,
-        statusMessage: "Account already active",
-      });
-    }
-    if (result.reason === "archer_already_linked") {
-      throw createError({
-        statusCode: 409,
-        statusMessage: "Archer already linked",
-      });
-    }
-    if (result.reason === "email_linked_elsewhere") {
-      throw createError({
-        statusCode: 409,
-        statusMessage: "Email already linked to another archer",
-      });
-    }
-    if (result.reason === "archer_not_found") {
-      throw createError({
-        statusCode: 404,
-        statusMessage: "Archer not found",
-      });
-    }
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Invalid request",
-    });
+    throw ApiError(result.reason);
   }
 
   const response: InviteArcherShellResponseDto = {

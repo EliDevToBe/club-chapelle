@@ -7,6 +7,7 @@ import {
   parseTarifsPatchBody,
   parseTextSectionPatchBody,
 } from "~~/server/utils/website-config";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import { defaultFeatureFlags } from "~~/shared/website/feature-flags.schema";
 import { DEFAULT_OPENING_HOURS } from "~~/shared/website/opening-hours.seed";
 import { DEFAULT_TARIFS } from "~~/shared/website/tarifs.seed";
@@ -14,8 +15,11 @@ import { DEFAULT_INFOS_INTRODUCTION } from "~~/shared/website/text-section.seed"
 
 describe("parseHomepageCarouselPatchBody", () => {
   it("rejects empty payloads", () => {
-    expect(() => parseHomepageCarouselPatchBody(null)).toThrowError(
-      "Invalid request body",
+    expect(() => parseHomepageCarouselPatchBody(null)).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.common.invalid_request },
+      }),
     );
   });
 
@@ -101,8 +105,11 @@ describe("parseHomepageCarouselPatchBody", () => {
 
 describe("parseFeatureFlagsPatchBody", () => {
   it("rejects empty payloads", () => {
-    expect(() => parseFeatureFlagsPatchBody(null)).toThrowError(
-      "Invalid request body",
+    expect(() => parseFeatureFlagsPatchBody(null)).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.common.invalid_request },
+      }),
     );
   });
 
@@ -127,13 +134,23 @@ describe("parseSiteSettingsPatchBody", () => {
   it("rejects empty payloads", () => {
     expect(() => {
       return parseSiteSettingsPatchBody(null);
-    }).toThrowError("Invalid request body");
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.common.invalid_request },
+      }),
+    );
   });
 
   it("rejects a missing settings object", () => {
     expect(() => {
       return parseSiteSettingsPatchBody({ settings: undefined });
-    }).toThrowError("Invalid site settings");
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.website.invalid_site_settings },
+      }),
+    );
   });
 
   it("rejects a patch with no known site-settings fields", () => {
@@ -141,7 +158,12 @@ describe("parseSiteSettingsPatchBody", () => {
       return parseSiteSettingsPatchBody({
         settings: { unknown_field: true },
       });
-    }).toThrowError("Invalid site settings");
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.website.invalid_site_settings },
+      }),
+    );
   });
 
   it("returns a contact-only patch without filling legal identity", () => {
@@ -181,13 +203,23 @@ describe("parseOpeningHoursPatchBody", () => {
   it("rejects empty payloads", () => {
     expect(() => {
       return parseOpeningHoursPatchBody(null);
-    }).toThrowError("Invalid request body");
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.common.invalid_request },
+      }),
+    );
   });
 
   it("rejects a missing settings object", () => {
     expect(() => {
       return parseOpeningHoursPatchBody({ settings: undefined });
-    }).toThrowError("Invalid opening hours");
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.website.invalid_opening_hours },
+      }),
+    );
   });
 
   it("rejects a patch missing document fields", () => {
@@ -195,7 +227,12 @@ describe("parseOpeningHoursPatchBody", () => {
       return parseOpeningHoursPatchBody({
         settings: { intro: "Intro only" },
       });
-    }).toThrowError("Invalid opening hours");
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.website.invalid_opening_hours },
+      }),
+    );
   });
 
   it("returns a full opening-hours document", () => {
@@ -211,7 +248,12 @@ describe("parseTextSectionPatchBody", () => {
   it("rejects empty payloads", () => {
     expect(() => {
       return parseTextSectionPatchBody(null);
-    }).toThrowError("Invalid request body");
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.common.invalid_request },
+      }),
+    );
   });
 
   it("rejects a patch missing document fields", () => {
@@ -219,7 +261,12 @@ describe("parseTextSectionPatchBody", () => {
       return parseTextSectionPatchBody({
         settings: { title: "Titre only" },
       });
-    }).toThrowError("Invalid text section");
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.website.invalid_text_section },
+      }),
+    );
   });
 
   it("returns a full text-section document", () => {
@@ -235,7 +282,12 @@ describe("parseTarifsPatchBody", () => {
   it("rejects empty payloads", () => {
     expect(() => {
       return parseTarifsPatchBody(null);
-    }).toThrowError("Invalid request body");
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.common.invalid_request },
+      }),
+    );
   });
 
   it("rejects a patch missing document fields", () => {
@@ -243,7 +295,12 @@ describe("parseTarifsPatchBody", () => {
       return parseTarifsPatchBody({
         settings: { title: "Tarifs only" },
       });
-    }).toThrowError("Invalid tarifs");
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.website.invalid_tarifs },
+      }),
+    );
   });
 
   it("returns a full tarifs document", () => {

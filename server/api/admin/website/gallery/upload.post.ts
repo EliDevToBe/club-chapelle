@@ -1,9 +1,11 @@
-import { createError, defineEventHandler, readMultipartFormData } from "h3";
+import { defineEventHandler, readMultipartFormData } from "h3";
 import { useRuntimeConfig } from "nitropack/runtime";
 import { UploadWebsiteGalleryImages } from "~~/application/website/upload-website-gallery-images.use-case";
 import { SirvGallerySource } from "~~/infrastructure/sirv/sirv-gallery.source";
+import { ApiError } from "~~/server/utils/api-error";
 import { requireRoles } from "~~/server/utils/rbac";
 import { parseGalleryUploadParts } from "~~/server/utils/website-gallery";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 export default defineEventHandler(async (event) => {
   requireRoles(event, ["admin"]);
@@ -15,19 +17,13 @@ export default defineEventHandler(async (event) => {
   const directory = config.sirvDirectory;
 
   if (!clientId || !clientSecret || !cdnDomain || !directory) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Sirv runtime configuration is missing",
-    });
+    throw ApiError(API_ERROR_REASON.website.sirv_not_configured);
   }
 
   const parts = await readMultipartFormData(event);
 
   if (!parts) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "No files were provided",
-    });
+    throw ApiError(API_ERROR_REASON.website.no_files_provided);
   }
 
   const files = parseGalleryUploadParts(parts);

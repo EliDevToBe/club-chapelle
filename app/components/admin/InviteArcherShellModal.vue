@@ -50,10 +50,12 @@
 import ChapInput from "~/components/ui/ChapInput.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useMemberManagement } from "~/composables/useMemberManagement";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import {
   inviteArcherShellBodySchema,
   prepareInviteArcherShellBody,
 } from "~~/shared/invitation/invite-archer-shell.schema";
+import { readApiErrorReason } from "~~/shared/utils/read-api-error.helper";
 
 const props = defineProps<{
   archerId: string;
@@ -86,28 +88,6 @@ const canSubmit = computed(() => {
 
 const resetForm = (): void => {
   email.value = "";
-};
-
-const statusFromError = (error: unknown): number | undefined => {
-  if (typeof error !== "object" || error === null) {
-    return undefined;
-  }
-  if (!("statusCode" in error)) {
-    return undefined;
-  }
-  const statusCode = (error as { statusCode: unknown }).statusCode;
-  return typeof statusCode === "number" ? statusCode : undefined;
-};
-
-const statusMessageFromError = (error: unknown): string | undefined => {
-  if (typeof error !== "object" || error === null) {
-    return undefined;
-  }
-  if (!("statusMessage" in error)) {
-    return undefined;
-  }
-  const statusMessage = (error as { statusMessage: unknown }).statusMessage;
-  return typeof statusMessage === "string" ? statusMessage : undefined;
 };
 
 const onInvite = async (): Promise<void> => {
@@ -146,24 +126,20 @@ const onInvite = async (): Promise<void> => {
     isOpen.value = false;
     emit("invited");
   } catch (error) {
-    const statusCode = statusFromError(error);
-    const statusMessage = statusMessageFromError(error);
-    if (statusCode === 409 && statusMessage === "Account already active") {
+    const reason = readApiErrorReason(error);
+    if (reason === API_ERROR_REASON.invitation.account_already_active) {
       addToastError({
         description: "Un compte actif existe déjà pour cette adresse e-mail.",
       });
       return;
     }
-    if (statusCode === 409 && statusMessage === "Archer already linked") {
+    if (reason === API_ERROR_REASON.invitation.archer_already_linked) {
       addToastError({
         description: "Cet·te archer·ère est déjà lié·e à un compte.",
       });
       return;
     }
-    if (
-      statusCode === 409 &&
-      statusMessage === "Email already linked to another archer"
-    ) {
+    if (reason === API_ERROR_REASON.invitation.email_already_linked) {
       addToastError({
         description:
           "Cette adresse e-mail est déjà liée à un·e autre archer·ère.",

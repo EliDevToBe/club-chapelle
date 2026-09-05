@@ -29,6 +29,7 @@ export class ListMemberRoster {
       search: query.search,
       status: query.status,
       role: query.role,
+      archivedOnly: query.archived_only,
     };
 
     const { rows } = await this.rosterQuery.findMatching(filterInput);
@@ -44,14 +45,30 @@ export class ListMemberRoster {
 }
 
 const toMemberRosterItem = (row: MemberRosterQueryRow): MemberRosterItem => {
-  if (row.authUserId && row.user) {
+  if (row.offboardedAt) {
     return {
-      status: row.user.authenticated ? "active" : "invited",
+      status: "archived",
+      userId: null,
+      archerId: row.archerId,
+      email: null,
+      publicName: row.publicName,
+      roles: [],
+      invitedAt: null,
+      offboardedAt: row.offboardedAt,
+    };
+  }
+
+  if (row.authUserId && row.user) {
+    const isActive = row.user.authenticated;
+    return {
+      status: isActive ? "active" : "invited",
       userId: row.user.id,
       archerId: row.archerId,
       email: row.user.email,
       publicName: row.publicName,
       roles: sortRolesByOrder(row.user.roles),
+      invitedAt: isActive ? null : row.user.latestInvitationAt,
+      offboardedAt: null,
     };
   }
 
@@ -62,6 +79,8 @@ const toMemberRosterItem = (row: MemberRosterQueryRow): MemberRosterItem => {
     email: null,
     publicName: row.publicName,
     roles: [],
+    invitedAt: null,
+    offboardedAt: null,
   };
 };
 
@@ -69,6 +88,7 @@ const rosterStatusOrder: Record<MemberRosterStatus, number> = {
   active: 0,
   invited: 1,
   shell: 2,
+  archived: 3,
 };
 
 const compareRosterItems = (

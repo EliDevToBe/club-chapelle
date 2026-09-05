@@ -27,6 +27,7 @@ export type FindArchersPageResult = {
 export interface ArcherRepository {
   create: (input: CreateArcherInput) => Promise<Archer>;
   findById: (id: ArcherId) => Promise<Archer | null>;
+  findByPublicName: (publicName: string) => Promise<Archer | null>;
   findMany: () => Promise<Archer[]>;
   findPage: (input: FindArchersPageInput) => Promise<FindArchersPageResult>;
   update: (id: ArcherId, input: UpdateArcherInput) => Promise<Archer | null>;

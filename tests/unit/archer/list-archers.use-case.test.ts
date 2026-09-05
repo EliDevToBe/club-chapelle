@@ -19,6 +19,7 @@ describe("ListArchers", () => {
     repo = {
       create: vi.fn(),
       findById: vi.fn(),
+      findByPublicName: vi.fn(),
       findMany: vi.fn(),
       findPage: vi.fn(),
       update: vi.fn(),

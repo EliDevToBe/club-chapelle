@@ -4,6 +4,7 @@ import type { PasswordHasher } from "~~/application/ports/password-hasher.port";
 import type { PasswordResetPersistence } from "~~/application/ports/password-reset-persistence.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
 import { ResetPassword } from "~~/application/user/reset-password.use-case";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 describe("ResetPassword", () => {
   let users: UserRepository;
@@ -67,7 +68,10 @@ describe("ResetPassword", () => {
       password: "Aa1!newpass",
     });
 
-    expect(result).toEqual({ ok: false, reason: "Invalid or expired link" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.auth.invalid_token,
+    });
     expect(users.findForPasswordResetById).not.toHaveBeenCalled();
     expect(passwords.hash).not.toHaveBeenCalled();
     expect(persistence.completeReset).not.toHaveBeenCalled();
@@ -89,7 +93,10 @@ describe("ResetPassword", () => {
       password: "Aa1!newpass",
     });
 
-    expect(result).toEqual({ ok: false, reason: "Invalid or expired link" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.auth.invalid_token,
+    });
     expect(passwords.hash).not.toHaveBeenCalled();
     expect(persistence.completeReset).not.toHaveBeenCalled();
   });
@@ -106,7 +113,10 @@ describe("ResetPassword", () => {
       password: "Aa1!newpass",
     });
 
-    expect(result).toEqual({ ok: false, reason: "Invalid or expired link" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.auth.invalid_token,
+    });
     expect(passwords.hash).toHaveBeenCalledWith("Aa1!newpass");
     expect(persistence.completeReset).toHaveBeenCalledWith({
       authUserId: "u1",

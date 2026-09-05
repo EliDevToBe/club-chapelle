@@ -10,6 +10,7 @@ import {
   vi,
 } from "vitest";
 import { requireRoles } from "~~/server/utils/rbac";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 const { getStorageInfoMock, SirvGallerySourceMock, useRuntimeConfigMock } =
   vi.hoisted(() => {
@@ -93,7 +94,7 @@ describe("GET /api/admin/website/gallery/infos", () => {
     }));
     await expect(getAdminGalleryInfos(adminEvent)).rejects.toMatchObject({
       statusCode: 500,
-      statusMessage: "Sirv runtime configuration is missing",
+      data: { reason: API_ERROR_REASON.website.sirv_not_configured },
     });
     expect(SirvGallerySourceMock).not.toHaveBeenCalled();
   });

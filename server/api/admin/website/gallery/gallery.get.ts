@@ -1,5 +1,7 @@
 import { ListWebsiteGalleryImages } from "~~/application/website/list-website-gallery-images.use-case";
 import { SirvGallerySource } from "~~/infrastructure/sirv/sirv-gallery.source";
+import { ApiError } from "~~/server/utils/api-error";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 export default defineEventHandler(async (event) => {
   requireRoles(event, ["admin"]);
@@ -11,10 +13,7 @@ export default defineEventHandler(async (event) => {
   const directory = config.sirvDirectory;
 
   if (!clientId || !clientSecret || !cdnDomain) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Sirv runtime configuration is missing",
-    });
+    throw ApiError(API_ERROR_REASON.website.sirv_not_configured);
   }
 
   const sirvGallerySource = new SirvGallerySource({

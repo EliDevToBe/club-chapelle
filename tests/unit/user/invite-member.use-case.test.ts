@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ArcherRepository } from "~~/application/ports/archer-repository.port";
 import type { InviteMemberPersistence } from "~~/application/ports/invite-member-persistence.port";
 import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port";
 import type { TokenRepository } from "~~/application/ports/token-repository.port";
@@ -6,6 +7,7 @@ import type { TransactionalMailPort } from "~~/application/ports/transactional-m
 import type { UserRepository } from "~~/application/ports/user-repository.port";
 import { InviteMember } from "~~/application/user/invite-member.use-case";
 import type { User } from "~~/domain/user/user";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 const invitedUser: User = {
   id: "u-new",
@@ -27,6 +29,7 @@ const existingInvited: User = {
 
 describe("InviteMember", () => {
   let users: UserRepository;
+  let archers: ArcherRepository;
   let persistence: InviteMemberPersistence;
   let tokens: TokenRepository;
   let jwt: JwtAuthService;
@@ -47,6 +50,15 @@ describe("InviteMember", () => {
       findByEmailForPasswordReset: vi.fn().mockResolvedValue(null),
       findForPasswordResetById: vi.fn(),
       findMany: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    };
+    archers = {
+      create: vi.fn(),
+      findById: vi.fn(),
+      findByPublicName: vi.fn().mockResolvedValue(null),
+      findMany: vi.fn(),
+      findPage: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
     };
@@ -77,6 +89,7 @@ describe("InviteMember", () => {
   it("creates a user and archer, issues a token, and sends mail", async () => {
     const handler = new InviteMember(
       users,
+      archers,
       persistence,
       tokens,
       jwt,
@@ -131,6 +144,7 @@ describe("InviteMember", () => {
 
     const handler = new InviteMember(
       users,
+      archers,
       persistence,
       tokens,
       jwt,
@@ -144,7 +158,7 @@ describe("InviteMember", () => {
 
     expect(result).toEqual({
       ok: false,
-      reason: "already_authenticated",
+      reason: API_ERROR_REASON.invitation.account_already_active,
     });
     expect(persistence.createInvitedMember).not.toHaveBeenCalled();
     expect(tokens.issueToken).not.toHaveBeenCalled();
@@ -162,6 +176,7 @@ describe("InviteMember", () => {
 
     const handler = new InviteMember(
       users,
+      archers,
       persistence,
       tokens,
       jwt,
@@ -195,6 +210,7 @@ describe("InviteMember", () => {
 
     const handler = new InviteMember(
       users,
+      archers,
       persistence,
       tokens,
       jwt,
@@ -209,20 +225,24 @@ describe("InviteMember", () => {
 
     expect(result).toEqual({
       ok: false,
-      reason: "already_invited",
+      reason: API_ERROR_REASON.invitation.account_already_invited,
     });
     expect(persistence.createInvitedMember).not.toHaveBeenCalled();
     expect(tokens.issueToken).not.toHaveBeenCalled();
   });
 
   it("rejects when the public name is already taken", async () => {
-    persistence.createInvitedMember = vi.fn().mockResolvedValue({
-      ok: false,
-      reason: "public_name_taken",
+    archers.findByPublicName = vi.fn().mockResolvedValue({
+      id: "a-taken",
+      publicName: "Taken Name",
+      authUserId: null,
+      createdAt: new Date("2026-01-01"),
+      offboardedAt: null,
     });
 
     const handler = new InviteMember(
       users,
+      archers,
       persistence,
       tokens,
       jwt,
@@ -236,8 +256,9 @@ describe("InviteMember", () => {
 
     expect(result).toEqual({
       ok: false,
-      reason: "public_name_taken",
+      reason: API_ERROR_REASON.invitation.public_name_taken,
     });
+    expect(persistence.createInvitedMember).not.toHaveBeenCalled();
     expect(tokens.issueToken).not.toHaveBeenCalled();
   });
 
@@ -246,6 +267,7 @@ describe("InviteMember", () => {
 
     const handler = new InviteMember(
       users,
+      archers,
       persistence,
       tokens,
       jwt,

@@ -5,15 +5,19 @@ import type {
 } from "~~/application/ports/member-roster-query.port";
 import { ListMemberRoster } from "~~/application/user/list-member-roster.use-case";
 
+const latestInvitationAt = new Date("2026-03-15T10:00:00.000Z");
+
 const activeRow: MemberRosterQueryRow = {
   archerId: "a-active",
   publicName: "Robin H.",
   authUserId: "u-active",
+  offboardedAt: null,
   user: {
     id: "u-active",
     email: "active@club.test",
     authenticated: true,
     roles: ["admin", "member"],
+    latestInvitationAt: new Date("2026-01-01T00:00:00.000Z"),
   },
 };
 
@@ -21,11 +25,13 @@ const invitedRow: MemberRosterQueryRow = {
   archerId: "a-invited",
   publicName: "Pat Pending",
   authUserId: "u-invited",
+  offboardedAt: null,
   user: {
     id: "u-invited",
     email: "invited@club.test",
     authenticated: false,
     roles: ["member"],
+    latestInvitationAt,
   },
 };
 
@@ -33,6 +39,15 @@ const shellRow: MemberRosterQueryRow = {
   archerId: "a-shell",
   publicName: "Shell Archer",
   authUserId: null,
+  offboardedAt: null,
+  user: null,
+};
+
+const archivedRow: MemberRosterQueryRow = {
+  archerId: "a-archived",
+  publicName: "Archived Archer",
+  authUserId: null,
+  offboardedAt: new Date("2026-01-01T00:00:00.000Z"),
   user: null,
 };
 
@@ -40,6 +55,7 @@ const brokenLinkRow: MemberRosterQueryRow = {
   archerId: "a-broken",
   publicName: "Broken Link",
   authUserId: "missing-user",
+  offboardedAt: null,
   user: null,
 };
 
@@ -67,6 +83,8 @@ describe("ListMemberRoster", () => {
         email: "active@club.test",
         publicName: "Robin H.",
         roles: ["member", "admin"],
+        invitedAt: null,
+        offboardedAt: null,
       },
       {
         status: "invited",
@@ -75,6 +93,8 @@ describe("ListMemberRoster", () => {
         email: "invited@club.test",
         publicName: "Pat Pending",
         roles: ["member"],
+        invitedAt: latestInvitationAt,
+        offboardedAt: null,
       },
       {
         status: "shell",
@@ -83,6 +103,8 @@ describe("ListMemberRoster", () => {
         email: null,
         publicName: "Shell Archer",
         roles: [],
+        invitedAt: null,
+        offboardedAt: null,
       },
     ]);
   });
@@ -108,11 +130,44 @@ describe("ListMemberRoster", () => {
         email: null,
         publicName: "Broken Link",
         roles: [],
+        invitedAt: null,
+        offboardedAt: null,
       },
     ]);
   });
 
-  it("passes search, status, and role filters to the query port", async () => {
+  it("maps offboarded shells to archived status", async () => {
+    const rosterQuery: MemberRosterQuery = {
+      findMatching: vi.fn().mockResolvedValue({
+        rows: [archivedRow],
+      }),
+    };
+
+    const handler = new ListMemberRoster(rosterQuery);
+    const page = await handler.findPage({
+      limit: 10,
+      offset: 0,
+      archived_only: true,
+    });
+
+    expect(rosterQuery.findMatching).toHaveBeenCalledWith({
+      archivedOnly: true,
+    });
+    expect(page.items).toEqual([
+      {
+        status: "archived",
+        userId: null,
+        archerId: "a-archived",
+        email: null,
+        publicName: "Archived Archer",
+        roles: [],
+        invitedAt: null,
+        offboardedAt: archivedRow.offboardedAt,
+      },
+    ]);
+  });
+
+  it("passes search, status, role, and archived filters to the query port", async () => {
     const rosterQuery: MemberRosterQuery = {
       findMatching: vi.fn().mockResolvedValue({
         rows: [activeRow],
@@ -132,7 +187,37 @@ describe("ListMemberRoster", () => {
       search: "robin",
       status: "active",
       role: "admin",
+      archivedOnly: undefined,
     });
+  });
+
+  it("uses the latest invitation token date for invited rows", async () => {
+    const resentInvitationAt = new Date("2026-09-05T08:00:00.000Z");
+    const invitedUser = invitedRow.user;
+    if (!invitedUser) {
+      throw new Error("Expected invited fixture to include a user");
+    }
+    const rosterQuery: MemberRosterQuery = {
+      findMatching: vi.fn().mockResolvedValue({
+        rows: [
+          {
+            ...invitedRow,
+            user: {
+              ...invitedUser,
+              latestInvitationAt: resentInvitationAt,
+            },
+          },
+        ],
+      }),
+    };
+
+    const handler = new ListMemberRoster(rosterQuery);
+    const page = await handler.findPage({
+      limit: 10,
+      offset: 0,
+    });
+
+    expect(page.items[0]?.invitedAt).toBe(resentInvitationAt);
   });
 
   it("slices the sorted roster using limit and offset", async () => {

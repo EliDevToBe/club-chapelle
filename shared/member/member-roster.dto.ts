@@ -1,6 +1,6 @@
 import type { RoleEnum } from "~~/shared/db-enums";
 
-export type MemberRosterStatus = "active" | "invited" | "shell";
+export type MemberRosterStatus = "active" | "invited" | "shell" | "archived";
 
 /** One row in the admin member roster (archer-centric). */
 export type MemberRosterItemDto = {
@@ -10,6 +10,8 @@ export type MemberRosterItemDto = {
   email: string | null;
   public_name: string;
   roles: RoleEnum[];
+  invited_at: string | null;
+  offboarded_at: string | null;
 };
 
 export type MemberRosterResponseDto = {

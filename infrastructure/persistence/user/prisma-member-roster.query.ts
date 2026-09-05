@@ -11,16 +11,37 @@ import type {
   auth_user_role,
 } from "~~/generated/prisma/client";
 import { prismaClient } from "~~/infrastructure/persistence/prisma.client";
+import {
+  type InvitationTokenCreatedAt,
+  resolveLatestInvitationAt,
+} from "~~/infrastructure/persistence/user/member-roster-query.invitation-at";
 import { buildMemberRosterWhere } from "~~/infrastructure/persistence/user/member-roster-query.where";
 
 type ArcherWithUser = archer & {
-  auth_user: (auth_user & { roles: auth_user_role[] }) | null;
+  auth_user:
+    | (auth_user & {
+        roles: auth_user_role[];
+        tokens: InvitationTokenCreatedAt[];
+      })
+    | null;
 };
 
 const archerInclude = {
   auth_user: {
     include: {
       roles: true,
+      tokens: {
+        where: {
+          type: "invitation",
+        },
+        orderBy: {
+          created_at: "desc",
+        },
+        take: 1,
+        select: {
+          created_at: true,
+        },
+      },
     },
   },
 } as const;
@@ -30,11 +51,16 @@ const toQueryRow = (row: ArcherWithUser): MemberRosterQueryRow => {
     archerId: row.id,
     publicName: row.public_name,
     authUserId: row.auth_user_id,
+    offboardedAt: row.offboarded_at,
     user: row.auth_user
       ? {
           id: row.auth_user.id,
           email: row.auth_user.email,
           authenticated: row.auth_user.authenticated,
+          latestInvitationAt: resolveLatestInvitationAt(
+            row.auth_user.tokens,
+            row.auth_user.created_at,
+          ),
           roles: sortRolesByOrder(
             row.auth_user.roles.map((roleRow) => {
               return roleRow.role;

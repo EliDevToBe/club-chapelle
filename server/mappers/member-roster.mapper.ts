@@ -11,5 +11,7 @@ export const toMemberRosterItemDto = (
     email: item.email,
     public_name: item.publicName,
     roles: item.roles,
+    invited_at: item.invitedAt ? item.invitedAt.toISOString() : null,
+    offboarded_at: item.offboardedAt ? item.offboardedAt.toISOString() : null,
   };
 };

@@ -3,13 +3,17 @@ import type { InviteArcherShellResponseDto } from "~~/shared/invitation/invite-a
 import type { InviteMemberResponseDto } from "~~/shared/invitation/invite-member.dto";
 import type { MemberRosterResponseDto } from "~~/shared/member/member-roster.dto";
 import type { MemberRosterListQuery } from "~~/shared/member/member-roster-list.schema";
+import type { SetUserRoleResponseDto } from "~~/shared/user/set-user-role.dto";
+import type { AssignableClubRole } from "~~/shared/user/set-user-role.schema";
 
 export const useMemberManagement = () => {
   const isLoading = ref(false);
   const isInviting = ref(false);
   const isRevoking = ref(false);
   const isDeleting = ref(false);
+  const isOffboarding = ref(false);
   const isUpdatingPublicName = ref(false);
+  const isSettingRole = ref(false);
   const items = ref<MemberRosterResponseDto["items"]>([]);
   const total = ref(0);
 
@@ -98,6 +102,18 @@ export const useMemberManagement = () => {
     }
   };
 
+  const offboardArcher = async (archerId: string): Promise<void> => {
+    isOffboarding.value = true;
+    try {
+      await $fetch(`/api/archers/${archerId}/offboard`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      isOffboarding.value = false;
+    }
+  };
+
   const updatePublicName = async (
     archerId: string,
     publicName: string,
@@ -118,6 +134,26 @@ export const useMemberManagement = () => {
     }
   };
 
+  const setRole = async (
+    userId: string,
+    role: AssignableClubRole,
+  ): Promise<SetUserRoleResponseDto["user"]> => {
+    isSettingRole.value = true;
+    try {
+      const response = await $fetch<SetUserRoleResponseDto>(
+        `/api/users/${userId}/role`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          body: { role },
+        },
+      );
+      return response.user;
+    } finally {
+      isSettingRole.value = false;
+    }
+  };
+
   return {
     items,
     total,
@@ -125,12 +161,16 @@ export const useMemberManagement = () => {
     isInviting,
     isRevoking,
     isDeleting,
+    isOffboarding,
     isUpdatingPublicName,
+    isSettingRole,
     listRoster,
     invite,
     inviteShell,
     revoke,
     deleteArcher,
+    offboardArcher,
     updatePublicName,
+    setRole,
   };
 };

@@ -7,12 +7,10 @@ import type {
 } from "~~/application/ports/invite-member-persistence.port";
 import { sortRolesByOrder } from "~~/domain/user/role";
 import type { User } from "~~/domain/user/user";
-import {
-  type auth_user,
-  type auth_user_role,
-  Prisma,
-} from "~~/generated/prisma/client";
+import type { auth_user, auth_user_role } from "~~/generated/prisma/client";
+import { Prisma } from "~~/generated/prisma/client";
 import { prismaClient } from "~~/infrastructure/persistence/prisma.client";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 type AuthUserWithRoles = auth_user & { roles: auth_user_role[] };
 
@@ -27,7 +25,11 @@ const toDomain = (row: AuthUserWithRoles): User => {
   };
 };
 
-const uniqueTargetIncludes = (error: unknown, field: string): boolean => {
+// Matches Prisma P2002 messages such as "Unique constraint failed on the fields: (`email`)"
+const uniqueConstraintMessagePattern =
+  /Unique constraint failed on the fields: \(([^)]+)\)/;
+
+const isUniqueConstraintOn = (error: unknown, field: string): boolean => {
   if (!(error instanceof Prisma.PrismaClientKnownRequestError)) {
     return false;
   }
@@ -36,14 +38,21 @@ const uniqueTargetIncludes = (error: unknown, field: string): boolean => {
   }
 
   const target = error.meta?.target;
-  if (Array.isArray(target)) {
-    return target.includes(field);
-  }
-  if (typeof target === "string") {
-    return target.includes(field);
+  if (Array.isArray(target) && target.includes(field)) {
+    return true;
   }
 
-  return false;
+  const match = error.message.match(uniqueConstraintMessagePattern);
+  if (!match?.[1]) {
+    return false;
+  }
+
+  return match[1]
+    .split(",")
+    .map((value) => {
+      return value.trim().replace(/^`|`$/g, "");
+    })
+    .includes(field);
 };
 
 export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
@@ -71,11 +80,17 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
 
       return { ok: true, user: toDomain(row) };
     } catch (error) {
-      if (uniqueTargetIncludes(error, "email")) {
-        return { ok: false, reason: "email_taken" };
+      if (isUniqueConstraintOn(error, "email")) {
+        return {
+          ok: false,
+          reason: API_ERROR_REASON.invitation.email_already_linked,
+        };
       }
-      if (uniqueTargetIncludes(error, "public_name")) {
-        return { ok: false, reason: "public_name_taken" };
+      if (isUniqueConstraintOn(error, "public_name")) {
+        return {
+          ok: false,
+          reason: API_ERROR_REASON.invitation.public_name_taken,
+        };
       }
       throw error;
     }
@@ -90,10 +105,13 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
           where: { id: input.archerId },
         });
         if (!archer) {
-          return { ok: false, reason: "archer_not_found" };
+          return { ok: false, reason: API_ERROR_REASON.common.not_found };
         }
         if (archer.auth_user_id) {
-          return { ok: false, reason: "archer_already_linked" };
+          return {
+            ok: false,
+            reason: API_ERROR_REASON.invitation.archer_already_linked,
+          };
         }
 
         const existingUser = await tx.auth_user.findFirst({
@@ -108,19 +126,25 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
 
         if (existingUser) {
           if (existingUser.authenticated) {
-            return { ok: false, reason: "already_authenticated" };
+            return {
+              ok: false,
+              reason: API_ERROR_REASON.invitation.account_already_active,
+            };
           }
 
           const linkedElsewhere = existingUser.archers.some(
             (linkedArcher) => linkedArcher.id !== input.archerId,
           );
           if (linkedElsewhere) {
-            return { ok: false, reason: "email_linked_elsewhere" };
+            return {
+              ok: false,
+              reason: API_ERROR_REASON.invitation.email_already_linked,
+            };
           }
 
           await tx.archer.update({
             where: { id: input.archerId },
-            data: { auth_user_id: existingUser.id },
+            data: { auth_user_id: existingUser.id, offboarded_at: null },
           });
 
           const updated = await tx.auth_user.update({
@@ -151,14 +175,17 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
 
         await tx.archer.update({
           where: { id: input.archerId },
-          data: { auth_user_id: created.id },
+          data: { auth_user_id: created.id, offboarded_at: null },
         });
 
         return { ok: true, user: toDomain(created), resent: false };
       });
     } catch (error) {
-      if (uniqueTargetIncludes(error, "email")) {
-        return { ok: false, reason: "email_taken" };
+      if (isUniqueConstraintOn(error, "email")) {
+        return {
+          ok: false,
+          reason: API_ERROR_REASON.invitation.email_already_linked,
+        };
       }
       throw error;
     }

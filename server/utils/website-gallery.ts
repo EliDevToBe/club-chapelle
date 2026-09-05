@@ -1,6 +1,8 @@
-import { createError, type MultiPartData } from "h3";
+import type { MultiPartData } from "h3";
 import type { WebsiteGalleryUploadInput } from "~~/application/ports/website-gallery-source.port";
 import type { DeleteGalleryImagesBody } from "~~/application/website/delete-website-gallery-images.use-case";
+import { ApiError } from "~~/server/utils/api-error";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import { asTrimmedString } from "~~/shared/utils/base-string.helper";
 
 type RenameGalleryImageBody = {
@@ -12,10 +14,7 @@ export const parseGalleryUploadParts = (
   parts: MultiPartData[] | undefined,
 ): WebsiteGalleryUploadInput[] => {
   if (!parts || parts.length === 0) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "No files were provided",
-    });
+    throw ApiError(API_ERROR_REASON.website.no_files_provided);
   }
 
   const files: WebsiteGalleryUploadInput[] = [];
@@ -31,10 +30,7 @@ export const parseGalleryUploadParts = (
   }
 
   if (files.length === 0) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "No valid files found in request",
-    });
+    throw ApiError(API_ERROR_REASON.website.no_valid_files);
   }
 
   return files;
@@ -47,10 +43,7 @@ export const parseRenameGalleryImageBody = (
   const newName = asTrimmedString(body?.newName);
 
   if (path.length === 0 || newName.length === 0) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Invalid request body",
-    });
+    throw ApiError(API_ERROR_REASON.common.invalid_request);
   }
 
   return { path, newName };
@@ -62,10 +55,7 @@ export const parseDeleteGalleryImagesBody = (
   const rawFilenames = Array.isArray(body?.filenames) ? body.filenames : null;
 
   if (!rawFilenames) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Invalid request body",
-    });
+    throw ApiError(API_ERROR_REASON.common.invalid_request);
   }
 
   const filenames = [...new Set(rawFilenames)]
@@ -77,10 +67,7 @@ export const parseDeleteGalleryImagesBody = (
     });
 
   if (filenames.length === 0) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Invalid request body",
-    });
+    throw ApiError(API_ERROR_REASON.common.invalid_request);
   }
 
   return { filenames };

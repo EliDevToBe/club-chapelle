@@ -8,6 +8,7 @@ import {
   it,
   vi,
 } from "vitest";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 const {
   useRuntimeConfigMock,
@@ -238,7 +239,7 @@ describe("Admin gallery upload and rename endpoints", () => {
 
     await expect(uploadGalleryImagesHandler(adminEvent)).rejects.toMatchObject({
       statusCode: 400,
-      statusMessage: "No files were provided",
+      data: { reason: API_ERROR_REASON.website.no_files_provided },
     });
   });
 
@@ -268,7 +269,7 @@ describe("Admin gallery upload and rename endpoints", () => {
     readBodyMock.mockResolvedValue({ path: "", newName: "" });
     await expect(renameGalleryImageHandler(adminEvent)).rejects.toMatchObject({
       statusCode: 400,
-      statusMessage: "Invalid request body",
+      data: { reason: API_ERROR_REASON.common.invalid_request },
     });
   });
 
@@ -310,7 +311,7 @@ describe("Admin gallery upload and rename endpoints", () => {
     readBodyMock.mockResolvedValue({ filenames: [] });
     await expect(deleteGalleryImagesHandler(adminEvent)).rejects.toMatchObject({
       statusCode: 400,
-      statusMessage: "Invalid request body",
+      data: { reason: API_ERROR_REASON.common.invalid_request },
     });
   });
 

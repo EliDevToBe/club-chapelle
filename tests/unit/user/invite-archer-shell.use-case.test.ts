@@ -5,6 +5,7 @@ import type { TokenRepository } from "~~/application/ports/token-repository.port
 import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
 import { InviteArcherShell } from "~~/application/user/invite-archer-shell.use-case";
 import type { User } from "~~/domain/user/user";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 const boundUser: User = {
   id: "u-bound",
@@ -92,7 +93,7 @@ describe("InviteArcherShell", () => {
   it("maps persistence failures", async () => {
     persistence.bindInvitedMemberToArcher = vi.fn().mockResolvedValue({
       ok: false,
-      reason: "archer_already_linked",
+      reason: API_ERROR_REASON.invitation.archer_already_linked,
     });
     const handler = new InviteArcherShell(
       persistence,
@@ -109,7 +110,7 @@ describe("InviteArcherShell", () => {
 
     expect(result).toEqual({
       ok: false,
-      reason: "archer_already_linked",
+      reason: API_ERROR_REASON.invitation.archer_already_linked,
     });
     expect(tokens.issueToken).not.toHaveBeenCalled();
   });
@@ -128,7 +129,10 @@ describe("InviteArcherShell", () => {
       publicName: "Shell",
     });
 
-    expect(result).toEqual({ ok: false, reason: "invalid_input" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.common.invalid_request,
+    });
     expect(persistence.bindInvitedMemberToArcher).not.toHaveBeenCalled();
   });
 });

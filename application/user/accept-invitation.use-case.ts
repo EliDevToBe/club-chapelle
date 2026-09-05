@@ -2,6 +2,7 @@ import type { AcceptInvitationPersistence } from "~~/application/ports/accept-in
 import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port";
 import type { PasswordHasher } from "~~/application/ports/password-hasher.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import type { SessionUser } from "~~/shared/auth/session-user";
 
 export type AcceptInvitationResult =
@@ -11,7 +12,10 @@ export type AcceptInvitationResult =
       refreshToken: string;
       session: SessionUser;
     }
-  | { ok: false; reason: string };
+  | {
+      ok: false;
+      reason: typeof API_ERROR_REASON.auth.invalid_token;
+    };
 
 export class AcceptInvitation {
   constructor(
@@ -27,17 +31,17 @@ export class AcceptInvitation {
   }): Promise<AcceptInvitationResult> => {
     const token = input.token.trim();
     if (!token || !input.password) {
-      return { ok: false, reason: "Invalid link or password" };
+      return { ok: false, reason: API_ERROR_REASON.auth.invalid_token };
     }
 
     const userId = this.jwt.verifyInvitationToken(token);
     if (!userId) {
-      return { ok: false, reason: "Invalid or expired link" };
+      return { ok: false, reason: API_ERROR_REASON.auth.invalid_token };
     }
 
     const row = await this.users.findForPasswordResetById(userId);
     if (!row || row.authenticated) {
-      return { ok: false, reason: "Invalid or expired link" };
+      return { ok: false, reason: API_ERROR_REASON.auth.invalid_token };
     }
 
     const passwordHash = await this.passwords.hash(input.password);
@@ -48,12 +52,12 @@ export class AcceptInvitation {
     });
 
     if (!persisted) {
-      return { ok: false, reason: "Invalid or expired link" };
+      return { ok: false, reason: API_ERROR_REASON.auth.invalid_token };
     }
 
     const user = await this.users.findById(userId);
     if (!user) {
-      return { ok: false, reason: "Invalid or expired link" };
+      return { ok: false, reason: API_ERROR_REASON.auth.invalid_token };
     }
 
     return {

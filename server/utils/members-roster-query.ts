@@ -1,10 +1,11 @@
-import { createError, getQuery, type H3Event } from "h3";
+import { getQuery, type H3Event } from "h3";
+import { ApiError } from "~~/server/utils/api-error";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import {
   type MemberRosterListQuery,
   memberRosterListQuerySchema,
   normaliseMemberRosterListRawQuery,
 } from "~~/shared/member/member-roster-list.schema";
-import { formatZodValidationError } from "~~/shared/utils/format-zod-error";
 
 export const parseMembersRosterListRawQuery = (
   query: Record<string, unknown>,
@@ -14,10 +15,7 @@ export const parseMembersRosterListRawQuery = (
   );
 
   if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: formatZodValidationError(result.error, "Invalid query"),
-    });
+    throw ApiError(API_ERROR_REASON.common.invalid_query);
   }
 
   return result.data;

@@ -19,10 +19,6 @@ export const useAuthUser = () => {
     return user.value?.roles.includes("developer");
   });
   const isAdmin = computed(() => {
-    if (isDeveloper.value) {
-      return true;
-    }
-
     return user.value?.roles.includes("admin") ?? false;
   });
 

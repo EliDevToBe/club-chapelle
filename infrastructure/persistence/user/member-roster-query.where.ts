@@ -22,6 +22,16 @@ export const buildMemberRosterWhere = (
     excludeDeveloperFromRosterWhere(),
   ];
 
+  if (input.archivedOnly) {
+    conditions.push({
+      offboarded_at: { not: null },
+    });
+  } else {
+    conditions.push({
+      offboarded_at: null,
+    });
+  }
+
   const trimmedSearch = input.search?.trim();
   if (trimmedSearch) {
     conditions.push({
@@ -67,6 +77,7 @@ export const buildMemberRosterWhere = (
   } else if (input.status === "shell") {
     conditions.push({
       OR: [{ auth_user_id: null }, { auth_user: { is: null } }],
+      offboarded_at: null,
     });
   }
 
