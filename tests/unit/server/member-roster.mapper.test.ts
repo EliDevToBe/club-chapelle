@@ -17,7 +17,9 @@ describe("toMemberRosterItemDto", () => {
       offboardedAt: null,
     };
 
-    expect(toMemberRosterItemDto(item).invited_at).toBe(invitedAt.toISOString());
+    expect(toMemberRosterItemDto(item).invited_at).toBe(
+      invitedAt.toISOString(),
+    );
     expect(toMemberRosterItemDto(item).offboarded_at).toBeNull();
   });
 
