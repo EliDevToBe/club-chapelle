@@ -33,7 +33,6 @@
           :items="statusFilterItems"
           placeholder="Tous"
           class="w-full"
-          :disabled="filter.archivedOnly"
         />
       </UFormField>
 
@@ -43,16 +42,9 @@
           :items="roleFilterItems"
           placeholder="Tous"
           class="w-full"
-          :disabled="filter.archivedOnly"
+          :disabled="isArchivedRosterView"
         />
       </UFormField>
-
-      <div class="flex items-center pb-0.5">
-        <UCheckbox
-          v-model="filter.archivedOnly"
-          label="Uniquement les archivé·es"
-        />
-      </div>
     </div>
 
     <div v-if="errorMessage" class="text-sm text-error">
@@ -62,7 +54,7 @@
       color="secondary"
       icon="i-ph-info-duotone"
       message="Aucun·e archer·ère archivé·e"
-      v-else-if="!isLoading && filter.archivedOnly && total === 0"
+      v-else-if="!isLoading && isArchivedRosterView && total === 0"
     >
     </Banner>
     <Banner
@@ -284,16 +276,14 @@ const isSavingPublicName = ref(false);
 
 type MemberRosterFilters = {
   search: string;
-  status: Exclude<MemberRosterItemDto["status"], "archived"> | null;
+  status: MemberRosterItemDto["status"] | null;
   role: MemberRosterRoleFilter | null;
-  archivedOnly: boolean;
 };
 
 const filter = reactive<MemberRosterFilters>({
   search: "",
   status: null,
   role: null,
-  archivedOnly: false,
 });
 
 const ui = {
@@ -314,7 +304,12 @@ const statusFilterItems: ChapSelectMenuItem[] = [
   { label: "Actif", value: "active" },
   { label: "Invité", value: "invited" },
   { label: "Sans compte", value: "shell" },
+  { label: "Archivé·es", value: "archived" },
 ];
+
+const isArchivedRosterView = computed(() => {
+  return filter.status === "archived";
+});
 
 const roleFilterItems: ChapSelectMenuItem[] = [
   { label: "Tous", value: null },
@@ -566,8 +561,7 @@ const hasActiveFilters = computed(() => {
   return (
     filter.search.trim().length > 0 ||
     filter.status !== null ||
-    filter.role !== null ||
-    filter.archivedOnly
+    filter.role !== null
   );
 });
 
@@ -586,14 +580,15 @@ const buildRosterQuery = (): MemberRosterListQuery => {
   if (trimmedSearch.length > 0) {
     query.search = trimmedSearch;
   }
-  if (filter.status && !filter.archivedOnly) {
-    query.status = filter.status;
-  }
-  if (filter.role && !filter.archivedOnly) {
-    query.role = filter.role;
-  }
-  if (filter.archivedOnly) {
+  if (filter.status === "archived") {
     query.archived_only = true;
+  } else {
+    if (filter.status) {
+      query.status = filter.status;
+    }
+    if (filter.role) {
+      query.role = filter.role;
+    }
   }
 
   return query;
@@ -948,20 +943,16 @@ watchDebounced(
   { debounce: 300 },
 );
 
-watch(
-  [() => filter.status, () => filter.role, () => filter.archivedOnly],
-  () => {
-    if (filter.archivedOnly) {
-      filter.status = null;
-      filter.role = null;
-    }
-    if (currentPage.value !== 1) {
-      currentPage.value = 1;
-      return;
-    }
-    void loadRoster();
-  },
-);
+watch([() => filter.status, () => filter.role], () => {
+  if (filter.status === "archived") {
+    filter.role = null;
+  }
+  if (currentPage.value !== 1) {
+    currentPage.value = 1;
+    return;
+  }
+  void loadRoster();
+});
 
 watch(currentPage, () => {
   void loadRoster();

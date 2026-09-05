@@ -1,3 +1,4 @@
+import type { ArcherRepository } from "~~/application/ports/archer-repository.port";
 import type { InviteMemberPersistence } from "~~/application/ports/invite-member-persistence.port";
 import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port";
 import type { TokenRepository } from "~~/application/ports/token-repository.port";
@@ -28,6 +29,7 @@ export type InviteMemberResult =
 export class InviteMember {
   constructor(
     private readonly users: UserRepository,
+    private readonly archers: ArcherRepository,
     private readonly persistence: InviteMemberPersistence,
     private readonly tokens: TokenRepository,
     private readonly jwt: JwtAuthService,
@@ -72,6 +74,14 @@ export class InviteMember {
       user = found;
       resent = true;
     } else {
+      const archerWithName = await this.archers.findByPublicName(name);
+      if (archerWithName) {
+        return {
+          ok: false,
+          reason: API_ERROR_REASON.invitation.public_name_taken,
+        };
+      }
+
       const created = await this.persistence.createInvitedMember({
         name,
         email,

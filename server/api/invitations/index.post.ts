@@ -66,8 +66,12 @@ export default defineEventHandler(async (event) => {
     throw ApiError(API_ERROR_REASON.common.invalid_request);
   }
 
-  const { userRepository, tokenRepository, inviteMemberPersistence } =
-    getRepositories();
+  const {
+    userRepository,
+    tokenRepository,
+    inviteMemberPersistence,
+    archerRepository,
+  } = getRepositories();
   const authServices = createAuthServices({
     accessSecret,
     refreshSecret,
@@ -82,6 +86,7 @@ export default defineEventHandler(async (event) => {
 
   const inviteMemberHandler = new InviteMember(
     userRepository,
+    archerRepository,
     inviteMemberPersistence,
     tokenRepository,
     authServices.jwt,
