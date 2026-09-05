@@ -6,6 +6,7 @@ import type { TransactionalMailPort } from "~~/application/ports/transactional-m
 import type { UserRepository } from "~~/application/ports/user-repository.port";
 import { InviteMember } from "~~/application/user/invite-member.use-case";
 import type { User } from "~~/domain/user/user";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 const invitedUser: User = {
   id: "u-new",
@@ -144,7 +145,7 @@ describe("InviteMember", () => {
 
     expect(result).toEqual({
       ok: false,
-      reason: "already_authenticated",
+      reason: API_ERROR_REASON.invitation.account_already_active,
     });
     expect(persistence.createInvitedMember).not.toHaveBeenCalled();
     expect(tokens.issueToken).not.toHaveBeenCalled();
@@ -209,7 +210,7 @@ describe("InviteMember", () => {
 
     expect(result).toEqual({
       ok: false,
-      reason: "already_invited",
+      reason: API_ERROR_REASON.invitation.account_already_invited,
     });
     expect(persistence.createInvitedMember).not.toHaveBeenCalled();
     expect(tokens.issueToken).not.toHaveBeenCalled();
@@ -218,7 +219,7 @@ describe("InviteMember", () => {
   it("rejects when the public name is already taken", async () => {
     persistence.createInvitedMember = vi.fn().mockResolvedValue({
       ok: false,
-      reason: "public_name_taken",
+      reason: API_ERROR_REASON.invitation.public_name_taken,
     });
 
     const handler = new InviteMember(
@@ -236,7 +237,7 @@ describe("InviteMember", () => {
 
     expect(result).toEqual({
       ok: false,
-      reason: "public_name_taken",
+      reason: API_ERROR_REASON.invitation.public_name_taken,
     });
     expect(tokens.issueToken).not.toHaveBeenCalled();
   });

@@ -1,6 +1,7 @@
 import type { H3Event } from "h3";
 import { describe, expect, it } from "vitest";
 import { requireRoles } from "~~/server/utils/rbac";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 const baseEvent = {
   context: {
@@ -60,7 +61,12 @@ describe("requireRoles", () => {
       },
     } as unknown as H3Event;
 
-    expect(() => requireRoles(event, ["manager"])).toThrowError("Forbidden");
+    expect(() => requireRoles(event, ["manager"])).toThrow(
+      expect.objectContaining({
+        statusCode: 403,
+        data: { reason: API_ERROR_REASON.common.forbidden },
+      }),
+    );
   });
 
   it("allows access when higher roles are listed explicitly", () => {
@@ -90,7 +96,12 @@ describe("requireRoles", () => {
       },
     } as unknown as H3Event;
 
-    expect(() => requireRoles(event, ["member"])).toThrowError("Forbidden");
+    expect(() => requireRoles(event, ["member"])).toThrow(
+      expect.objectContaining({
+        statusCode: 403,
+        data: { reason: API_ERROR_REASON.common.forbidden },
+      }),
+    );
   });
 
   it("allows developer when an assigned role is listed in allowedRoles", () => {
@@ -122,8 +133,11 @@ describe("requireRoles", () => {
       },
     } as unknown as H3Event;
 
-    expect(() => requireRoles(event, ["member"])).toThrowError(
-      "Authentication required",
+    expect(() => requireRoles(event, ["member"])).toThrow(
+      expect.objectContaining({
+        statusCode: 401,
+        data: { reason: API_ERROR_REASON.common.unauthenticated },
+      }),
     );
   });
 
@@ -141,7 +155,12 @@ describe("requireRoles", () => {
       },
     } as unknown as H3Event;
 
-    expect(() => requireRoles(event, ["admin"])).toThrowError("Forbidden");
+    expect(() => requireRoles(event, ["admin"])).toThrow(
+      expect.objectContaining({
+        statusCode: 403,
+        data: { reason: API_ERROR_REASON.common.forbidden },
+      }),
+    );
   });
 
   it("does not trust legacy x-user-* headers without event.context", () => {
@@ -158,8 +177,11 @@ describe("requireRoles", () => {
       },
     } as unknown as H3Event;
 
-    expect(() => requireRoles(event, ["admin"])).toThrowError(
-      "Authentication required",
+    expect(() => requireRoles(event, ["admin"])).toThrow(
+      expect.objectContaining({
+        statusCode: 401,
+        data: { reason: API_ERROR_REASON.common.unauthenticated },
+      }),
     );
   });
 });

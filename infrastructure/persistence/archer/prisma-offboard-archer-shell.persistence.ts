@@ -4,6 +4,7 @@ import type {
 } from "~~/application/ports/offboard-archer-shell-persistence.port";
 import type { ArcherId } from "~~/domain/archer/archer";
 import { prismaClient } from "~~/infrastructure/persistence/prisma.client";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 export class PrismaOffboardArcherShellPersistence
   implements OffboardArcherShellPersistence
@@ -16,10 +17,13 @@ export class PrismaOffboardArcherShellPersistence
       select: { id: true, auth_user_id: true, offboarded_at: true },
     });
     if (!archer) {
-      return { ok: false, reason: "not_found" };
+      return { ok: false, reason: API_ERROR_REASON.common.not_found };
     }
     if (archer.offboarded_at !== null) {
-      return { ok: false, reason: "already_offboarded" };
+      return {
+        ok: false,
+        reason: API_ERROR_REASON.archer.already_offboarded,
+      };
     }
 
     if (archer.auth_user_id !== null) {
@@ -28,7 +32,7 @@ export class PrismaOffboardArcherShellPersistence
         select: { id: true },
       });
       if (linkedUser) {
-        return { ok: false, reason: "archer_linked" };
+        return { ok: false, reason: API_ERROR_REASON.archer.linked };
       }
     }
 

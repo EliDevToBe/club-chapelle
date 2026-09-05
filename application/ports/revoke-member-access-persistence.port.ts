@@ -1,10 +1,13 @@
 import type { UserId } from "~~/domain/user/user";
+import type { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 export type RevokeMemberAccessResult =
   | { ok: true }
   | {
       ok: false;
-      reason: "not_found" | "self_revoke";
+      reason:
+        | typeof API_ERROR_REASON.common.not_found
+        | typeof API_ERROR_REASON.user.self_revoke;
     };
 
 export interface RevokeMemberAccessPersistence {

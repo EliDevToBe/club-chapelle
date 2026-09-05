@@ -1,9 +1,10 @@
-import { createError } from "h3";
 import { authResetPasswordBodySchema } from "~~/app/schemas/auth-flow.zod";
 import { ResetPassword } from "~~/application/user/reset-password.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { ApiError } from "~~/server/utils/api-error";
 import { setAuthSessionCookies } from "~~/server/utils/auth-cookies";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import { asStringOrEmpty } from "~~/shared/utils/base-string.helper";
 
 export default defineEventHandler(async (event) => {
@@ -11,10 +12,7 @@ export default defineEventHandler(async (event) => {
   const accessSecret = config.authJwtAccessSecret;
   const refreshSecret = config.authJwtRefreshSecret;
   if (!accessSecret || !refreshSecret || accessSecret === refreshSecret) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Authentication is not configured",
-    });
+    throw ApiError(API_ERROR_REASON.auth.not_configured);
   }
 
   const body = await readBody<Record<string, unknown>>(event);
@@ -25,10 +23,7 @@ export default defineEventHandler(async (event) => {
   });
 
   if (!parsed.success) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Invalid request",
-    });
+    throw ApiError(API_ERROR_REASON.common.invalid_request);
   }
 
   const { userRepository, passwordResetPersistence } = getRepositories();
@@ -48,10 +43,7 @@ export default defineEventHandler(async (event) => {
   });
 
   if (!result.ok) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: result.reason,
-    });
+    throw ApiError(result.reason);
   }
 
   setAuthSessionCookies(event, result.accessToken, result.refreshToken);

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
 import { SetUserRole } from "~~/application/user/set-user-role.use-case";
 import type { User } from "~~/domain/user/user";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 const createdAt = new Date("2026-01-01T00:00:00.000Z");
 
@@ -69,7 +70,10 @@ describe("SetUserRole", () => {
       role: "manager",
     });
 
-    expect(result).toEqual({ ok: false, reason: "self_change" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.user_role.self_change,
+    });
     expect(users.findById).not.toHaveBeenCalled();
     expect(users.update).not.toHaveBeenCalled();
   });
@@ -84,7 +88,10 @@ describe("SetUserRole", () => {
       role: "member",
     });
 
-    expect(result).toEqual({ ok: false, reason: "not_found" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.common.not_found,
+    });
     expect(users.update).not.toHaveBeenCalled();
   });
 
@@ -149,7 +156,10 @@ describe("SetUserRole", () => {
       role: "manager",
     });
 
-    expect(result).toEqual({ ok: false, reason: "admin_target" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.user_role.admin_target,
+    });
     expect(users.update).not.toHaveBeenCalled();
   });
 
@@ -201,7 +211,10 @@ describe("SetUserRole", () => {
       role: "manager",
     });
 
-    expect(result).toEqual({ ok: false, reason: "last_admin" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.user_role.last_admin,
+    });
     expect(users.update).not.toHaveBeenCalled();
   });
 
@@ -236,6 +249,9 @@ describe("SetUserRole", () => {
       role: "manager",
     });
 
-    expect(result).toEqual({ ok: false, reason: "not_found" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.common.not_found,
+    });
   });
 });

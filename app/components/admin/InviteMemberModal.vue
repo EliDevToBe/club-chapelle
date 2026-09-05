@@ -55,10 +55,12 @@
 import ChapInput from "~/components/ui/ChapInput.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useMemberManagement } from "~/composables/useMemberManagement";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import {
   inviteMemberBodySchema,
   prepareInviteMemberBody,
 } from "~~/shared/invitation/invite-member.schema";
+import { readApiErrorReason } from "~~/shared/utils/read-api-error.helper";
 
 const emit = defineEmits<{
   invited: [];
@@ -88,28 +90,6 @@ const canSubmit = computed(() => {
 const resetForm = (): void => {
   name.value = "";
   email.value = "";
-};
-
-const statusFromError = (error: unknown): number | undefined => {
-  if (typeof error !== "object" || error === null) {
-    return undefined;
-  }
-  if (!("statusCode" in error)) {
-    return undefined;
-  }
-  const statusCode = (error as { statusCode: unknown }).statusCode;
-  return typeof statusCode === "number" ? statusCode : undefined;
-};
-
-const statusMessageFromError = (error: unknown): string | undefined => {
-  if (typeof error !== "object" || error === null) {
-    return undefined;
-  }
-  if (!("statusMessage" in error)) {
-    return undefined;
-  }
-  const statusMessage = (error as { statusMessage: unknown }).statusMessage;
-  return typeof statusMessage === "string" ? statusMessage : undefined;
 };
 
 const onInvite = async (): Promise<void> => {
@@ -146,22 +126,21 @@ const onInvite = async (): Promise<void> => {
     isOpen.value = false;
     emit("invited");
   } catch (error) {
-    const statusCode = statusFromError(error);
-    const statusMessage = statusMessageFromError(error);
-    if (statusCode === 409 && statusMessage === "Account already active") {
+    const reason = readApiErrorReason(error);
+    if (reason === API_ERROR_REASON.invitation.account_already_active) {
       addToastError({
         description: "Un compte actif existe déjà pour cette adresse e-mail.",
       });
       return;
     }
-    if (statusCode === 409 && statusMessage === "Account already invited") {
+    if (reason === API_ERROR_REASON.invitation.account_already_invited) {
       addToastError({
         description:
           "Une invitation est déjà en cours pour cette adresse. Utilisez « Renvoyer l’invitation » dans la liste.",
       });
       return;
     }
-    if (statusCode === 409 && statusMessage === "Public name already taken") {
+    if (reason === API_ERROR_REASON.invitation.public_name_taken) {
       addToastError({
         description: "Ce nom est déjà utilisé par un·e archer·ère.",
       });

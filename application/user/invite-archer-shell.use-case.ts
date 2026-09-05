@@ -4,6 +4,7 @@ import type { TokenRepository } from "~~/application/ports/token-repository.port
 import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
 import type { InviteMemberOptions } from "~~/application/user/invite-member.use-case";
 import type { User } from "~~/domain/user/user";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import { INVITATION_TOKEN_MAX_AGE_SECONDS } from "~~/shared/auth/jwt-lifetimes";
 
 export type InviteArcherShellResult =
@@ -11,12 +12,11 @@ export type InviteArcherShellResult =
   | {
       ok: false;
       reason:
-        | "invalid_input"
-        | "archer_not_found"
-        | "archer_already_linked"
-        | "already_authenticated"
-        | "email_linked_elsewhere"
-        | "email_taken";
+        | typeof API_ERROR_REASON.common.invalid_request
+        | typeof API_ERROR_REASON.common.not_found
+        | typeof API_ERROR_REASON.invitation.archer_already_linked
+        | typeof API_ERROR_REASON.invitation.account_already_active
+        | typeof API_ERROR_REASON.invitation.email_already_linked;
     };
 
 export class InviteArcherShell {
@@ -37,7 +37,7 @@ export class InviteArcherShell {
     const publicName = input.publicName.trim();
     const archerId = input.archerId.trim();
     if (!email || !publicName || !archerId) {
-      return { ok: false, reason: "invalid_input" };
+      return { ok: false, reason: API_ERROR_REASON.common.invalid_request };
     }
 
     const bound = await this.persistence.bindInvitedMemberToArcher({

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { RevokeMemberAccessPersistence } from "~~/application/ports/revoke-member-access-persistence.port";
 import { RevokeMemberAccess } from "~~/application/user/revoke-member-access.use-case";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 describe("RevokeMemberAccess", () => {
   let persistence: RevokeMemberAccessPersistence;
@@ -29,7 +30,10 @@ describe("RevokeMemberAccess", () => {
       actorUserId: "u-admin",
     });
 
-    expect(result).toEqual({ ok: false, reason: "self_revoke" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.user.self_revoke,
+    });
     expect(persistence.revokeAccess).not.toHaveBeenCalled();
   });
 
@@ -41,6 +45,9 @@ describe("RevokeMemberAccess", () => {
       actorUserId: "u-admin",
     });
 
-    expect(result).toEqual({ ok: false, reason: "not_found" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.common.not_found,
+    });
   });
 });

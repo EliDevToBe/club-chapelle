@@ -1,8 +1,10 @@
-import { createError, defineEventHandler } from "h3";
+import { defineEventHandler } from "h3";
 import { useRuntimeConfig } from "nitropack/runtime";
 import { GetWebsiteGalleryInfos } from "~~/application/website/get-website-gallery-infos.use-case";
 import { SirvGallerySource } from "~~/infrastructure/sirv/sirv-gallery.source";
+import { ApiError } from "~~/server/utils/api-error";
 import { requireRoles } from "~~/server/utils/rbac";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 export default defineEventHandler(async (event) => {
   requireRoles(event, ["admin"]);
@@ -13,10 +15,7 @@ export default defineEventHandler(async (event) => {
   const cdnDomain = config.sirvCdnDomain;
 
   if (!clientId || !clientSecret || !cdnDomain) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Sirv runtime configuration is missing",
-    });
+    throw ApiError(API_ERROR_REASON.website.sirv_not_configured);
   }
 
   const sirvGallerySource = new SirvGallerySource({

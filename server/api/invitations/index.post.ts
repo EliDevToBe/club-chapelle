@@ -1,4 +1,3 @@
-import { createError } from "h3";
 import { InviteMember } from "~~/application/user/invite-member.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
 import {
@@ -7,7 +6,9 @@ import {
 } from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { toUserDto } from "~~/server/mappers/user.mapper";
+import { ApiError } from "~~/server/utils/api-error";
 import { requireRoles } from "~~/server/utils/rbac";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import type { RoleEnum } from "~~/shared/db-enums";
 import type { InviteMemberResponseDto } from "~~/shared/invitation/invite-member.dto";
 import {
@@ -32,34 +33,22 @@ export default defineEventHandler(async (event) => {
   const sandbox = Boolean(config.mailtrapUseSandbox);
 
   if (!apiKey) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Mail is not configured",
-    });
+    throw ApiError(API_ERROR_REASON.mail.not_configured);
   }
 
   if (!fromEmail) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Mail sender is not configured",
-    });
+    throw ApiError(API_ERROR_REASON.mail.sender_not_configured);
   }
 
   if (!accessSecret || !refreshSecret || accessSecret === refreshSecret) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Authentication is not configured",
-    });
+    throw ApiError(API_ERROR_REASON.auth.not_configured);
   }
 
   let testInboxId: number | undefined;
   if (sandbox) {
     const parsedInbox = Number.parseInt(inboxIdRaw, 10);
     if (!Number.isFinite(parsedInbox) || parsedInbox <= 0) {
-      throw createError({
-        statusCode: 500,
-        statusMessage: "Mail sandbox inbox is not configured",
-      });
+      throw ApiError(API_ERROR_REASON.mail.sandbox_inbox_not_configured);
     }
     testInboxId = parsedInbox;
   }
@@ -74,10 +63,7 @@ export default defineEventHandler(async (event) => {
   );
 
   if (!parsed.success) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Invalid request",
-    });
+    throw ApiError(API_ERROR_REASON.common.invalid_request);
   }
 
   const { userRepository, tokenRepository, inviteMemberPersistence } =
@@ -115,28 +101,7 @@ export default defineEventHandler(async (event) => {
   });
 
   if (!result.ok) {
-    if (result.reason === "already_authenticated") {
-      throw createError({
-        statusCode: 409,
-        statusMessage: "Account already active",
-      });
-    }
-    if (result.reason === "already_invited") {
-      throw createError({
-        statusCode: 409,
-        statusMessage: "Account already invited",
-      });
-    }
-    if (result.reason === "public_name_taken") {
-      throw createError({
-        statusCode: 409,
-        statusMessage: "Public name already taken",
-      });
-    }
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Invalid request",
-    });
+    throw ApiError(result.reason);
   }
 
   const response: InviteMemberResponseDto = {

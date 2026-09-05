@@ -1,5 +1,7 @@
-import { createError, type H3Event } from "h3";
+import type { H3Event } from "h3";
 import { userHasRoleAccess } from "~~/domain/user/role";
+import { ApiError } from "~~/server/utils/api-error";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import type { RoleEnum } from "~~/shared/db-enums";
 
 type AuthUserContext = {
@@ -29,17 +31,11 @@ export const requireRoles = (
 ): AuthUserContext => {
   const authUser = readAuthUser(event);
   if (!authUser?.authenticated) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: "Authentication required",
-    });
+    throw ApiError(API_ERROR_REASON.common.unauthenticated);
   }
 
   if (!userHasRoleAccess(authUser.roles, allowedRoles)) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: "Forbidden",
-    });
+    throw ApiError(API_ERROR_REASON.common.forbidden);
   }
 
   return authUser;
@@ -52,17 +48,11 @@ export const requireRoles = (
 export const requireDeveloper = (event: H3Event): AuthUserContext => {
   const authUser = readAuthUser(event);
   if (!authUser?.authenticated) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: "Authentication required",
-    });
+    throw ApiError(API_ERROR_REASON.common.unauthenticated);
   }
 
   if (!authUser.roles.includes("developer")) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: "Forbidden",
-    });
+    throw ApiError(API_ERROR_REASON.common.forbidden);
   }
 
   return authUser;

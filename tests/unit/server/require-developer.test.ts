@@ -1,6 +1,7 @@
 import type { H3Event } from "h3";
 import { describe, expect, it } from "vitest";
 import { requireDeveloper } from "~~/server/utils/rbac";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 const baseEvent = {
   context: {
@@ -30,7 +31,12 @@ describe("requireDeveloper", () => {
       },
     } as unknown as H3Event;
 
-    expect(() => requireDeveloper(event)).toThrowError("Forbidden");
+    expect(() => requireDeveloper(event)).toThrow(
+      expect.objectContaining({
+        statusCode: 403,
+        data: { reason: API_ERROR_REASON.common.forbidden },
+      }),
+    );
   });
 
   it("rejects member-only users", () => {
@@ -45,7 +51,12 @@ describe("requireDeveloper", () => {
       },
     } as unknown as H3Event;
 
-    expect(() => requireDeveloper(event)).toThrowError("Forbidden");
+    expect(() => requireDeveloper(event)).toThrow(
+      expect.objectContaining({
+        statusCode: 403,
+        data: { reason: API_ERROR_REASON.common.forbidden },
+      }),
+    );
   });
 
   it("rejects unauthenticated users with 401", () => {
@@ -60,8 +71,11 @@ describe("requireDeveloper", () => {
       },
     } as unknown as H3Event;
 
-    expect(() => requireDeveloper(event)).toThrowError(
-      "Authentication required",
+    expect(() => requireDeveloper(event)).toThrow(
+      expect.objectContaining({
+        statusCode: 401,
+        data: { reason: API_ERROR_REASON.common.unauthenticated },
+      }),
     );
   });
 });

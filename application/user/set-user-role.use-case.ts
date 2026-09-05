@@ -1,5 +1,6 @@
 import type { UserRepository } from "~~/application/ports/user-repository.port";
 import type { User, UserId } from "~~/domain/user/user";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import type { RoleEnum } from "~~/shared/db-enums";
 import {
   ASSIGNABLE_CLUB_ROLES,
@@ -11,11 +12,11 @@ export type SetUserRoleResult =
   | {
       ok: false;
       reason:
-        | "self_change"
-        | "not_found"
+        | typeof API_ERROR_REASON.user_role.self_change
+        | typeof API_ERROR_REASON.common.not_found
         | "developer_target"
-        | "admin_target"
-        | "last_admin"
+        | typeof API_ERROR_REASON.user_role.admin_target
+        | typeof API_ERROR_REASON.user_role.last_admin
         | "invalid_role";
     };
 
@@ -33,7 +34,7 @@ export class SetUserRole {
     role: RoleEnum;
   }): Promise<SetUserRoleResult> => {
     if (input.targetUserId === input.actorUserId) {
-      return { ok: false, reason: "self_change" };
+      return { ok: false, reason: API_ERROR_REASON.user_role.self_change };
     }
 
     if (!isAssignableClubRole(input.role)) {
@@ -42,7 +43,7 @@ export class SetUserRole {
 
     const target = await this.users.findById(input.targetUserId);
     if (!target) {
-      return { ok: false, reason: "not_found" };
+      return { ok: false, reason: API_ERROR_REASON.common.not_found };
     }
 
     if (target.roles.includes("developer")) {
@@ -53,7 +54,7 @@ export class SetUserRole {
     const isDemotingAdmin =
       target.roles.includes("admin") && input.role !== "admin";
     if (isDemotingAdmin && !actorIsDeveloper) {
-      return { ok: false, reason: "admin_target" };
+      return { ok: false, reason: API_ERROR_REASON.user_role.admin_target };
     }
 
     if (isDemotingAdmin) {
@@ -62,7 +63,7 @@ export class SetUserRole {
         return user.roles.includes("admin");
       }).length;
       if (adminCount <= 1) {
-        return { ok: false, reason: "last_admin" };
+        return { ok: false, reason: API_ERROR_REASON.user_role.last_admin };
       }
     }
 
@@ -70,7 +71,7 @@ export class SetUserRole {
       roles: [input.role],
     });
     if (!updated) {
-      return { ok: false, reason: "not_found" };
+      return { ok: false, reason: API_ERROR_REASON.common.not_found };
     }
 
     return { ok: true, user: updated };

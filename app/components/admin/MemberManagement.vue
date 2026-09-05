@@ -225,6 +225,7 @@ import { useAuthUser } from "~/composables/useAuthUser";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useMemberManagement } from "~/composables/useMemberManagement";
 import { translateRole } from "~/utils/translate";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import type { RoleEnum } from "~~/shared/db-enums";
 import type { MemberRosterItemDto } from "~~/shared/member/member-roster.dto";
 import type { MemberRosterRoleFilter } from "~~/shared/member/member-roster-list.dto";
@@ -235,7 +236,7 @@ import {
   MEMBER_ROSTER_PAGE_SIZE_MOBILE,
 } from "~~/shared/member/member-roster-pagination";
 import { type AssignableClubRole } from "~~/shared/user/set-user-role.schema";
-import { readApiErrorStatusMessage } from "~~/shared/utils/read-api-error.helper";
+import { readApiErrorReason } from "~~/shared/utils/read-api-error.helper";
 
 type MemberRow = MemberRosterItemDto;
 
@@ -499,14 +500,14 @@ const confirmSetRole = async (): Promise<void> => {
     });
     await loadRoster();
   } catch (error) {
-    const statusMessage = readApiErrorStatusMessage(error);
-    if (statusMessage === "Cannot change your own role") {
+    const reason = readApiErrorReason(error);
+    if (reason === API_ERROR_REASON.user_role.self_change) {
       addToastError({
         description: "Vous ne pouvez pas modifier votre propre rôle.",
       });
       return;
     }
-    if (statusMessage === "Only a developer can demote an admin") {
+    if (reason === API_ERROR_REASON.user_role.admin_target) {
       addToastInfo({
         title: "Rôle inchangé",
         description: "Contactez un développeur pour rétrograder un admin.",
@@ -514,7 +515,7 @@ const confirmSetRole = async (): Promise<void> => {
       });
       return;
     }
-    if (statusMessage === "Cannot demote the last admin") {
+    if (reason === API_ERROR_REASON.user_role.last_admin) {
       addToastError({
         description: "Impossible de rétrograder le dernier admin.",
       });
@@ -708,8 +709,8 @@ const confirmRevoke = async (): Promise<void> => {
     );
     await loadRoster();
   } catch (error) {
-    const statusMessage = readApiErrorStatusMessage(error);
-    if (statusMessage === "Cannot revoke your own access") {
+    const reason = readApiErrorReason(error);
+    if (reason === API_ERROR_REASON.user.self_revoke) {
       addToastError({
         description: "Vous ne pouvez pas révoquer votre propre accès.",
       });
@@ -748,21 +749,21 @@ const confirmOffboard = async (): Promise<void> => {
     );
     await loadRoster();
   } catch (error) {
-    const statusMessage = readApiErrorStatusMessage(error);
-    if (statusMessage === "Archer is linked to an account") {
+    const reason = readApiErrorReason(error);
+    if (reason === API_ERROR_REASON.archer.linked) {
       addToastError({
         description:
           "Impossible d’archiver un·e archer·ère lié·e à un compte. Révoquez l’accès d’abord.",
       });
       return;
     }
-    if (statusMessage === "Archer is already archived") {
+    if (reason === API_ERROR_REASON.archer.already_offboarded) {
       addToastError({
         description: "Cet archer·ère est déjà archivé·e.",
       });
       return;
     }
-    if (statusMessage === "Archer not found") {
+    if (reason === API_ERROR_REASON.common.not_found) {
       addToastError({
         description: "Archer·ère introuvable.",
       });
@@ -801,15 +802,15 @@ const confirmDelete = async (): Promise<void> => {
     );
     await loadRoster();
   } catch (error) {
-    const statusMessage = readApiErrorStatusMessage(error);
-    if (statusMessage === "Archer is linked to an account") {
+    const reason = readApiErrorReason(error);
+    if (reason === API_ERROR_REASON.archer.linked) {
       addToastError({
         description:
           "Impossible de supprimer un·e archer·ère lié·e à un compte. Révoquez l’accès d’abord.",
       });
       return;
     }
-    if (statusMessage === "Archer must be archived before deletion") {
+    if (reason === API_ERROR_REASON.archer.not_offboarded) {
       addToastError({
         description: "Archivez l’archer·ère avant de la supprimer.",
       });

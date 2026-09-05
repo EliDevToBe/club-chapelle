@@ -4,6 +4,7 @@ import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port"
 import type { PasswordHasher } from "~~/application/ports/password-hasher.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
 import { AcceptInvitation } from "~~/application/user/accept-invitation.use-case";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 describe("AcceptInvitation", () => {
   let users: UserRepository;
@@ -67,7 +68,10 @@ describe("AcceptInvitation", () => {
       password: "Aa1!newpass",
     });
 
-    expect(result).toEqual({ ok: false, reason: "Invalid or expired link" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.auth.invalid_token,
+    });
     expect(users.findForPasswordResetById).not.toHaveBeenCalled();
     expect(persistence.completeInvitation).not.toHaveBeenCalled();
   });
@@ -86,7 +90,10 @@ describe("AcceptInvitation", () => {
       password: "Aa1!newpass",
     });
 
-    expect(result).toEqual({ ok: false, reason: "Invalid or expired link" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.auth.invalid_token,
+    });
     expect(passwords.hash).not.toHaveBeenCalled();
     expect(persistence.completeInvitation).not.toHaveBeenCalled();
   });

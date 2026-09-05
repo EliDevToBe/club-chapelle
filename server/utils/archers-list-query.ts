@@ -1,10 +1,11 @@
-import { createError, getQuery, type H3Event } from "h3";
+import { getQuery, type H3Event } from "h3";
+import { ApiError } from "~~/server/utils/api-error";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import {
   type ArcherListQuery,
   archerListQuerySchema,
 } from "~~/shared/archer/archer-list.schema";
 import { normalisePaginatedListRawQuery } from "~~/shared/schemas/paginated-list-query.schema";
-import { formatZodValidationError } from "~~/shared/utils/format-zod-error";
 
 export const parseArchersListRawQuery = (
   query: Record<string, unknown>,
@@ -14,10 +15,7 @@ export const parseArchersListRawQuery = (
   );
 
   if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: formatZodValidationError(result.error, "Invalid query"),
-    });
+    throw ApiError(API_ERROR_REASON.common.invalid_query);
   }
 
   return result.data;

@@ -1,8 +1,15 @@
 import type { ArcherId } from "~~/domain/archer/archer";
+import type { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 export type DeleteArcherShellResult =
   | { ok: true }
-  | { ok: false; reason: "not_found" | "archer_linked" | "not_offboarded" };
+  | {
+      ok: false;
+      reason:
+        | typeof API_ERROR_REASON.common.not_found
+        | typeof API_ERROR_REASON.archer.linked
+        | typeof API_ERROR_REASON.archer.not_offboarded;
+    };
 
 export interface DeleteArcherPersistence {
   /**

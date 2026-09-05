@@ -13,6 +13,7 @@ import {
   Prisma,
 } from "~~/generated/prisma/client";
 import { prismaClient } from "~~/infrastructure/persistence/prisma.client";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 type AuthUserWithRoles = auth_user & { roles: auth_user_role[] };
 
@@ -72,10 +73,16 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
       return { ok: true, user: toDomain(row) };
     } catch (error) {
       if (uniqueTargetIncludes(error, "email")) {
-        return { ok: false, reason: "email_taken" };
+        return {
+          ok: false,
+          reason: API_ERROR_REASON.invitation.email_already_linked,
+        };
       }
       if (uniqueTargetIncludes(error, "public_name")) {
-        return { ok: false, reason: "public_name_taken" };
+        return {
+          ok: false,
+          reason: API_ERROR_REASON.invitation.public_name_taken,
+        };
       }
       throw error;
     }
@@ -90,10 +97,13 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
           where: { id: input.archerId },
         });
         if (!archer) {
-          return { ok: false, reason: "archer_not_found" };
+          return { ok: false, reason: API_ERROR_REASON.common.not_found };
         }
         if (archer.auth_user_id) {
-          return { ok: false, reason: "archer_already_linked" };
+          return {
+            ok: false,
+            reason: API_ERROR_REASON.invitation.archer_already_linked,
+          };
         }
 
         const existingUser = await tx.auth_user.findFirst({
@@ -108,14 +118,20 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
 
         if (existingUser) {
           if (existingUser.authenticated) {
-            return { ok: false, reason: "already_authenticated" };
+            return {
+              ok: false,
+              reason: API_ERROR_REASON.invitation.account_already_active,
+            };
           }
 
           const linkedElsewhere = existingUser.archers.some(
             (linkedArcher) => linkedArcher.id !== input.archerId,
           );
           if (linkedElsewhere) {
-            return { ok: false, reason: "email_linked_elsewhere" };
+            return {
+              ok: false,
+              reason: API_ERROR_REASON.invitation.email_already_linked,
+            };
           }
 
           await tx.archer.update({
@@ -158,7 +174,10 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
       });
     } catch (error) {
       if (uniqueTargetIncludes(error, "email")) {
-        return { ok: false, reason: "email_taken" };
+        return {
+          ok: false,
+          reason: API_ERROR_REASON.invitation.email_already_linked,
+        };
       }
       throw error;
     }

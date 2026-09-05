@@ -1,4 +1,5 @@
 import type { User } from "~~/domain/user/user";
+import type { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 export type CreateInvitedMemberInput = {
   name: string;
@@ -7,7 +8,12 @@ export type CreateInvitedMemberInput = {
 
 export type CreateInvitedMemberResult =
   | { ok: true; user: User }
-  | { ok: false; reason: "email_taken" | "public_name_taken" };
+  | {
+      ok: false;
+      reason:
+        | typeof API_ERROR_REASON.invitation.email_already_linked
+        | typeof API_ERROR_REASON.invitation.public_name_taken;
+    };
 
 export type BindInvitedMemberToArcherInput = {
   archerId: string;
@@ -21,11 +27,10 @@ export type BindInvitedMemberToArcherResult =
   | {
       ok: false;
       reason:
-        | "archer_not_found"
-        | "archer_already_linked"
-        | "already_authenticated"
-        | "email_linked_elsewhere"
-        | "email_taken";
+        | typeof API_ERROR_REASON.common.not_found
+        | typeof API_ERROR_REASON.invitation.archer_already_linked
+        | typeof API_ERROR_REASON.invitation.account_already_active
+        | typeof API_ERROR_REASON.invitation.email_already_linked;
     };
 
 export interface InviteMemberPersistence {

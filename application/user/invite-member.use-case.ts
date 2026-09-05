@@ -4,6 +4,7 @@ import type { TokenRepository } from "~~/application/ports/token-repository.port
 import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
 import type { User } from "~~/domain/user/user";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import { INVITATION_TOKEN_MAX_AGE_SECONDS } from "~~/shared/auth/jwt-lifetimes";
 
 export type InviteMemberOptions = {
@@ -18,10 +19,10 @@ export type InviteMemberResult =
   | {
       ok: false;
       reason:
-        | "already_authenticated"
-        | "already_invited"
-        | "public_name_taken"
-        | "invalid_input";
+        | typeof API_ERROR_REASON.invitation.account_already_active
+        | typeof API_ERROR_REASON.invitation.account_already_invited
+        | typeof API_ERROR_REASON.invitation.public_name_taken
+        | typeof API_ERROR_REASON.common.invalid_request;
     };
 
 export class InviteMember {
@@ -43,12 +44,15 @@ export class InviteMember {
     const name = input.name.trim();
     const allowResent = input.allowResent === true;
     if (!email || !name) {
-      return { ok: false, reason: "invalid_input" };
+      return { ok: false, reason: API_ERROR_REASON.common.invalid_request };
     }
 
     const existing = await this.users.findByEmailForPasswordReset(email);
     if (existing?.authenticated) {
-      return { ok: false, reason: "already_authenticated" };
+      return {
+        ok: false,
+        reason: API_ERROR_REASON.invitation.account_already_active,
+      };
     }
 
     let user: User;
@@ -56,11 +60,14 @@ export class InviteMember {
 
     if (existing) {
       if (!allowResent) {
-        return { ok: false, reason: "already_invited" };
+        return {
+          ok: false,
+          reason: API_ERROR_REASON.invitation.account_already_invited,
+        };
       }
       const found = await this.users.findById(existing.id);
       if (!found) {
-        return { ok: false, reason: "invalid_input" };
+        return { ok: false, reason: API_ERROR_REASON.common.invalid_request };
       }
       user = found;
       resent = true;
@@ -70,7 +77,9 @@ export class InviteMember {
         email,
       });
       if (!created.ok) {
-        if (created.reason === "email_taken") {
+        if (
+          created.reason === API_ERROR_REASON.invitation.email_already_linked
+        ) {
           return this.inviteAfterEmailRace(email, allowResent);
         }
         return { ok: false, reason: created.reason };
@@ -87,18 +96,24 @@ export class InviteMember {
   ): Promise<InviteMemberResult> => {
     const raced = await this.users.findByEmailForPasswordReset(email);
     if (raced?.authenticated) {
-      return { ok: false, reason: "already_authenticated" };
+      return {
+        ok: false,
+        reason: API_ERROR_REASON.invitation.account_already_active,
+      };
     }
     if (!raced) {
-      return { ok: false, reason: "invalid_input" };
+      return { ok: false, reason: API_ERROR_REASON.common.invalid_request };
     }
     if (!allowResent) {
-      return { ok: false, reason: "already_invited" };
+      return {
+        ok: false,
+        reason: API_ERROR_REASON.invitation.account_already_invited,
+      };
     }
 
     const found = await this.users.findById(raced.id);
     if (!found) {
-      return { ok: false, reason: "invalid_input" };
+      return { ok: false, reason: API_ERROR_REASON.common.invalid_request };
     }
 
     return this.issueAndMail(found, true);

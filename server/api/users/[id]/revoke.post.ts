@@ -1,7 +1,8 @@
-import { createError } from "h3";
 import { RevokeMemberAccess } from "~~/application/user/revoke-member-access.use-case";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { ApiError } from "~~/server/utils/api-error";
 import { requireRoles } from "~~/server/utils/rbac";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import type { RoleEnum } from "~~/shared/db-enums";
 
 const allowedRoles: RoleEnum[] = ["admin"];
@@ -11,10 +12,7 @@ export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
 
   if (!id) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "User id is required",
-    });
+    throw ApiError(API_ERROR_REASON.common.missing_id);
   }
 
   const { revokeMemberAccessPersistence } = getRepositories();
@@ -27,16 +25,7 @@ export default defineEventHandler(async (event) => {
   });
 
   if (!result.ok) {
-    if (result.reason === "self_revoke") {
-      throw createError({
-        statusCode: 400,
-        statusMessage: "Cannot revoke your own access",
-      });
-    }
-    throw createError({
-      statusCode: 404,
-      statusMessage: "User not found",
-    });
+    throw ApiError(result.reason);
   }
 
   return { ok: true };
