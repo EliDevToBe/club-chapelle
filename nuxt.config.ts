@@ -3,6 +3,12 @@
 const defaultContactEmail = process.env.DEFAULT_CONTACT_EMAIL ?? "";
 
 export default defineNuxtConfig({
+  vite: {
+    optimizeDeps: {
+      include: ["@vue/devtools-core", "@vue/devtools-kit", "zod"],
+    },
+  },
+
   css: ["~/assets/css/main.css"],
 
   compatibilityDate: "2025-07-15",
