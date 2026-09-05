@@ -6,6 +6,7 @@ export type MemberRosterQueryRow = {
   archerId: string;
   publicName: string;
   authUserId: string | null;
+  offboardedAt: Date | null;
   user: {
     id: string;
     email: string;
@@ -18,6 +19,7 @@ export type FindMemberRosterQueryInput = {
   search?: string;
   status?: MemberRosterStatus;
   role?: MemberRosterRoleFilter;
+  archivedOnly?: boolean;
 };
 
 export type FindMemberRosterQueryResult = {

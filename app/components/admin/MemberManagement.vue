@@ -33,6 +33,7 @@
           :items="statusFilterItems"
           placeholder="Tous"
           class="w-full"
+          :disabled="filter.archivedOnly"
         />
       </UFormField>
 
@@ -42,13 +43,28 @@
           :items="roleFilterItems"
           placeholder="Tous"
           class="w-full"
+          :disabled="filter.archivedOnly"
         />
       </UFormField>
+
+      <div class="flex items-center pb-0.5">
+        <UCheckbox
+          v-model="filter.archivedOnly"
+          label="Uniquement les archivé·es"
+        />
+      </div>
     </div>
 
     <div v-if="errorMessage" class="text-sm text-error">
       {{ errorMessage }}
     </div>
+    <Banner
+      color="secondary"
+      icon="i-ph-info-duotone"
+      message="Aucun·e archer·ère archivé·e"
+      v-else-if="!isLoading && filter.archivedOnly && total === 0"
+    >
+    </Banner>
     <Banner
       color="secondary"
       icon="i-ph-info-duotone"
@@ -69,7 +85,10 @@
           <USkeleton v-if="isLoading" class="h-4 w-28" />
           <div v-else-if="row.original.archer_id" class="min-w-40">
             <UInput
-              v-if="editingArcherId === row.original.archer_id"
+              v-if="
+                editingArcherId === row.original.archer_id &&
+                canEditPublicName(row.original)
+              "
               v-model="editingPublicName"
               size="sm"
               :disabled="isUpdatingPublicName"
@@ -79,13 +98,14 @@
               :autofocus="true"
             />
             <button
-              v-else
+              v-else-if="canEditPublicName(row.original)"
               type="button"
               class="text-left hover:underline underline-offset-2 cursor-pointer"
               @click="startPublicNameEdit(row.original)"
             >
               {{ row.original.public_name }}
             </button>
+            <span v-else>{{ row.original.public_name }}</span>
           </div>
           <span v-else>{{ row.original.public_name }}</span>
         </template>
@@ -164,6 +184,12 @@
       @on-confirm="confirmRevoke"
     />
     <ChapConfirmModal
+      v-model:open="showOffboardModal"
+      title="Archiver l’archer·ère ?"
+      description="L’archer·ère sera retiré·e de la liste active. L’historique des participations est conservé. Vous pourrez la réinviter ou la supprimer depuis les archivés."
+      @on-confirm="confirmOffboard"
+    />
+    <ChapConfirmModal
       v-model:open="showDeleteModal"
       title="⚠️ Supprimer l’archer·ère ?"
       description="L’archer·ère et l’historique des participations seront supprimés définitivement. Cette action est irréversible."
@@ -209,6 +235,7 @@ import {
   MEMBER_ROSTER_PAGE_SIZE_MOBILE,
 } from "~~/shared/member/member-roster-pagination";
 import { type AssignableClubRole } from "~~/shared/user/set-user-role.schema";
+import { readApiErrorStatusMessage } from "~~/shared/utils/read-api-error.helper";
 
 type MemberRow = MemberRosterItemDto;
 
@@ -221,6 +248,7 @@ const {
   invite,
   revoke,
   deleteArcher,
+  offboardArcher,
   updatePublicName,
   setRole,
 } = useMemberManagement();
@@ -230,6 +258,7 @@ const { addToastError, addToastSuccess, addToastInfo } = useChapToast();
 const showInviteModal = ref(false);
 const showShellInviteModal = ref(false);
 const showRevokeModal = ref(false);
+const showOffboardModal = ref(false);
 const showDeleteModal = ref(false);
 const showRoleModal = ref(false);
 
@@ -238,6 +267,7 @@ const shellInviteTarget = ref<{
   public_name: string;
 } | null>(null);
 const revokeTargetUserId = ref<string | null>(null);
+const offboardTargetArcherId = ref<string | null>(null);
 const deleteTargetArcherId = ref<string | null>(null);
 const roleTarget = ref<{
   userId: string;
@@ -253,14 +283,16 @@ const isSavingPublicName = ref(false);
 
 type MemberRosterFilters = {
   search: string;
-  status: MemberRosterItemDto["status"] | null;
+  status: Exclude<MemberRosterItemDto["status"], "archived"> | null;
   role: MemberRosterRoleFilter | null;
+  archivedOnly: boolean;
 };
 
 const filter = reactive<MemberRosterFilters>({
   search: "",
   status: null,
   role: null,
+  archivedOnly: false,
 });
 
 const ui = {
@@ -345,31 +377,29 @@ const statusLabel = (status: MemberRosterItemDto["status"]): string => {
   if (status === "invited") {
     return "Invité";
   }
+  if (status === "archived") {
+    return "Archivé";
+  }
   return "Sans compte";
 };
 
 const statusBadgeColor = (
   status: MemberRosterItemDto["status"],
-): "success" | "warning" | "neutral" => {
+): "success" | "warning" | "neutral" | "secondary" => {
   if (status === "active") {
     return "success";
   }
   if (status === "invited") {
     return "warning";
   }
+  if (status === "archived") {
+    return "secondary";
+  }
   return "neutral";
 };
 
-const fetchErrorStatusMessage = (error: unknown): string | undefined => {
-  if (
-    typeof error === "object" &&
-    error !== null &&
-    "statusMessage" in error &&
-    typeof (error as { statusMessage: unknown }).statusMessage === "string"
-  ) {
-    return (error as { statusMessage: string }).statusMessage;
-  }
-  return undefined;
+const canEditPublicName = (row: MemberRow): boolean => {
+  return row.status !== "archived" && Boolean(row.archer_id);
 };
 
 const canEditRowRole = (row: MemberRow): boolean => {
@@ -469,7 +499,7 @@ const confirmSetRole = async (): Promise<void> => {
     });
     await loadRoster();
   } catch (error) {
-    const statusMessage = fetchErrorStatusMessage(error);
+    const statusMessage = readApiErrorStatusMessage(error);
     if (statusMessage === "Cannot change your own role") {
       addToastError({
         description: "Vous ne pouvez pas modifier votre propre rôle.",
@@ -535,7 +565,8 @@ const hasActiveFilters = computed(() => {
   return (
     filter.search.trim().length > 0 ||
     filter.status !== null ||
-    filter.role !== null
+    filter.role !== null ||
+    filter.archivedOnly
   );
 });
 
@@ -554,11 +585,14 @@ const buildRosterQuery = (): MemberRosterListQuery => {
   if (trimmedSearch.length > 0) {
     query.search = trimmedSearch;
   }
-  if (filter.status) {
+  if (filter.status && !filter.archivedOnly) {
     query.status = filter.status;
   }
-  if (filter.role) {
+  if (filter.role && !filter.archivedOnly) {
     query.role = filter.role;
+  }
+  if (filter.archivedOnly) {
+    query.archived_only = true;
   }
 
   return query;
@@ -674,7 +708,7 @@ const confirmRevoke = async (): Promise<void> => {
     );
     await loadRoster();
   } catch (error) {
-    const statusMessage = fetchErrorStatusMessage(error);
+    const statusMessage = readApiErrorStatusMessage(error);
     if (statusMessage === "Cannot revoke your own access") {
       addToastError({
         description: "Vous ne pouvez pas révoquer votre propre accès.",
@@ -687,8 +721,61 @@ const confirmRevoke = async (): Promise<void> => {
   }
 };
 
-const openDeleteConfirm = (row: MemberRow): void => {
+const openOffboardConfirm = (row: MemberRow): void => {
   if (row.status !== "shell" || !row.archer_id) {
+    return;
+  }
+  offboardTargetArcherId.value = row.archer_id;
+  showOffboardModal.value = true;
+};
+
+const confirmOffboard = async (): Promise<void> => {
+  const archerId = offboardTargetArcherId.value;
+  offboardTargetArcherId.value = null;
+  if (!archerId) {
+    return;
+  }
+
+  try {
+    await offboardArcher(archerId);
+    addToastSuccess({
+      title: "Archer·ère archivé·e",
+    });
+    currentPage.value = clampMemberRosterPage(
+      currentPage.value,
+      Math.max(0, total.value - 1),
+      pageSize.value,
+    );
+    await loadRoster();
+  } catch (error) {
+    const statusMessage = readApiErrorStatusMessage(error);
+    if (statusMessage === "Archer is linked to an account") {
+      addToastError({
+        description:
+          "Impossible d’archiver un·e archer·ère lié·e à un compte. Révoquez l’accès d’abord.",
+      });
+      return;
+    }
+    if (statusMessage === "Archer is already archived") {
+      addToastError({
+        description: "Cet archer·ère est déjà archivé·e.",
+      });
+      return;
+    }
+    if (statusMessage === "Archer not found") {
+      addToastError({
+        description: "Archer·ère introuvable.",
+      });
+      return;
+    }
+    addToastError({
+      description: "Impossible d’archiver l’archer·ère. Réessayez plus tard.",
+    });
+  }
+};
+
+const openDeleteConfirm = (row: MemberRow): void => {
+  if (row.status !== "archived" || !row.archer_id) {
     return;
   }
   deleteTargetArcherId.value = row.archer_id;
@@ -714,11 +801,17 @@ const confirmDelete = async (): Promise<void> => {
     );
     await loadRoster();
   } catch (error) {
-    const statusMessage = fetchErrorStatusMessage(error);
+    const statusMessage = readApiErrorStatusMessage(error);
     if (statusMessage === "Archer is linked to an account") {
       addToastError({
         description:
           "Impossible de supprimer un·e archer·ère lié·e à un compte. Révoquez l’accès d’abord.",
+      });
+      return;
+    }
+    if (statusMessage === "Archer must be archived before deletion") {
+      addToastError({
+        description: "Archivez l’archer·ère avant de la supprimer.",
       });
       return;
     }
@@ -780,6 +873,23 @@ const buildActionItemsForRow = (row: MemberRow): DropdownMenuItem[][] => {
         openShellInvite(row);
       },
     });
+    primary.push({
+      label: "Archiver",
+      icon: "i-ph-archive-duotone",
+      onSelect: () => {
+        openOffboardConfirm(row);
+      },
+    });
+  }
+
+  if (row.status === "archived") {
+    primary.push({
+      label: "Inviter à nouveau",
+      icon: "i-ph-user-plus-duotone",
+      onSelect: () => {
+        openShellInvite(row);
+      },
+    });
   }
 
   if (primary.length > 0) {
@@ -804,7 +914,7 @@ const buildActionItemsForRow = (row: MemberRow): DropdownMenuItem[][] => {
     ]);
   }
 
-  const canDelete = row.status === "shell" && Boolean(row.archer_id);
+  const canDelete = row.status === "archived" && Boolean(row.archer_id);
   if (canDelete) {
     groups.push([
       {
@@ -837,13 +947,20 @@ watchDebounced(
   { debounce: 300 },
 );
 
-watch([() => filter.status, () => filter.role], () => {
-  if (currentPage.value !== 1) {
-    currentPage.value = 1;
-    return;
-  }
-  void loadRoster();
-});
+watch(
+  [() => filter.status, () => filter.role, () => filter.archivedOnly],
+  () => {
+    if (filter.archivedOnly) {
+      filter.status = null;
+      filter.role = null;
+    }
+    if (currentPage.value !== 1) {
+      currentPage.value = 1;
+      return;
+    }
+    void loadRoster();
+  },
+);
 
 watch(currentPage, () => {
   void loadRoster();

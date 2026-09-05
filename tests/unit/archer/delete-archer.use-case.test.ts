@@ -40,4 +40,15 @@ describe("DeleteArcher", () => {
 
     expect(result).toEqual({ ok: false, reason: "archer_linked" });
   });
+
+  it("returns not_offboarded from persistence", async () => {
+    persistence.deleteShell = vi.fn().mockResolvedValue({
+      ok: false,
+      reason: "not_offboarded",
+    });
+    const handler = new DeleteArcher(persistence);
+    const result = await handler.delete("a-shell");
+
+    expect(result).toEqual({ ok: false, reason: "not_offboarded" });
+  });
 });

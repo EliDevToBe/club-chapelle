@@ -1,5 +1,5 @@
 import { createError } from "h3";
-import { DeleteArcher } from "~~/application/archer/delete-archer.use-case";
+import { OffboardArcherShell } from "~~/application/archer/offboard-archer-shell.use-case";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { requireRoles } from "~~/server/utils/rbac";
 import type { RoleEnum } from "~~/shared/db-enums";
@@ -13,9 +13,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Missing id" });
   }
 
-  const { deleteArcherPersistence } = getRepositories();
-  const deleteArcherHandler = new DeleteArcher(deleteArcherPersistence);
-  const result = await deleteArcherHandler.delete(id);
+  const { offboardArcherShellPersistence } = getRepositories();
+  const offboardArcherShellHandler = new OffboardArcherShell(
+    offboardArcherShellPersistence,
+  );
+  const result = await offboardArcherShellHandler.offboard(id);
 
   if (!result.ok) {
     if (result.reason === "archer_linked") {
@@ -24,14 +26,14 @@ export default defineEventHandler(async (event) => {
         statusMessage: "Archer is linked to an account",
       });
     }
-    if (result.reason === "not_offboarded") {
+    if (result.reason === "already_offboarded") {
       throw createError({
         statusCode: 409,
-        statusMessage: "Archer must be archived before deletion",
+        statusMessage: "Archer is already archived",
       });
     }
     throw createError({ statusCode: 404, statusMessage: "Archer not found" });
   }
 
-  return { deleted: true };
+  return { offboarded: true };
 });

@@ -30,6 +30,7 @@ const toQueryRow = (row: ArcherWithUser): MemberRosterQueryRow => {
     archerId: row.id,
     publicName: row.public_name,
     authUserId: row.auth_user_id,
+    offboardedAt: row.offboarded_at,
     user: row.auth_user
       ? {
           id: row.auth_user.id,

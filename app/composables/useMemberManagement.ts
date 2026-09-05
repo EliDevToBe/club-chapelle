@@ -11,6 +11,7 @@ export const useMemberManagement = () => {
   const isInviting = ref(false);
   const isRevoking = ref(false);
   const isDeleting = ref(false);
+  const isOffboarding = ref(false);
   const isUpdatingPublicName = ref(false);
   const isSettingRole = ref(false);
   const items = ref<MemberRosterResponseDto["items"]>([]);
@@ -101,6 +102,18 @@ export const useMemberManagement = () => {
     }
   };
 
+  const offboardArcher = async (archerId: string): Promise<void> => {
+    isOffboarding.value = true;
+    try {
+      await $fetch(`/api/archers/${archerId}/offboard`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      isOffboarding.value = false;
+    }
+  };
+
   const updatePublicName = async (
     archerId: string,
     publicName: string,
@@ -148,6 +161,7 @@ export const useMemberManagement = () => {
     isInviting,
     isRevoking,
     isDeleting,
+    isOffboarding,
     isUpdatingPublicName,
     isSettingRole,
     listRoster,
@@ -155,6 +169,7 @@ export const useMemberManagement = () => {
     inviteShell,
     revoke,
     deleteArcher,
+    offboardArcher,
     updatePublicName,
     setRole,
   };

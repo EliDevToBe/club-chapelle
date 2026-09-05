@@ -9,6 +9,7 @@ const activeRow: MemberRosterQueryRow = {
   archerId: "a-active",
   publicName: "Robin H.",
   authUserId: "u-active",
+  offboardedAt: null,
   user: {
     id: "u-active",
     email: "active@club.test",
@@ -21,6 +22,7 @@ const invitedRow: MemberRosterQueryRow = {
   archerId: "a-invited",
   publicName: "Pat Pending",
   authUserId: "u-invited",
+  offboardedAt: null,
   user: {
     id: "u-invited",
     email: "invited@club.test",
@@ -33,6 +35,15 @@ const shellRow: MemberRosterQueryRow = {
   archerId: "a-shell",
   publicName: "Shell Archer",
   authUserId: null,
+  offboardedAt: null,
+  user: null,
+};
+
+const archivedRow: MemberRosterQueryRow = {
+  archerId: "a-archived",
+  publicName: "Archived Archer",
+  authUserId: null,
+  offboardedAt: new Date("2026-01-01T00:00:00.000Z"),
   user: null,
 };
 
@@ -40,6 +51,7 @@ const brokenLinkRow: MemberRosterQueryRow = {
   archerId: "a-broken",
   publicName: "Broken Link",
   authUserId: "missing-user",
+  offboardedAt: null,
   user: null,
 };
 
@@ -112,7 +124,36 @@ describe("ListMemberRoster", () => {
     ]);
   });
 
-  it("passes search, status, and role filters to the query port", async () => {
+  it("maps offboarded shells to archived status", async () => {
+    const rosterQuery: MemberRosterQuery = {
+      findMatching: vi.fn().mockResolvedValue({
+        rows: [archivedRow],
+      }),
+    };
+
+    const handler = new ListMemberRoster(rosterQuery);
+    const page = await handler.findPage({
+      limit: 10,
+      offset: 0,
+      archived_only: true,
+    });
+
+    expect(rosterQuery.findMatching).toHaveBeenCalledWith({
+      archivedOnly: true,
+    });
+    expect(page.items).toEqual([
+      {
+        status: "archived",
+        userId: null,
+        archerId: "a-archived",
+        email: null,
+        publicName: "Archived Archer",
+        roles: [],
+      },
+    ]);
+  });
+
+  it("passes search, status, role, and archived filters to the query port", async () => {
     const rosterQuery: MemberRosterQuery = {
       findMatching: vi.fn().mockResolvedValue({
         rows: [activeRow],
@@ -132,6 +173,7 @@ describe("ListMemberRoster", () => {
       search: "robin",
       status: "active",
       role: "admin",
+      archivedOnly: undefined,
     });
   });
 

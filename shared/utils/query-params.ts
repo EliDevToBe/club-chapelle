@@ -35,3 +35,19 @@ export const trimmedOptionalQueryString = (
   }
   return raw;
 };
+
+export const optionalBooleanQueryParam = (
+  value: unknown,
+): boolean | undefined => {
+  const raw = firstQueryString(value)?.trim().toLowerCase();
+  if (raw === undefined || raw === "") {
+    return undefined;
+  }
+  if (raw === "true" || raw === "1") {
+    return true;
+  }
+  if (raw === "false" || raw === "0") {
+    return false;
+  }
+  return undefined;
+};

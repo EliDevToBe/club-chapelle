@@ -12,13 +12,16 @@ export class PrismaDeleteArcherPersistence implements DeleteArcherPersistence {
     return prismaClient.$transaction(async (tx) => {
       const archer = await tx.archer.findUnique({
         where: { id },
-        select: { id: true, auth_user_id: true },
+        select: { id: true, auth_user_id: true, offboarded_at: true },
       });
       if (!archer) {
         return { ok: false, reason: "not_found" };
       }
       if (archer.auth_user_id !== null) {
         return { ok: false, reason: "archer_linked" };
+      }
+      if (archer.offboarded_at === null) {
+        return { ok: false, reason: "not_offboarded" };
       }
 
       await tx.participation.deleteMany({

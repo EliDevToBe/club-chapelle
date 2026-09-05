@@ -5,10 +5,10 @@ import {
 } from "~~/infrastructure/persistence/user/member-roster-query.where";
 
 describe("buildMemberRosterWhere", () => {
-  it("always excludes archers linked to a developer account", () => {
-    expect(buildMemberRosterWhere({})).toEqual(
-      excludeDeveloperFromRosterWhere(),
-    );
+  it("always excludes archers linked to a developer account and non-archived shells by default", () => {
+    expect(buildMemberRosterWhere({})).toEqual({
+      AND: [excludeDeveloperFromRosterWhere(), { offboarded_at: null }],
+    });
     expect(excludeDeveloperFromRosterWhere()).toEqual({
       auth_user: {
         isNot: {
@@ -26,6 +26,7 @@ describe("buildMemberRosterWhere", () => {
     expect(buildMemberRosterWhere({ search: "robin" })).toEqual({
       AND: [
         excludeDeveloperFromRosterWhere(),
+        { offboarded_at: null },
         {
           OR: [
             {
@@ -54,6 +55,7 @@ describe("buildMemberRosterWhere", () => {
     expect(buildMemberRosterWhere({ status: "active" })).toEqual({
       AND: [
         excludeDeveloperFromRosterWhere(),
+        { offboarded_at: null },
         {
           auth_user_id: { not: null },
           auth_user: {
@@ -70,6 +72,7 @@ describe("buildMemberRosterWhere", () => {
     expect(buildMemberRosterWhere({ status: "invited" })).toEqual({
       AND: [
         excludeDeveloperFromRosterWhere(),
+        { offboarded_at: null },
         {
           auth_user_id: { not: null },
           auth_user: {
@@ -86,9 +89,20 @@ describe("buildMemberRosterWhere", () => {
     expect(buildMemberRosterWhere({ status: "shell" })).toEqual({
       AND: [
         excludeDeveloperFromRosterWhere(),
+        { offboarded_at: null },
         {
           OR: [{ auth_user_id: null }, { auth_user: { is: null } }],
+          offboarded_at: null,
         },
+      ],
+    });
+  });
+
+  it("builds an archived-only filter", () => {
+    expect(buildMemberRosterWhere({ archivedOnly: true })).toEqual({
+      AND: [
+        excludeDeveloperFromRosterWhere(),
+        { offboarded_at: { not: null } },
       ],
     });
   });
@@ -97,6 +111,7 @@ describe("buildMemberRosterWhere", () => {
     expect(buildMemberRosterWhere({ role: "manager" })).toEqual({
       AND: [
         excludeDeveloperFromRosterWhere(),
+        { offboarded_at: null },
         {
           auth_user: {
             is: {
@@ -122,6 +137,7 @@ describe("buildMemberRosterWhere", () => {
     ).toEqual({
       AND: [
         excludeDeveloperFromRosterWhere(),
+        { offboarded_at: null },
         {
           OR: [
             {

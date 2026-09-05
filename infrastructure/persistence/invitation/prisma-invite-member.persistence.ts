@@ -120,7 +120,7 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
 
           await tx.archer.update({
             where: { id: input.archerId },
-            data: { auth_user_id: existingUser.id },
+            data: { auth_user_id: existingUser.id, offboarded_at: null },
           });
 
           const updated = await tx.auth_user.update({
@@ -151,7 +151,7 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
 
         await tx.archer.update({
           where: { id: input.archerId },
-          data: { auth_user_id: created.id },
+          data: { auth_user_id: created.id, offboarded_at: null },
         });
 
         return { ok: true, user: toDomain(created), resent: false };
