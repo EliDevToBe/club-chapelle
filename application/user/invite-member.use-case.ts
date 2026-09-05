@@ -4,16 +4,14 @@ import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port"
 import type { TokenRepository } from "~~/application/ports/token-repository.port";
 import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
+import {
+  SendInvitationEmail,
+  type SendInvitationEmailOptions,
+} from "~~/application/user/send-invitation-email";
 import type { User } from "~~/domain/user/user";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
-import { INVITATION_TOKEN_MAX_AGE_SECONDS } from "~~/shared/auth/jwt-lifetimes";
 
-export type InviteMemberOptions = {
-  fromEmail: string;
-  fromName: string;
-  templateId: string;
-  inviteOrigin: string;
-};
+export type InviteMemberOptions = SendInvitationEmailOptions;
 
 export type InviteMemberResult =
   | { ok: true; user: User; mailSent: boolean; resent: boolean }
@@ -27,15 +25,24 @@ export type InviteMemberResult =
     };
 
 export class InviteMember {
+  private readonly sendInvitationEmail: SendInvitationEmail;
+
   constructor(
     private readonly users: UserRepository,
     private readonly archers: ArcherRepository,
     private readonly persistence: InviteMemberPersistence,
-    private readonly tokens: TokenRepository,
-    private readonly jwt: JwtAuthService,
-    private readonly mail: TransactionalMailPort,
-    private readonly options: InviteMemberOptions,
-  ) {}
+    tokens: TokenRepository,
+    jwt: JwtAuthService,
+    mail: TransactionalMailPort,
+    options: InviteMemberOptions,
+  ) {
+    this.sendInvitationEmail = new SendInvitationEmail(
+      tokens,
+      jwt,
+      mail,
+      options,
+    );
+  }
 
   public invite = async (input: {
     name: string;
@@ -97,7 +104,8 @@ export class InviteMember {
       user = created.user;
     }
 
-    return this.issueAndMail(user, resent);
+    const sent = await this.sendInvitationEmail.send({ user, resent });
+    return { ok: true, ...sent };
   };
 
   private inviteAfterEmailRace = async (
@@ -126,67 +134,10 @@ export class InviteMember {
       return { ok: false, reason: API_ERROR_REASON.common.invalid_request };
     }
 
-    return this.issueAndMail(found, true);
-  };
-
-  private issueAndMail = async (
-    user: User,
-    resent: boolean,
-  ): Promise<InviteMemberResult> => {
-    const tokenString = this.jwt.signInvitationToken(user.id);
-    const expiresAt = new Date(
-      Date.now() + INVITATION_TOKEN_MAX_AGE_SECONDS * 1000,
-    );
-
-    await this.tokens.issueToken({
-      authUserId: user.id,
-      type: "invitation",
-      tokenValue: tokenString,
-      expiresAt,
+    const sent = await this.sendInvitationEmail.send({
+      user: found,
+      resent: true,
     });
-
-    const displayName = user.name?.trim() || "Archer·ère";
-    let mailSent = true;
-    let inviteLink = "";
-    let privacyPolicyUrl = "";
-
-    try {
-      const inviteUrl = new URL("/accept-invite", this.options.inviteOrigin);
-      inviteUrl.searchParams.set("t", tokenString);
-      inviteLink = inviteUrl.toString();
-      privacyPolicyUrl = new URL(
-        "/privacy-policy",
-        this.options.inviteOrigin,
-      ).toString();
-    } catch (error) {
-      console.error("InviteMember: Invalid invite origin");
-      console.error(error);
-      mailSent = false;
-    }
-
-    if (inviteLink) {
-      try {
-        await this.mail.sendTemplateEmail({
-          templateId: this.options.templateId,
-          variables: {
-            user_name: displayName,
-            user_email: user.email,
-            invite_link: inviteLink,
-            privacy_policy_url: privacyPolicyUrl,
-          },
-          to: [{ email: user.email, name: displayName }],
-          from: {
-            email: this.options.fromEmail,
-            name: this.options.fromName,
-          },
-        });
-      } catch (error) {
-        console.error("InviteMember: Error sending email");
-        console.error(error);
-        mailSent = false;
-      }
-    }
-
-    return { ok: true, user, mailSent, resent };
+    return { ok: true, ...sent };
   };
 }

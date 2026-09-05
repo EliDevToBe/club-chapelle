@@ -12,8 +12,8 @@ export type MailtrapTransactionalMailConfig = {
 };
 
 export const MAILTRAP_TEMPLATES_IDS = {
-  forgotPassword: "4c226edb-5687-4870-88b4-aea6c6a572a8",
-  invitation: "3d0972be-da02-45bd-8d04-5eb33d23bc3d",
+  forgotPassword: "93f3dab6-d896-4318-bd57-2328b47dea6a",
+  invitation: "9508cd9c-65c8-4bb3-9d06-efff128869c9",
 } as const;
 
 export class MailtrapTransactionalMailSender implements TransactionalMailPort {
