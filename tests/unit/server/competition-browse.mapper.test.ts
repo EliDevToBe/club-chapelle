@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ParticipationWithArcherSummary } from "~~/application/ports/participation-repository.port";
-import {
-  toParticipationBrowseRowDto,
-  viewerIsAdminForBrowse,
-} from "~~/server/mappers/competition-listing.mapper";
+import { toParticipationBrowseRowDto } from "~~/server/mappers/competition-listing.mapper";
 
 const baseRow = (): ParticipationWithArcherSummary => ({
   id: "p1",
@@ -21,20 +18,6 @@ const baseRow = (): ParticipationWithArcherSummary => ({
   archerAuthUserId: "user-1",
 });
 
-describe("viewerIsAdminForBrowse", () => {
-  it("returns true for admin", () => {
-    expect(viewerIsAdminForBrowse(["member", "admin"])).toBe(true);
-  });
-
-  it("returns true for developer", () => {
-    expect(viewerIsAdminForBrowse(["developer"])).toBe(true);
-  });
-
-  it("returns false for member only", () => {
-    expect(viewerIsAdminForBrowse(["member"])).toBe(false);
-  });
-});
-
 describe("toParticipationBrowseRowDto", () => {
   it("includes statuses for admin viewer", () => {
     const row = baseRow();
@@ -46,11 +29,11 @@ describe("toParticipationBrowseRowDto", () => {
     expect(dto.payment_status).toBe("to_pay");
   });
 
-  it("includes statuses for developer viewer", () => {
+  it("includes statuses for developer viewer with admin role", () => {
     const row = baseRow();
     const dto = toParticipationBrowseRowDto(row, {
       userId: "someone-else",
-      roles: ["developer"],
+      roles: ["developer", "admin"],
     });
     expect(dto.payment_status).toBe("to_pay");
   });

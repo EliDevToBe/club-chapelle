@@ -78,7 +78,7 @@ describe("requireRoles", () => {
     expect(() => requireRoles(event, ["manager", "admin"])).not.toThrow();
   });
 
-  it("allows developer on any route without listing developer in allowedRoles", () => {
+  it("denies developer when developer is not listed in allowedRoles", () => {
     const event = {
       ...baseEvent,
       context: {
@@ -90,7 +90,22 @@ describe("requireRoles", () => {
       },
     } as unknown as H3Event;
 
-    expect(() => requireRoles(event, ["member"])).not.toThrow();
+    expect(() => requireRoles(event, ["member"])).toThrowError("Forbidden");
+  });
+
+  it("allows developer when an assigned role is listed in allowedRoles", () => {
+    const event = {
+      ...baseEvent,
+      context: {
+        ...baseEvent.context,
+        authUser: {
+          ...baseEvent.context.authUser,
+          roles: ["developer", "admin"],
+        },
+      },
+    } as unknown as H3Event;
+
+    expect(() => requireRoles(event, ["admin"])).not.toThrow();
   });
 
   it("rejects unauthenticated users with 401", () => {

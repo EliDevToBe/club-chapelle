@@ -19,10 +19,9 @@ const readAuthUser = (event: H3Event): AuthUserContext | null => {
 };
 
 /**
- * Requires an authenticated user with at least one role in `allowedRoles`,
- * except `developer`, which is always allowed after authentication (do not list it on routes).
- * Role hierarchy is **not** applied: list every non-developer role that may call the route (e.g. `["manager", "admin"]`).
- * Users with multiple roles pass if **any** role matches (or they have `developer`).
+ * Requires an authenticated user with at least one role in `allowedRoles`.
+ * Role hierarchy is **not** applied: list every role that may call the route (e.g. `["manager", "admin"]`).
+ * Users with multiple roles pass if **any** role matches. For developer-only routes, use `requireDeveloper`.
  */
 export const requireRoles = (
   event: H3Event,

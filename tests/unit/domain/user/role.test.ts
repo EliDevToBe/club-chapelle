@@ -26,15 +26,19 @@ describe("highestRoleRank", () => {
 });
 
 describe("userHasRoleAccess", () => {
-  it("allows developer regardless of allowedRoles", () => {
-    expect(userHasRoleAccess(["developer"], ["member"])).toBe(true);
+  it("denies developer when developer is not listed in allowedRoles", () => {
+    expect(userHasRoleAccess(["developer"], ["member"])).toBe(false);
   });
 
   it("allows when any user role is listed", () => {
     expect(userHasRoleAccess(["member", "manager"], ["manager"])).toBe(true);
   });
 
-  it("denies when no user role matches and not developer", () => {
+  it("allows developer when admin is listed and user also has admin", () => {
+    expect(userHasRoleAccess(["developer", "admin"], ["admin"])).toBe(true);
+  });
+
+  it("denies when no user role matches", () => {
     expect(userHasRoleAccess(["member"], ["admin"])).toBe(false);
   });
 });
