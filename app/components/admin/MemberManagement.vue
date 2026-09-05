@@ -91,7 +91,7 @@
         </template>
         <template #email-cell="{ row }">
           <USkeleton v-if="isLoading" class="h-4 w-40" />
-          <span v-else>{{ row.original.email ?? "—" }}</span>
+          <span v-else>{{ row.original.email ?? "-" }}</span>
         </template>
         <template #status-cell="{ row }">
           <USkeleton v-if="isLoading" class="h-6 w-16 rounded-lg" />
@@ -106,23 +106,12 @@
           </UBadge>
         </template>
         <template #roles-cell="{ row }">
-          <USkeleton v-if="isLoading" class="h-6 w-24 rounded-lg" />
-          <div
-            v-else-if="row.original.roles.length > 0"
-            class="flex flex-wrap gap-1.5 whitespace-nowrap"
-          >
-            <UBadge
-              v-for="role in orderedRoles(row.original.roles)"
-              :key="role"
-              size="sm"
-              variant="subtle"
-              :color="roleBadgeColor[role]"
-              :ui="{ base: 'rounded-lg' }"
-            >
-              {{ translateRole[role] }}
-            </UBadge>
-          </div>
-          <span v-else class="text-muted">—</span>
+          <MemberRoleCell
+            :roles="row.original.roles"
+            :can-edit="canEditRowRole(row.original)"
+            :is-loading="isLoading"
+            @pick="onRolePicked(row.original, $event)"
+          />
         </template>
         <template #actions-cell="{ row }">
           <USkeleton v-if="isLoading" class="h-6 w-6 rounded-md" />
@@ -180,6 +169,12 @@
       description="L’archer·ère et l’historique des participations seront supprimés définitivement. Cette action est irréversible."
       @on-confirm="confirmDelete"
     />
+    <ChapConfirmModal
+      v-model:open="showRoleModal"
+      :title="roleConfirmTitle"
+      :description="roleConfirmDescription"
+      @on-confirm="confirmSetRole"
+    />
   </ChapAccordionContentWrapper>
 </template>
 
@@ -192,6 +187,7 @@ import {
 } from "@vueuse/core";
 import InviteArcherShellModal from "~/components/admin/InviteArcherShellModal.vue";
 import InviteMemberModal from "~/components/admin/InviteMemberModal.vue";
+import MemberRoleCell from "~/components/admin/MemberRoleCell.vue";
 import ChapAccordionContentAction from "~/components/ui/ChapAccordionContentAction.vue";
 import ChapAccordionContentWrapper from "~/components/ui/ChapAccordionContentWrapper.vue";
 import ChapConfirmModal from "~/components/ui/ChapConfirmModal.vue";
@@ -203,7 +199,6 @@ import { useAuthUser } from "~/composables/useAuthUser";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useMemberManagement } from "~/composables/useMemberManagement";
 import { translateRole } from "~/utils/translate";
-import { sortRolesByOrder } from "~~/domain/user/role";
 import type { RoleEnum } from "~~/shared/db-enums";
 import type { MemberRosterItemDto } from "~~/shared/member/member-roster.dto";
 import type { MemberRosterRoleFilter } from "~~/shared/member/member-roster-list.dto";
@@ -213,6 +208,7 @@ import {
   MEMBER_ROSTER_PAGE_SIZE_DESKTOP,
   MEMBER_ROSTER_PAGE_SIZE_MOBILE,
 } from "~~/shared/member/member-roster-pagination";
+import { type AssignableClubRole } from "~~/shared/user/set-user-role.schema";
 
 type MemberRow = MemberRosterItemDto;
 
@@ -226,14 +222,16 @@ const {
   revoke,
   deleteArcher,
   updatePublicName,
+  setRole,
 } = useMemberManagement();
-const { user: sessionUser } = useAuthUser();
-const { addToastError, addToastSuccess } = useChapToast();
+const { user: sessionUser, isDeveloper } = useAuthUser();
+const { addToastError, addToastSuccess, addToastInfo } = useChapToast();
 
 const showInviteModal = ref(false);
 const showShellInviteModal = ref(false);
 const showRevokeModal = ref(false);
 const showDeleteModal = ref(false);
+const showRoleModal = ref(false);
 
 const shellInviteTarget = ref<{
   archer_id: string;
@@ -241,6 +239,12 @@ const shellInviteTarget = ref<{
 } | null>(null);
 const revokeTargetUserId = ref<string | null>(null);
 const deleteTargetArcherId = ref<string | null>(null);
+const roleTarget = ref<{
+  userId: string;
+  publicName: string;
+  nextRole: AssignableClubRole;
+  isDemotingAdmin: boolean;
+} | null>(null);
 const errorMessage = ref<string | null>(null);
 const currentPage = ref(1);
 const editingArcherId = ref<string | null>(null);
@@ -334,20 +338,6 @@ const columns: TableColumn<MemberRow>[] = [
   },
 ];
 
-const roleBadgeColor: Record<
-  RoleEnum,
-  "neutral" | "info" | "primary" | "secondary"
-> = {
-  member: "neutral",
-  manager: "info",
-  admin: "primary",
-  developer: "secondary",
-};
-
-const orderedRoles = (roles: RoleEnum[]): RoleEnum[] => {
-  return sortRolesByOrder(roles).toReversed();
-};
-
 const statusLabel = (status: MemberRosterItemDto["status"]): string => {
   if (status === "active") {
     return "Actif";
@@ -368,6 +358,144 @@ const statusBadgeColor = (
     return "warning";
   }
   return "neutral";
+};
+
+const fetchErrorStatusMessage = (error: unknown): string | undefined => {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "statusMessage" in error &&
+    typeof (error as { statusMessage: unknown }).statusMessage === "string"
+  ) {
+    return (error as { statusMessage: string }).statusMessage;
+  }
+  return undefined;
+};
+
+const canEditRowRole = (row: MemberRow): boolean => {
+  if (!row.user_id) {
+    return false;
+  }
+  return row.user_id !== sessionUser.value?.id;
+};
+
+const rowHasAdmin = (row: MemberRow): boolean => {
+  return row.roles.includes("admin");
+};
+
+const currentAssignableRole = (
+  roles: RoleEnum[],
+): AssignableClubRole | null => {
+  if (roles.includes("admin")) {
+    return "admin";
+  }
+  if (roles.includes("manager")) {
+    return "manager";
+  }
+  if (roles.includes("member")) {
+    return "member";
+  }
+  return null;
+};
+
+const onRolePicked = (row: MemberRow, nextRole: AssignableClubRole): void => {
+  if (!row.user_id) {
+    return;
+  }
+  if (currentAssignableRole(row.roles) === nextRole) {
+    return;
+  }
+  const isDemotingAdmin = rowHasAdmin(row) && nextRole !== "admin";
+  if (isDemotingAdmin && !isDeveloper.value) {
+    addToastInfo({
+      title: "Rôle inchangé",
+      description: "Contactez un développeur pour rétrograder un admin.",
+      duration: 5000,
+    });
+    return;
+  }
+
+  roleTarget.value = {
+    userId: row.user_id,
+    publicName: row.public_name,
+    nextRole,
+    isDemotingAdmin,
+  };
+  showRoleModal.value = true;
+};
+
+const roleConfirmTitle = computed(() => {
+  const target = roleTarget.value;
+  if (!target) {
+    return "Changer le rôle ?";
+  }
+  if (target.isDemotingAdmin) {
+    return "Retirer le rôle admin ?";
+  }
+  if (target.nextRole === "admin") {
+    return "Accorder le rôle admin ?";
+  }
+  if (target.nextRole === "manager") {
+    return "Promouvoir organisateur ?";
+  }
+  return "Passer membre ?";
+});
+
+const roleConfirmDescription = computed(() => {
+  const target = roleTarget.value;
+  if (!target) {
+    return "";
+  }
+  const roleLabel = translateRole[target.nextRole];
+  if (target.isDemotingAdmin) {
+    return `${target.publicName} passera au rôle de ${roleLabel}.`;
+  }
+  if (target.nextRole === "admin") {
+    return `${target.publicName} recevra le rôle de ${roleLabel}.`;
+  }
+  return `${target.publicName} passera au rôle de ${roleLabel}.`;
+});
+
+const confirmSetRole = async (): Promise<void> => {
+  const target = roleTarget.value;
+  if (!target) {
+    return;
+  }
+
+  try {
+    await setRole(target.userId, target.nextRole);
+    addToastSuccess({
+      title: "Rôle mis à jour",
+    });
+    await loadRoster();
+  } catch (error) {
+    const statusMessage = fetchErrorStatusMessage(error);
+    if (statusMessage === "Cannot change your own role") {
+      addToastError({
+        description: "Vous ne pouvez pas modifier votre propre rôle.",
+      });
+      return;
+    }
+    if (statusMessage === "Only a developer can demote an admin") {
+      addToastInfo({
+        title: "Rôle inchangé",
+        description: "Contactez un développeur pour rétrograder un admin.",
+        duration: 5000,
+      });
+      return;
+    }
+    if (statusMessage === "Cannot demote the last admin") {
+      addToastError({
+        description: "Impossible de rétrograder le dernier admin.",
+      });
+      return;
+    }
+    addToastError({
+      description: "Impossible de modifier le rôle. Réessayez plus tard.",
+    });
+  } finally {
+    roleTarget.value = null;
+  }
 };
 
 const rows = computed((): MemberRow[] => {
@@ -546,13 +674,7 @@ const confirmRevoke = async (): Promise<void> => {
     );
     await loadRoster();
   } catch (error) {
-    const statusMessage =
-      typeof error === "object" &&
-      error !== null &&
-      "statusMessage" in error &&
-      typeof (error as { statusMessage: unknown }).statusMessage === "string"
-        ? (error as { statusMessage: string }).statusMessage
-        : undefined;
+    const statusMessage = fetchErrorStatusMessage(error);
     if (statusMessage === "Cannot revoke your own access") {
       addToastError({
         description: "Vous ne pouvez pas révoquer votre propre accès.",
@@ -592,13 +714,7 @@ const confirmDelete = async (): Promise<void> => {
     );
     await loadRoster();
   } catch (error) {
-    const statusMessage =
-      typeof error === "object" &&
-      error !== null &&
-      "statusMessage" in error &&
-      typeof (error as { statusMessage: unknown }).statusMessage === "string"
-        ? (error as { statusMessage: string }).statusMessage
-        : undefined;
+    const statusMessage = fetchErrorStatusMessage(error);
     if (statusMessage === "Archer is linked to an account") {
       addToastError({
         description:

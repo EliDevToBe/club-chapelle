@@ -3,6 +3,8 @@ import type { InviteArcherShellResponseDto } from "~~/shared/invitation/invite-a
 import type { InviteMemberResponseDto } from "~~/shared/invitation/invite-member.dto";
 import type { MemberRosterResponseDto } from "~~/shared/member/member-roster.dto";
 import type { MemberRosterListQuery } from "~~/shared/member/member-roster-list.schema";
+import type { SetUserRoleResponseDto } from "~~/shared/user/set-user-role.dto";
+import type { AssignableClubRole } from "~~/shared/user/set-user-role.schema";
 
 export const useMemberManagement = () => {
   const isLoading = ref(false);
@@ -10,6 +12,7 @@ export const useMemberManagement = () => {
   const isRevoking = ref(false);
   const isDeleting = ref(false);
   const isUpdatingPublicName = ref(false);
+  const isSettingRole = ref(false);
   const items = ref<MemberRosterResponseDto["items"]>([]);
   const total = ref(0);
 
@@ -118,6 +121,26 @@ export const useMemberManagement = () => {
     }
   };
 
+  const setRole = async (
+    userId: string,
+    role: AssignableClubRole,
+  ): Promise<SetUserRoleResponseDto["user"]> => {
+    isSettingRole.value = true;
+    try {
+      const response = await $fetch<SetUserRoleResponseDto>(
+        `/api/users/${userId}/role`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          body: { role },
+        },
+      );
+      return response.user;
+    } finally {
+      isSettingRole.value = false;
+    }
+  };
+
   return {
     items,
     total,
@@ -126,11 +149,13 @@ export const useMemberManagement = () => {
     isRevoking,
     isDeleting,
     isUpdatingPublicName,
+    isSettingRole,
     listRoster,
     invite,
     inviteShell,
     revoke,
     deleteArcher,
     updatePublicName,
+    setRole,
   };
 };
