@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SubmitContactMessage } from "~~/application/contact/submit-contact-message.use-case";
 import type {
-  SendTransactionalEmailInput,
+  SendTemplateEmailInput,
   TransactionalMailPort,
 } from "~~/application/ports/transactional-mail.port";
 
@@ -13,6 +13,8 @@ describe("SubmitContactMessage", () => {
     fromEmail: "noreply@example.com",
     fromName: "ARC18",
     sandbox: false,
+    templateId: "contact-template-uuid",
+    inviteOrigin: "https://app.example.com",
   };
 
   beforeEach(() => {
@@ -31,7 +33,7 @@ describe("SubmitContactMessage", () => {
       message: "This is a long enough contact message.",
     });
     expect(result).toEqual({ ok: false, error: "validation" });
-    expect(mail.sendTransactionalEmail).not.toHaveBeenCalled();
+    expect(mail.sendTemplateEmail).not.toHaveBeenCalled();
   });
 
   it("returns validation when email is invalid", async () => {
@@ -43,16 +45,14 @@ describe("SubmitContactMessage", () => {
       message: "This is a long enough contact message.",
     });
     expect(result).toEqual({ ok: false, error: "validation" });
-    expect(mail.sendTransactionalEmail).not.toHaveBeenCalled();
+    expect(mail.sendTemplateEmail).not.toHaveBeenCalled();
   });
 
-  it("sends mail with kind contact and replyTo", async () => {
-    let captured: SendTransactionalEmailInput | undefined;
-    mail.sendTransactionalEmail = vi.fn(
-      async (input: SendTransactionalEmailInput) => {
-        captured = input;
-      },
-    );
+  it("sends the contact template with replyTo and form variables", async () => {
+    let captured: SendTemplateEmailInput | undefined;
+    mail.sendTemplateEmail = vi.fn(async (input: SendTemplateEmailInput) => {
+      captured = input;
+    });
     const submitContactMessage = new SubmitContactMessage(mail, options);
     const result = await submitContactMessage.submit({
       name: "Marie Dupont",
@@ -61,25 +61,30 @@ describe("SubmitContactMessage", () => {
       message: "Bonjour, je souhaite avoir plus d'informations.",
     });
     expect(result).toEqual({ ok: true });
-    expect(captured?.kind).toBe("contact");
+    expect(captured?.templateId).toBe("contact-template-uuid");
     expect(captured?.replyTo).toEqual({
       email: "marie@example.com",
       name: "Marie Dupont",
     });
     expect(captured?.to).toEqual([{ email: "club@example.com" }]);
-    expect(captured?.subject).toBe("Question");
-    expect(captured?.text).toBe(
-      "Bonjour, je souhaite avoir plus d'informations.",
-    );
+    expect(captured?.from).toEqual({
+      email: "noreply@example.com",
+      name: "ARC18",
+    });
+    expect(captured?.variables).toEqual({
+      sender_name: "Marie Dupont",
+      sender_email: "marie@example.com",
+      privacy_policy_url: "https://app.example.com/privacy-policy",
+      message_subject: "Question",
+      message_body: "Bonjour, je souhaite avoir plus d'informations.",
+    });
   });
 
-  it("prefixes subject in sandbox mode", async () => {
-    let captured: SendTransactionalEmailInput | undefined;
-    mail.sendTransactionalEmail = vi.fn(
-      async (input: SendTransactionalEmailInput) => {
-        captured = input;
-      },
-    );
+  it("prefixes message_subject in sandbox mode", async () => {
+    let captured: SendTemplateEmailInput | undefined;
+    mail.sendTemplateEmail = vi.fn(async (input: SendTemplateEmailInput) => {
+      captured = input;
+    });
     const submitContactMessage = new SubmitContactMessage(mail, {
       ...options,
       sandbox: true,
@@ -90,11 +95,11 @@ describe("SubmitContactMessage", () => {
       subject: "Subject",
       message: "This is a message with at least twenty characters.",
     });
-    expect(captured?.subject).toBe("[Sandbox] Subject");
+    expect(captured?.variables?.message_subject).toBe("[Sandbox] Subject");
   });
 
   it("returns send_failed when mail throws", async () => {
-    mail.sendTransactionalEmail = vi.fn(async () => {
+    mail.sendTemplateEmail = vi.fn(async () => {
       throw new Error("network");
     });
     const submitContactMessage = new SubmitContactMessage(mail, options);
