@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { resolveLatestInvitationAt } from "~~/infrastructure/persistence/user/member-roster-query.invitation-at";
 import {
   buildMemberRosterWhere,
   excludeDeveloperFromRosterWhere,
@@ -179,5 +180,20 @@ describe("buildMemberRosterWhere", () => {
         },
       ],
     });
+  });
+});
+
+describe("resolveLatestInvitationAt", () => {
+  const userCreatedAt = new Date("2026-01-10T09:00:00.000Z");
+  const latestTokenAt = new Date("2026-09-05T08:00:00.000Z");
+
+  it("uses the newest invitation token created_at", () => {
+    expect(
+      resolveLatestInvitationAt([{ created_at: latestTokenAt }], userCreatedAt),
+    ).toBe(latestTokenAt);
+  });
+
+  it("falls back to the user created_at when no invitation token exists", () => {
+    expect(resolveLatestInvitationAt([], userCreatedAt)).toBe(userCreatedAt);
   });
 });

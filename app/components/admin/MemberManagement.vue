@@ -114,7 +114,7 @@
             :color="statusBadgeColor(row.original.status)"
             :ui="{ base: 'rounded-lg' }"
           >
-            {{ statusLabel(row.original.status) }}
+            {{ statusLabel(row.original) }}
           </UBadge>
         </template>
         <template #roles-cell="{ row }">
@@ -294,7 +294,7 @@ const ui = {
   ],
   colName: "min-w-40",
   colEmail: "min-w-48",
-  colStatus: "min-w-24 whitespace-nowrap",
+  colStatus: "min-w-32 whitespace-nowrap",
   colRoles: "min-w-28 whitespace-nowrap",
   colActions: "w-12",
 };
@@ -366,14 +366,36 @@ const columns: TableColumn<MemberRow>[] = [
   },
 ];
 
-const statusLabel = (status: MemberRosterItemDto["status"]): string => {
-  if (status === "active") {
+const formatStatusDateDayMonth = (value: string | null): string | null => {
+  if (!value) {
+    return null;
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+  }).format(date);
+};
+
+const statusLabel = (row: MemberRow): string => {
+  if (row.status === "active") {
     return "Actif";
   }
-  if (status === "invited") {
+  if (row.status === "invited") {
+    const dayMonth = formatStatusDateDayMonth(row.invited_at);
+    if (dayMonth) {
+      return `Invité ${dayMonth}`;
+    }
     return "Invité";
   }
-  if (status === "archived") {
+  if (row.status === "archived") {
+    const dayMonth = formatStatusDateDayMonth(row.offboarded_at);
+    if (dayMonth) {
+      return `Archivé ${dayMonth}`;
+    }
     return "Archivé";
   }
   return "Sans compte";
@@ -546,6 +568,8 @@ const skeletonRows = computed((): MemberRow[] => {
       email: null,
       public_name: "",
       roles: [],
+      invited_at: null,
+      offboarded_at: null,
     };
   });
 });
@@ -817,6 +841,23 @@ const confirmDelete = async (): Promise<void> => {
   }
 };
 
+const updateInviteDate = (row: MemberRow): void => {
+  if (!row.user_id) {
+    return;
+  }
+  const userId = row.user_id;
+  const nextInvitedAt = new Date().toISOString();
+  items.value = items.value.map((item) => {
+    if (item.user_id !== userId) {
+      return item;
+    }
+    return {
+      ...item,
+      invited_at: nextInvitedAt,
+    };
+  });
+};
+
 const renewInvite = async (row: MemberRow): Promise<void> => {
   if (!row.email) {
     return;
@@ -828,6 +869,7 @@ const renewInvite = async (row: MemberRow): Promise<void> => {
       email: row.email,
       allow_resent: true,
     });
+    updateInviteDate(row);
     if (!result.mail_sent) {
       addToastError({
         title: "Invitation enregistrée",

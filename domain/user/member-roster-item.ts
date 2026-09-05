@@ -10,4 +10,6 @@ export type MemberRosterItem = {
   email: string | null;
   publicName: string;
   roles: RoleEnum[];
+  invitedAt: Date | null;
+  offboardedAt: Date | null;
 };

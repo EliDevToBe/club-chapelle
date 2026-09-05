@@ -12,6 +12,7 @@ export type MemberRosterQueryRow = {
     email: string;
     authenticated: boolean;
     roles: RoleEnum[];
+    latestInvitationAt: Date;
   } | null;
 };
 

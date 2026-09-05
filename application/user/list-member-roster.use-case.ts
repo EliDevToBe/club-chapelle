@@ -53,17 +53,22 @@ const toMemberRosterItem = (row: MemberRosterQueryRow): MemberRosterItem => {
       email: null,
       publicName: row.publicName,
       roles: [],
+      invitedAt: null,
+      offboardedAt: row.offboardedAt,
     };
   }
 
   if (row.authUserId && row.user) {
+    const isActive = row.user.authenticated;
     return {
-      status: row.user.authenticated ? "active" : "invited",
+      status: isActive ? "active" : "invited",
       userId: row.user.id,
       archerId: row.archerId,
       email: row.user.email,
       publicName: row.publicName,
       roles: sortRolesByOrder(row.user.roles),
+      invitedAt: isActive ? null : row.user.latestInvitationAt,
+      offboardedAt: null,
     };
   }
 
@@ -74,6 +79,8 @@ const toMemberRosterItem = (row: MemberRosterQueryRow): MemberRosterItem => {
     email: null,
     publicName: row.publicName,
     roles: [],
+    invitedAt: null,
+    offboardedAt: null,
   };
 };
 

@@ -10,6 +10,8 @@ export type MemberRosterItemDto = {
   email: string | null;
   public_name: string;
   roles: RoleEnum[];
+  invited_at: string | null;
+  offboarded_at: string | null;
 };
 
 export type MemberRosterResponseDto = {
