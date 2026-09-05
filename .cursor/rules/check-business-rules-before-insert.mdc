@@ -1,0 +1,47 @@
+---
+description: Validate business rules in use cases before persistence inserts
+globs:
+  - "**/application/**/*.ts"
+  - "**/infrastructure/persistence/**/*.ts"
+alwaysApply: false
+---
+
+# Check business rules before DB inserts
+
+## Requirement
+
+Before calling a repository or persistence **create** / **insert**, the **use case** must enforce domain and product rules explicitly:
+
+- **Uniqueness** (e.g. email, public name) — query existing records through an injected port and return a typed `{ ok: false, reason }` or domain error.
+- **State** (e.g. already linked, archived, authenticated) — reject with the appropriate API reason, not a raw DB failure.
+- **Authorisation / RBAC** — already enforced at the HTTP boundary; use cases still enforce invariants that must hold regardless of caller.
+
+Do **not** rely on database unique constraints or foreign keys as the **primary** user-facing error path.
+
+## Persistence role
+
+- Repositories and flow persistence classes perform writes only after the use case has validated.
+- Catching Prisma `P2002` (unique violation) is allowed **only** as a **concurrency fallback** when two requests race past the same pre-check.
+- Keep that mapping **local and small** (inline helper in the persistence file). Do not add a shared helper unless the same mapping is reused in **three or more** places.
+
+## Examples
+
+```typescript
+// ✅ Use case — explicit pre-check before insert
+const archerWithName = await this.archers.findByPublicName(name);
+if (archerWithName) {
+  return { ok: false, reason: API_ERROR_REASON.invitation.public_name_taken };
+}
+
+const created = await this.persistence.createInvitedMember({ name, email });
+```
+
+```typescript
+// ❌ Avoid — insert first, hope the catch block saves UX
+const created = await this.persistence.createInvitedMember({ name, email });
+// only path to public_name_taken is an unmapped Prisma throw
+```
+
+## Typed errors
+
+Map pre-check failures to existing `API_ERROR_REASON` codes (or domain result types) so presentation can show French copy via `readApiErrorReason` — same as for race fallbacks from persistence.
