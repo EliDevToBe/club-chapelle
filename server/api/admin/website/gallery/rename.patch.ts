@@ -1,10 +1,12 @@
-import { createError, defineEventHandler, readBody } from "h3";
+import { defineEventHandler, readBody } from "h3";
 import { useRuntimeConfig } from "nitropack/runtime";
 import { RenameWebsiteGalleryImage } from "~~/application/website/rename-website-gallery-image.use-case";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { SirvGallerySource } from "~~/infrastructure/sirv/sirv-gallery.source";
+import { ApiError } from "~~/server/utils/api-error";
 import { requireRoles } from "~~/server/utils/rbac";
 import { parseRenameGalleryImageBody } from "~~/server/utils/website-gallery";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 export default defineEventHandler(async (event) => {
   requireRoles(event, ["admin"]);
@@ -17,10 +19,7 @@ export default defineEventHandler(async (event) => {
   const { websiteConfigRepository } = getRepositories();
 
   if (!clientId || !clientSecret || !cdnDomain || !directory) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Sirv runtime configuration is missing",
-    });
+    throw ApiError(API_ERROR_REASON.website.sirv_not_configured);
   }
 
   const body = await readBody(event);

@@ -1,4 +1,3 @@
-import { createError } from "h3";
 import { authForgotPasswordFormSchema } from "~~/app/schemas/auth-flow.zod";
 import { RequestForgotPassword } from "~~/application/user/request-forgot-password.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
@@ -7,6 +6,8 @@ import {
   MAILTRAP_TEMPLATES_IDS,
 } from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { ApiError } from "~~/server/utils/api-error";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import { asStringOrEmpty } from "~~/shared/utils/base-string.helper";
 
 export default defineEventHandler(async (event) => {
@@ -22,34 +23,22 @@ export default defineEventHandler(async (event) => {
   const sandbox = Boolean(config.mailtrapUseSandbox);
 
   if (!apiKey) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Mail is not configured",
-    });
+    throw ApiError(API_ERROR_REASON.mail.not_configured);
   }
 
   if (!fromEmail) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Mail sender is not configured",
-    });
+    throw ApiError(API_ERROR_REASON.mail.sender_not_configured);
   }
 
   if (!accessSecret || !refreshSecret || accessSecret === refreshSecret) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Authentication is not configured",
-    });
+    throw ApiError(API_ERROR_REASON.auth.not_configured);
   }
 
   let testInboxId: number | undefined;
   if (sandbox) {
     const parsed = Number.parseInt(inboxIdRaw, 10);
     if (!Number.isFinite(parsed) || parsed <= 0) {
-      throw createError({
-        statusCode: 500,
-        statusMessage: "Mail sandbox inbox is not configured",
-      });
+      throw ApiError(API_ERROR_REASON.mail.sandbox_inbox_not_configured);
     }
     testInboxId = parsed;
   }
@@ -60,10 +49,7 @@ export default defineEventHandler(async (event) => {
   });
 
   if (!parsed.success) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Invalid email",
-    });
+    throw ApiError(API_ERROR_REASON.auth.invalid_email);
   }
 
   const { userRepository, tokenRepository } = getRepositories();
@@ -79,7 +65,7 @@ export default defineEventHandler(async (event) => {
 
   const templateId = MAILTRAP_TEMPLATES_IDS.forgotPassword;
 
-  const passwordResetOrigin = (config.passwordResetOrigin as string) || "";
+  const passwordResetOrigin = (config.baseUrl as string) || "";
 
   const requestForgotPasswordHandler = new RequestForgotPassword(
     userRepository,
@@ -91,7 +77,6 @@ export default defineEventHandler(async (event) => {
       fromName,
       templateId,
       passwordResetOrigin,
-      sandbox,
     },
   );
 

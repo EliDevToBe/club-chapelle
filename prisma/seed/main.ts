@@ -54,20 +54,22 @@ const main = async () => {
   await prisma.auth_user_role.deleteMany();
   await prisma.auth_user.deleteMany();
 
-  const authRows: { id: string; role: RoleEnum }[] = [];
+  const authRows: { id: string; roles: RoleEnum[] }[] = [];
   for (const spec of seedLinkedArchers) {
     const u = await prisma.auth_user.create({
       data: {
         name: spec.public_name,
         email: spec.email,
         password: null,
-        authenticated: true,
+        authenticated: spec.authenticated,
         roles: {
-          create: { role: spec.role },
+          create: spec.roles.map((role) => {
+            return { role };
+          }),
         },
       },
     });
-    authRows.push({ id: u.id, role: spec.role });
+    authRows.push({ id: u.id, roles: [...spec.roles] });
   }
 
   /**
@@ -77,7 +79,9 @@ const main = async () => {
   if (seedDevPassword && authRows.length > 0) {
     const argon2 = new Argon2PasswordHasher();
     const passwordHash = await argon2.hash(seedDevPassword);
-    const firstAuthId = authRows.find((u) => u.role === "developer")?.id;
+    const firstAuthId = authRows.find((userRow) => {
+      return userRow.roles.includes("developer");
+    })?.id;
     if (firstAuthId) {
       await prisma.auth_user.update({
         where: { id: firstAuthId },

@@ -9,7 +9,6 @@ export type RequestForgotPasswordOptions = {
   fromName: string;
   templateId: string;
   passwordResetOrigin: string;
-  sandbox: boolean;
 };
 
 export class RequestForgotPassword {
@@ -60,6 +59,10 @@ export class RequestForgotPassword {
     resetUrl.searchParams.set("t", tokenString);
 
     const recoveryLink = resetUrl.toString();
+    const privacyPolicyUrl = new URL(
+      "/privacy-policy",
+      this.options.passwordResetOrigin,
+    ).toString();
 
     const displayName = row.name?.trim() || "Archer·ère";
 
@@ -70,6 +73,7 @@ export class RequestForgotPassword {
           user_name: displayName,
           user_email: row.email,
           recovery_link: recoveryLink,
+          privacy_policy_url: privacyPolicyUrl,
         },
         to: [{ email: row.email, name: displayName }],
         from: {

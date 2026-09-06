@@ -42,7 +42,5 @@ defineEmits<{
   onConfirm: [];
 }>();
 
-const isOpen = ref(false);
+const isOpen = defineModel<boolean>("open", { default: false });
 </script>
-
-<style scoped lang=""></style>

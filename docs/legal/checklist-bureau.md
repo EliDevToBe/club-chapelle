@@ -13,7 +13,7 @@ Companion to [registre-des-traitements.md](registre-des-traitements.md). These i
 ## Ongoing
 
 - [ ] Do **not** add a “I accept the GDPR” checkbox on the contact form (false consent). Keep the information notice and the link to `/privacy-policy`.
-- [ ] Member space stays **invitation-only**. When invitations ship (v1.5): link to `/privacy-policy` in the e-mail; information notice on the activation form; **no** public terms-of-use tick box.
+- [ ] Member space stays **invitation-only**. Invitations exist: confirm the Mailtrap invitation template includes `/privacy-policy` (variable `privacy_policy_url`); activation form already shows an information notice; **no** public terms-of-use tick box.
 - [ ] Photos of identifiable people (especially ages 14–17): image-rights agreement before publishing on the carousel.
 - [ ] No analytics, pixels, or client-side Facebook SDK without a **cookie banner** and an update to this register.
 - [ ] No online payment / distance selling without **terms of sale** (CGV) and a privacy update.

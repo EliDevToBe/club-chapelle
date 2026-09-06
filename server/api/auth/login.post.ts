@@ -1,8 +1,9 @@
-import { createError } from "h3";
 import { LoginUser } from "~~/application/user/login-user.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { ApiError } from "~~/server/utils/api-error";
 import { setAuthSessionCookies } from "~~/server/utils/auth-cookies";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 type LoginBody = {
   email?: string;
@@ -14,10 +15,7 @@ export default defineEventHandler(async (event) => {
   const accessSecret = config.authJwtAccessSecret;
   const refreshSecret = config.authJwtRefreshSecret;
   if (!accessSecret || !refreshSecret || accessSecret === refreshSecret) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Authentication is not configured",
-    });
+    throw ApiError(API_ERROR_REASON.auth.not_configured);
   }
 
   const body = await readBody<LoginBody>(event);
@@ -37,10 +35,7 @@ export default defineEventHandler(async (event) => {
   });
 
   if (!result.ok) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: result.reason,
-    });
+    throw ApiError(result.reason);
   }
 
   setAuthSessionCookies(event, result.accessToken, result.refreshToken);

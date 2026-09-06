@@ -10,7 +10,8 @@ export type SubmitContactMessageOptions = {
   toEmail: string;
   fromEmail: string;
   fromName: string;
-  sandbox: boolean;
+  templateId: string;
+  inviteOrigin: string;
 };
 
 export class SubmitContactMessage {
@@ -41,21 +42,26 @@ export class SubmitContactMessage {
       return { ok: false, error: "validation" };
     }
 
-    const subject = this.options.sandbox
-      ? `[Sandbox] ${subjectRaw}`
-      : subjectRaw;
+    const privacyPolicyUrl = new URL(
+      "/privacy-policy",
+      this.options.inviteOrigin,
+    ).toString();
 
     try {
-      await this.mail.sendTransactionalEmail({
-        kind: "contact",
+      await this.mail.sendTemplateEmail({
+        templateId: this.options.templateId,
+        variables: {
+          sender_name: name,
+          sender_email: email,
+          privacy_policy_url: privacyPolicyUrl,
+          message_body: message,
+        },
         to: [{ email: this.options.toEmail }],
         from: {
-          email: this.options.fromEmail,
-          name: this.options.fromName,
+          email,
+          name,
         },
         replyTo: { email, name },
-        subject,
-        text: message,
       });
       return { ok: true };
     } catch {

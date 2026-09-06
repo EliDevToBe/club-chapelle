@@ -3,6 +3,7 @@ import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port"
 import type { PasswordHasher } from "~~/application/ports/password-hasher.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
 import { LoginUser } from "~~/application/user/login-user.use-case";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 let users: UserRepository;
 let passwords: PasswordHasher;
@@ -35,6 +36,8 @@ beforeEach(() => {
     signRefresh: vi.fn().mockReturnValue("refresh-jwt"),
     signForgotPasswordToken: vi.fn(),
     verifyForgotPasswordToken: vi.fn(),
+    signInvitationToken: vi.fn(),
+    verifyInvitationToken: vi.fn(),
     verifyAccess: vi.fn(),
     verifyRefresh: vi.fn(),
   };
@@ -75,7 +78,10 @@ describe("LoginUser", () => {
 
     const login = new LoginUser(users, passwords, jwt);
     const result = await login.login({ email: "a@b.c", password: "secret" });
-    expect(result).toEqual({ ok: false, reason: "User is not authenticated" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.auth.account_not_active,
+    });
   });
 
   it("fails when password is wrong", async () => {
@@ -91,6 +97,9 @@ describe("LoginUser", () => {
 
     const login = new LoginUser(users, passwords, jwt);
     const result = await login.login({ email: "a@b.c", password: "bad" });
-    expect(result).toEqual({ ok: false, reason: "Invalid email or password" });
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.auth.invalid_credentials,
+    });
   });
 });

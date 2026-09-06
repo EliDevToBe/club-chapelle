@@ -8,15 +8,11 @@ import type {
 import type { RoleEnum } from "~~/shared/db-enums";
 import { formatDateForDb } from "~~/shared/utils/dates";
 
-export const viewerIsAdminForBrowse = (roles: readonly RoleEnum[]): boolean => {
-  return roles.includes("admin") || roles.includes("developer");
-};
-
 export const toParticipationBrowseRowDto = (
   row: ParticipationWithArcherSummary,
   viewer: { userId: string; roles: readonly RoleEnum[] },
 ): ParticipationBrowseRowDto => {
-  const isAdmin = viewerIsAdminForBrowse(viewer.roles);
+  const isAdmin = viewer.roles.includes("admin");
   const isOwn =
     row.archerAuthUserId !== null && row.archerAuthUserId === viewer.userId;
   const showStatuses = isAdmin || isOwn;

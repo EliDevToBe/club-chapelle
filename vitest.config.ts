@@ -51,5 +51,6 @@ export default defineConfig({
       },
       nuxtProject,
     ],
+    silent: false,
   },
 });

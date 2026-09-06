@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware(async (to, _from) => {
   const adminRoutes = ["/admin"];
   const needAuthRoutes = ["/competitions"];
   const authRequiredRoutes = [...adminRoutes, ...needAuthRoutes];
-  const preventAuthRoutes = ["/login", "/reset-password"];
+  const preventAuthRoutes = ["/login", "/reset-password", "/accept-invite"];
 
   const isAdminRoute =
     adminRoutes.includes(to.path) ||

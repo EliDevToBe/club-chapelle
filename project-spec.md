@@ -89,7 +89,7 @@ Three roles with **strict ordering**: **Admin > Manager > Member**.
 
 - A **higher** role **inherits** all permissions of **lower** roles unless an exception is explicitly stated (none below—Admin-only actions are listed separately).
 
-The **`developer`** value in the database and RBAC layer is a **technical** role for maintainers: it is **not** a club-facing permission tier in the matrix below. When authenticated, it is treated as **elevated** for route checks (see §3.3).
+The **`developer`** value in the database and RBAC layer is a **technical** role for maintainers: it is **not** a club-facing permission tier in the matrix below. It does **not** bypass route allow-lists; maintainer accounts that need club admin capabilities should also hold **`admin`** (and use **`requireDeveloper`** for developer-only routes).
 
 ### 3.2 Permission matrix
 
@@ -128,13 +128,15 @@ Capabilities are cumulative by level.
 - Only **Admin** may **revoke** and **unlink** accounts from the **Archer** shell (preserving history).
 - **Creating competitions** and **assigning participants** is **Admin-only** (not Manager) per current spec.
 - **MVP landing gallery:** only **Admin** may **upload** images or **curate** the public landing **carousel** set (Manager upload is **out of scope** for MVP; revisit after MVP if the club wants to widen who may publish visuals).
+- **Member invitation (shipped):** the matrix still lists **Manager** as an intended inviter, but **current delivery is Admin-only** (`POST /api/invitations`, ClubPanel on `/admin`). `/admin` is Admin-gated; Manager invite waits for a Manager-accessible surface. **Admin** may also **bind an existing unlinked Archer shell** via `POST /api/invitations/bind-archer` from the member roster (email only; `public_name` stays on the Archer; clears `offboarded_at` when re-inviting an archived shell). The admin roster list is **server-filtered and paginated** via `GET /api/members/roster` (`search`, `status`, `role`, `archived_only`, `limit`, `offset`).
+- **Admin member roster (shipped):** archer-centric rows (`active`, `invited`, `shell`, **`archived`**) in **Gestion du club**. Default list excludes archived shells (`offboarded_at` set); **`archived_only`** query shows archived shells only. Linked accounts with the **`developer`** role are **omitted** from the roster (maintainer role, not club-facing). **Admin** may **edit `public_name` inline** (`PATCH /api/archers/:id`), **re-invite** pending members, **set a club role** to **Member**, **Manager**, or **Admin** (`PATCH /api/users/:id/role` — **replaces** the `auth_user_role` set, does not append; self-edit is blocked in the UI and API), **revoke** linked accounts (`POST /api/users/:id/revoke`), **archive** unlinked shells (`POST /api/archers/:id/offboard`), **re-invite** archived shells (**Inviter à nouveau**; bind-archer clears `offboarded_at`), and **hard-delete** archived shells only (`DELETE /api/archers/:id`). **Admin** cannot **demote** another **Admin** (roster picker is a no-op with an info toast to contact a developer); only **`developer`** may apply that change, and the last Admin cannot be demoted. **`developer`** is never assignable through this path. Multi-role on `auth_user` remains valid for other flows.
 
 ### 3.3 Technical session model (reference)
 
 This subsection documents how the **implemented** HTTP session works today (**cookie-based JWTs**). There is **no** server-side **session** table: identity between requests is carried only in **HttpOnly** cookies. **User roles** are persisted separately in **`auth_user_role`** (a user may have **multiple** roles); that is **not** a session store.
 
 - **Password storage:** `auth_user.password` holds an **Argon2id** hash (library defaults). Plain passwords are never stored.
-- **Role storage:** `auth_user_role` links `auth_user` rows to `role` enum values. Authorisation in Nitro uses **explicit** allow-lists per route (`requireRoles`); **`developer`** bypasses product-role checks when authenticated (see §3.1). This does **not** implement automatic **inheritance** (Admin > Manager > Member) in code—that remains a product rule for v1.5 alignment ([project-roadmap.md](project-roadmap.md)).
+- **Role storage:** `auth_user_role` links `auth_user` rows to `role` enum values. Authorisation in Nitro uses **explicit** allow-lists per route (`requireRoles`); **`developer`** does **not** bypass product-role checks—list **`developer`** explicitly or use **`requireDeveloper`** for maintainer-only routes. Maintainer seed accounts typically carry **`developer`** and **`admin`**. This does **not** implement automatic **inheritance** (Admin > Manager > Member) in code—that remains a product rule for v1.5 alignment ([project-roadmap.md](project-roadmap.md)).
 - **Tokens:** Two **HS256 JWT** families—**access** (20-minute lifetime) and **refresh** (7-day lifetime)—signed with **two different secrets** (`NUXT_AUTH_JWT_ACCESS_SECRET` and `NUXT_AUTH_JWT_REFRESH_SECRET`). Access and refresh are **not** distinguished by custom JWT header fields or by extra payload “type” claims; separation is by **signing secret** and by **which cookie** carries the string, so a refresh token cannot be verified as an access token.
 - **Cookies (HttpOnly):** `club-access` (access JWT) and `club-refresh` (refresh JWT). The browser should send both on same-origin API calls using **`credentials: 'include'`**.
 - **Client contract:** Any same-origin **`fetch`** / **`$fetch`** to **private** or **mutating** API routes (including login, logout, session, and protected handlers) must use **`credentials: 'include'`** so cookies are sent.
@@ -142,7 +144,9 @@ This subsection documents how the **implemented** HTTP session works today (**co
 - **Middleware (Nitro):** On `/api/**` routes (except `POST /api/auth/login`), the server verifies the access JWT from `club-access`, loads the user from the database by `sub`, and sets server **`event.context`** for RBAC. If access is missing or invalid but `club-refresh` verifies, the server issues a **new** access JWT, sets **`Set-Cookie`** for `club-access`, then continues with the same user resolution.
 - **Login / logout:** `POST /api/auth/login` validates email and password and sets both cookies. `POST /api/auth/logout` clears both cookies (no database session row to delete).
 - **Password recovery:** `POST /api/auth/forgot-password` sends a transactional e-mail with a **recovery JWT** (separate verification from session access tokens) and records a **`token`** row (`forgot_password`). `POST /api/auth/reset-password` updates `auth_user.password` and sets that row’s **`used_at`** in one transaction, then issues new access and refresh cookies like a successful login.
-- **Revocation limits:** Without server-side refresh/session storage, revoking **all** devices for a user is not automatic beyond password change or future token blocklists.
+- **Member invitation:** `POST /api/invitations` (**Admin**) creates an invited `auth_user` (`authenticated: false`) and a linked Archer, issues an **invitation JWT** (`token_type.invitation`, 7 days; not valid as a session access token), and sends template mail. `POST /api/invitations/bind-archer` (**Admin**) links an **existing unlinked** Archer shell to a new or pending invited account (same mail/token flow). `POST /api/auth/accept-invitation` sets the password, marks the user authenticated, consumes the token, and issues session cookies. See §3.2 (Admin-only delivery).
+- **Member revoke:** `POST /api/users/:id/revoke` (**Admin**) unlinks all Archers from the user, clears the password, sets `authenticated: false`, and revokes unused tokens; the `auth_user` row and Archer history remain. Self-revoke is rejected. Session JWTs are not blocklisted (see revocation limits below).
+- **Revocation limits:** Without server-side refresh/session storage, revoking **all** devices for a user is not automatic beyond password change, revoke (clears password), or future token blocklists.
 
 ```mermaid
 sequenceDiagram
@@ -186,10 +190,11 @@ An **Archer** is an internal entity representing a person in the club’s data m
 
 - Holds **historical** links to **participations** and related records.
 - When a **Member** account is **revoked**, the **user** is unlinked from the Archer; the **Archer** and past participations remain for audit and continuity.
+- **Admin** may **delete** an **unlinked shell** Archer only after **archiving** it (`POST /api/archers/:id/offboard` sets `offboarded_at`; participations are kept). **Hard delete** (`DELETE /api/archers/:id`) removes an **archived** unlinked shell and its participations in one transaction. Deletion is rejected when the Archer is not archived or still linked to an account (revoke first). **Re-invite** from the archived roster (`POST /api/invitations/bind-archer`) clears `offboarded_at` when linking the account.
 
 ### 4.2 Member (authenticated user)
 
-A **Member** is a user account that may be **linked** to an Archer. Invitations (Manager/Admin) create or bind this link.
+A **Member** is a user account that may be **linked** to an Archer. The shipped **Admin** invite flow **creates** a new Archer (`public_name` = invitee name) and links it to the new account. **Admin** may also invite an **existing unlinked Archer shell** (`POST /api/invitations/bind-archer`) from the member roster.
 
 ### 4.3 Competition & participation
 

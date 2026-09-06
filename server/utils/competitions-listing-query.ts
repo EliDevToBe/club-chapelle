@@ -1,4 +1,6 @@
-import { createError, getQuery, type H3Event } from "h3";
+import { getQuery, type H3Event } from "h3";
+import { ApiError } from "~~/server/utils/api-error";
+import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import { asNonEmptyString } from "~~/shared/utils/base-string.helper";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -17,19 +19,13 @@ const firstQueryString = (value: unknown): string | undefined => {
   return String(value);
 };
 
-const assertValidYmd = (raw: string, paramName: string): void => {
+const assertValidYmd = (raw: string): void => {
   if (!ISO_DATE.test(raw)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: `Invalid ${paramName}: expected YYYY-MM-DD`,
-    });
+    throw ApiError(API_ERROR_REASON.common.invalid_query);
   }
   const d = new Date(`${raw}T12:00:00.000Z`);
   if (Number.isNaN(d.getTime())) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: `Invalid ${paramName}: not a valid calendar date`,
-    });
+    throw ApiError(API_ERROR_REASON.common.invalid_query);
   }
 };
 
@@ -57,10 +53,7 @@ export const parseCompetitionsListingRawQuery = (
   if (mineRaw !== undefined && mineRaw !== null && mineRaw !== "") {
     const mineStr = firstQueryString(mineRaw);
     if (mineStr !== "true") {
-      throw createError({
-        statusCode: 400,
-        statusMessage: "Invalid mine: use mine=true or omit the parameter",
-      });
+      throw ApiError(API_ERROR_REASON.common.invalid_query);
     }
   }
 
@@ -68,13 +61,13 @@ export const parseCompetitionsListingRawQuery = (
 
   let dateStartYmd: string | null = null;
   if (startRaw !== undefined && startRaw !== "") {
-    assertValidYmd(startRaw, "start_date");
+    assertValidYmd(startRaw);
     dateStartYmd = startRaw;
   }
 
   let dateEndYmd: string | null = null;
   if (endRaw !== undefined && endRaw !== "") {
-    assertValidYmd(endRaw, "end_date");
+    assertValidYmd(endRaw);
     dateEndYmd = endRaw;
   }
 

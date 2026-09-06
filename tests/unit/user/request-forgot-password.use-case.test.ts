@@ -27,6 +27,8 @@ beforeEach(() => {
     signRefresh: vi.fn(),
     signForgotPasswordToken: vi.fn(),
     verifyForgotPasswordToken: vi.fn(),
+    signInvitationToken: vi.fn(),
+    verifyInvitationToken: vi.fn(),
     verifyAccess: vi.fn(),
     verifyRefresh: vi.fn(),
   };
@@ -42,7 +44,6 @@ describe("RequestForgotPassword", () => {
     fromName: "Club",
     templateId: "tpl-uuid",
     passwordResetOrigin: "https://app.example.com",
-    sandbox: false,
   };
 
   it("does nothing when the user is unknown", async () => {
@@ -96,6 +97,7 @@ describe("RequestForgotPassword", () => {
           user_name: "Alex",
           user_email: "a@b.c",
           recovery_link: "https://app.example.com/reset-password?t=jwt-token",
+          privacy_policy_url: "https://app.example.com/privacy-policy",
         },
         to: [{ email: "a@b.c", name: "Alex" }],
       }),

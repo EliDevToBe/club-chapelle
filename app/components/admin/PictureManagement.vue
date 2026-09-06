@@ -77,7 +77,7 @@
       message="N’importez des photos de personnes identifiables qu’avec leur accord
       (droit à l’image), d'autant plus pour les mineur·e·s"
       color="info"
-      icon="i-ph-warning-duotone"
+      icon="i-ph-info-duotone"
     />
 
     <Banner

@@ -57,4 +57,32 @@ describe("JsonWebTokenAuthService", () => {
     const access = svc.signAccess("user-6");
     expect(svc.verifyForgotPasswordToken(access)).toBeNull();
   });
+
+  it("does not verify an invitation JWT as an access session", () => {
+    const svc = new JsonWebTokenAuthService(
+      "access-secret-a",
+      "refresh-secret-b",
+    );
+    const invitation = svc.signInvitationToken("user-7");
+    expect(svc.verifyAccess(invitation)).toBeNull();
+  });
+
+  it("round-trips an invitation JWT via verifyInvitationToken", () => {
+    const svc = new JsonWebTokenAuthService(
+      "access-secret-a",
+      "refresh-secret-b",
+    );
+    const invitation = svc.signInvitationToken("user-8");
+    expect(svc.verifyInvitationToken(invitation)).toBe("user-8");
+    expect(svc.verifyForgotPasswordToken(invitation)).toBeNull();
+  });
+
+  it("does not verify a forgot-password JWT as an invitation token", () => {
+    const svc = new JsonWebTokenAuthService(
+      "access-secret-a",
+      "refresh-secret-b",
+    );
+    const forgot = svc.signForgotPasswordToken("user-9");
+    expect(svc.verifyInvitationToken(forgot)).toBeNull();
+  });
 });

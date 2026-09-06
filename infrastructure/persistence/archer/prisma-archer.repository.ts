@@ -34,6 +34,15 @@ export class PrismaArcherRepository implements ArcherRepository {
     return row ? toDomain(row) : null;
   };
 
+  public findByPublicName = async (
+    publicName: string,
+  ): Promise<Archer | null> => {
+    const row = await prismaClient.archer.findUnique({
+      where: { public_name: publicName },
+    });
+    return row ? toDomain(row) : null;
+  };
+
   public findMany = async (): Promise<Archer[]> => {
     const rows = await prismaClient.archer.findMany({
       orderBy: { created_at: "desc" },
