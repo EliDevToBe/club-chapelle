@@ -10,7 +10,6 @@ export type SubmitContactMessageOptions = {
   toEmail: string;
   fromEmail: string;
   fromName: string;
-  sandbox: boolean;
   templateId: string;
   inviteOrigin: string;
 };
@@ -57,10 +56,10 @@ export class SubmitContactMessage {
           privacy_policy_url: privacyPolicyUrl,
           message_body: message,
         },
-        to: [{ email: this.options.toEmail, name: name }],
+        to: [{ email: this.options.toEmail }],
         from: {
-          email: this.options.fromEmail,
-          name: this.options.fromName,
+          email,
+          name,
         },
         replyTo: { email, name },
       });

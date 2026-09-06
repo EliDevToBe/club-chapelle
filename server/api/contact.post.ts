@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
   const inboxIdRaw = config.mailtrapInboxId;
   const fromEmail = config.mailtrapFromEmail;
   const fromName = config.mailtrapFromName;
-  const inviteOrigin = config.passwordResetOrigin;
+  const inviteOrigin = config.baseUrl;
 
   if (!apiKey) {
     throw ApiError(API_ERROR_REASON.mail.not_configured);
@@ -67,7 +67,6 @@ export default defineEventHandler(async (event) => {
     toEmail,
     fromEmail,
     fromName,
-    sandbox,
     templateId: MAILTRAP_TEMPLATES_IDS.contact,
     inviteOrigin,
   });

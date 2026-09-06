@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
 
   const templateId = MAILTRAP_TEMPLATES_IDS.forgotPassword;
 
-  const passwordResetOrigin = (config.passwordResetOrigin as string) || "";
+  const passwordResetOrigin = (config.baseUrl as string) || "";
 
   const requestForgotPasswordHandler = new RequestForgotPassword(
     userRepository,
@@ -77,7 +77,6 @@ export default defineEventHandler(async (event) => {
       fromName,
       templateId,
       passwordResetOrigin,
-      sandbox,
     },
   );
 
