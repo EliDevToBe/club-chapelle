@@ -243,7 +243,7 @@
           Le club peut accueillir les jeunes à partir de 14 ans. En France, un
           mineur·e de moins de 15 ans ne peut pas, seul·e, consentir à un
           service en ligne. Les comptes restent ouverts sur invitation. Pour les
-          14–15 ans, l’invitation s’inscrit dans le cadre parental /
+          14-15 ans, l’invitation s’inscrit dans le cadre parental /
           représentant légal.
         </p>
       </ContentTextWrapper>
@@ -253,9 +253,9 @@
       <ContentTextWrapper class="text-muted">
         <p>
           Les mots de passe sont chiffrés. L’accès aux comptes est protégé par
-          des cookies de session et des contrôles selon les rôles. Les clés
-          d’accès aux services externes restent sur le serveur et ne sont pas
-          exposées dans le navigateur.
+          des cookies de session et des contrôles selon certaines permissions.
+          Les clés d’accès aux services externes restent sur le serveur et ne
+          sont pas exposées dans le navigateur.
         </p>
       </ContentTextWrapper>
     </ChapSection>
