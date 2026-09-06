@@ -50,7 +50,9 @@
           :disabled="loading"
           :class="ui.formInput"
         />
-        <div class="mt-2">
+
+        <!-- Progress bar -->
+        <div class="mt-2 w-full md:w-80">
           <UProgress
             size="sm"
             :model-value="successfulRequirements"
