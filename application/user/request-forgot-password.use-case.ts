@@ -9,7 +9,6 @@ export type RequestForgotPasswordOptions = {
   fromName: string;
   templateId: string;
   passwordResetOrigin: string;
-  sandbox: boolean;
 };
 
 export class RequestForgotPassword {

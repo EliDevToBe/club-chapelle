@@ -86,7 +86,7 @@ export default defineEventHandler(async (event) => {
     testInboxId,
   });
 
-  const inviteOrigin = (config.passwordResetOrigin as string) || "";
+  const inviteOrigin = (config.baseUrl as string) || "";
 
   const inviteArcherShellHandler = new InviteArcherShell(
     inviteMemberPersistence,

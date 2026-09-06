@@ -28,8 +28,8 @@ export default defineNuxtConfig({
     mailtrapFromEmail: process.env.MAILTRAP_FROM_EMAIL ?? "",
     mailtrapFromName:
       process.env.MAILTRAP_FROM_NAME ?? "Les Archers de la Chapelle",
-    /** Public site origin for password recovery links (no trailing slash). */
-    passwordResetOrigin: process.env.PASSWORD_RESET_ORIGIN,
+    /** Public site origin for e-mail links (no trailing slash). */
+    baseUrl: process.env.BASE_URL,
 
     sirvApiClientId: process.env.SIRV_API_CLIENT_ID,
     sirvApiClientSecret: process.env.SIRV_API_CLIENT_SECRET,

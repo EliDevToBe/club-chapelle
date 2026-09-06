@@ -1,6 +1,9 @@
 import { SubmitContactMessage } from "~~/application/contact/submit-contact-message.use-case";
 import { GetSiteSettings } from "~~/application/website/get-site-settings.use-case";
-import { createMailtrapTransactionalMailSender } from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
+import {
+  createMailtrapTransactionalMailSender,
+  MAILTRAP_TEMPLATES_IDS,
+} from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { ApiError } from "~~/server/utils/api-error";
 import { buildSiteSettingsSeed } from "~~/server/utils/site-settings-seed";
@@ -20,6 +23,7 @@ export default defineEventHandler(async (event) => {
   const inboxIdRaw = config.mailtrapInboxId;
   const fromEmail = config.mailtrapFromEmail;
   const fromName = config.mailtrapFromName;
+  const inviteOrigin = config.baseUrl;
 
   if (!apiKey) {
     throw ApiError(API_ERROR_REASON.mail.not_configured);
@@ -63,7 +67,8 @@ export default defineEventHandler(async (event) => {
     toEmail,
     fromEmail,
     fromName,
-    sandbox,
+    templateId: MAILTRAP_TEMPLATES_IDS.contact,
+    inviteOrigin,
   });
 
   const result = await submitContactMessageHandler.submit({

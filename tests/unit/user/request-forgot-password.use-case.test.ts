@@ -44,7 +44,6 @@ describe("RequestForgotPassword", () => {
     fromName: "Club",
     templateId: "tpl-uuid",
     passwordResetOrigin: "https://app.example.com",
-    sandbox: false,
   };
 
   it("does nothing when the user is unknown", async () => {
