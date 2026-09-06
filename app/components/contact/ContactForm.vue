@@ -81,7 +81,6 @@ import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapLink from "~/components/ui/ChapLink.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 import { useChapToast } from "~/composables/useChapToasts";
-import { useFeatureFlags } from "~/composables/useFeatureFlags";
 import { useZod } from "~/composables/useZod";
 import { contactFormSchema } from "~/schemas/contact-form.zod";
 
@@ -92,9 +91,8 @@ const ui = {
   privacyNotice: "w-full md:w-80 text-sm text-muted ",
 };
 
-const { addToastError, addToastSuccess, addToastInfo } = useChapToast();
+const { addToastError, addToastSuccess } = useChapToast();
 const { getZodIssues } = useZod();
-const { isEnabled } = useFeatureFlags();
 
 const form = reactive({
   name: "",
@@ -106,17 +104,6 @@ const form = reactive({
 const submitting = ref(false);
 
 const onSubmit = async () => {
-  if (!isEnabled("contact_form").value) {
-    addToastInfo({
-      title: "Site en construction",
-      description:
-        "Le formulaire de contact n'est pas encore disponible. Veuillez nous contacter directement par mail.",
-      duration: 5000,
-    });
-
-    return;
-  }
-
   const body = {
     name: form.name,
     email: form.email,
