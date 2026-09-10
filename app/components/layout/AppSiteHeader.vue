@@ -62,7 +62,7 @@ import { useAuthUser } from "~/composables/useAuthUser";
 import { useChapToast } from "~/composables/useChapToasts";
 
 const route = useRoute();
-const { navItems, drawerNavItems } = useSiteNavItems();
+const { navItems, drawerNavItems, accountNavItems } = useSiteNavItems();
 const { user, logout } = useAuthUser();
 const { addToastInfo } = useChapToast();
 
@@ -92,18 +92,24 @@ const signOut = async () => {
 };
 
 const profileMenuItems = computed<DropdownMenuItem[][]>(() => {
+  const primaryGroup: DropdownMenuItem[] = accountNavItems.value.map((item) => {
+    return {
+      label: item.label,
+      to: item.to,
+      class: item.class,
+      color: item.color,
+      icon: item.icon,
+    };
+  });
+
   return [
-    [
-      {
-        label: "Paramètres",
-        to: "/settings",
-      },
-    ],
+    primaryGroup,
     [
       {
         label: "Se déconnecter",
         onSelect: signOut,
         color: "error",
+        icon: "i-ph-sign-out-duotone",
       },
     ],
   ];
