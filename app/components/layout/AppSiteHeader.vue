@@ -129,7 +129,12 @@ const actionItems = computed<NavigationMenuItem[]>(() => {
   } else {
     items.push({
       label: "Se déconnecter",
+      ui: {
+        linkLeadingIcon:
+          "text-error-500 group-hover:text-error-400! focus:bg-error/10 rounded-lg group-active:text-error-700!",
+      },
       onSelect: signOut,
+      icon: "i-ph-sign-out-duotone",
       class:
         "cursor-pointer text-error-500 hover:text-error-400! hover:bg-error/10 focus:bg-error/10 rounded-lg active:text-error-700!",
     });
