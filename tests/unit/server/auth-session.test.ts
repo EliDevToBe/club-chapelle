@@ -2,7 +2,12 @@ import type { H3Event } from "h3";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 let resolveSessionFromEvent: (event: H3Event) => {
-  session: { id: string; name: string | null; roles: string[] } | null;
+  session: {
+    id: string;
+    name: string | null;
+    public_name: string | null;
+    roles: string[];
+  } | null;
 };
 
 beforeAll(async () => {
@@ -50,6 +55,7 @@ describe("/api/auth/session", () => {
       session: {
         id: "u1",
         name: "Sam",
+        public_name: null,
         roles: ["member", "manager"],
       },
     });

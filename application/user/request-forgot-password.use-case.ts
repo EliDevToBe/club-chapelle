@@ -27,7 +27,7 @@ export class RequestForgotPassword {
       return;
     }
 
-    const row = await this.users.findByEmailForPasswordReset(email);
+    const row = await this.users.findByEmailWithPasswordHash(email);
     if (!row) {
       console.info("RequestForgotPassword: User not found");
       return;

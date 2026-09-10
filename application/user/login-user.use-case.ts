@@ -58,6 +58,7 @@ export class LoginUser {
       session: {
         id: row.id,
         name: row.name,
+        public_name: null,
         roles: row.roles,
       },
     };

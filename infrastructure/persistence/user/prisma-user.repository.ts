@@ -2,6 +2,7 @@ import type {
   CreateUserInput,
   UpdateUserInput,
   UserAuthCredentials,
+  UserListFilter,
   UserPasswordResetLookup,
   UserRepository,
 } from "~~/application/ports/user-repository.port";
@@ -91,19 +92,6 @@ export class PrismaUserRepository implements UserRepository {
     return toCredentials(row);
   };
 
-  public findByEmailForPasswordReset = async (
-    email: string,
-  ): Promise<UserPasswordResetLookup | null> => {
-    const row = await prismaClient.auth_user.findFirst({
-      where: { email: { equals: email.trim(), mode: "insensitive" } },
-      include: rolesInclude,
-    });
-    if (!row) {
-      return null;
-    }
-    return toPasswordResetLookup(row);
-  };
-
   public findForPasswordResetById = async (
     id: string,
   ): Promise<UserPasswordResetLookup | null> => {
@@ -119,6 +107,39 @@ export class PrismaUserRepository implements UserRepository {
 
   public findMany = async (): Promise<User[]> => {
     const rows = await prismaClient.auth_user.findMany({
+      orderBy: { created_at: "desc" },
+      include: rolesInclude,
+    });
+    return rows.map(toDomain);
+  };
+
+  public findManyForListing = async (
+    filter: UserListFilter,
+  ): Promise<User[]> => {
+    const where: Prisma.auth_userWhereInput = {};
+
+    if (filter.roles !== undefined && filter.roles.length > 0) {
+      where.roles = {
+        some: {
+          role: { in: [...filter.roles] },
+        },
+      };
+    }
+
+    if (filter.authenticated !== undefined) {
+      where.authenticated = filter.authenticated;
+    }
+
+    const trimmedSearch = filter.search?.trim();
+    if (trimmedSearch) {
+      where.OR = [
+        { email: { contains: trimmedSearch, mode: "insensitive" } },
+        { name: { contains: trimmedSearch, mode: "insensitive" } },
+      ];
+    }
+
+    const rows = await prismaClient.auth_user.findMany({
+      where,
       orderBy: { created_at: "desc" },
       include: rolesInclude,
     });

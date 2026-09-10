@@ -26,9 +26,9 @@ describe("SetUserRole", () => {
       create: vi.fn(),
       findById: vi.fn(),
       findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn(),
       findForPasswordResetById: vi.fn(),
       findMany: vi.fn(),
+      findManyForListing: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
     };
@@ -58,7 +58,7 @@ describe("SetUserRole", () => {
     expect(users.update).toHaveBeenCalledWith("u-target", {
       roles: ["manager"],
     });
-    expect(users.findMany).not.toHaveBeenCalled();
+    expect(users.findManyForListing).not.toHaveBeenCalled();
   });
 
   it("rejects self-change", async () => {
@@ -138,7 +138,7 @@ describe("SetUserRole", () => {
     expect(users.update).toHaveBeenCalledWith("u-member", {
       roles: ["admin"],
     });
-    expect(users.findMany).not.toHaveBeenCalled();
+    expect(users.findManyForListing).not.toHaveBeenCalled();
   });
 
   it("rejects an Admin actor demoting another Admin", async () => {
@@ -173,7 +173,7 @@ describe("SetUserRole", () => {
       roles: ["member"],
     });
     users.findById = vi.fn().mockResolvedValue(target);
-    users.findMany = vi
+    users.findManyForListing = vi
       .fn()
       .mockResolvedValue([
         target,
@@ -190,6 +190,7 @@ describe("SetUserRole", () => {
     });
 
     expect(result).toEqual({ ok: true, user: updated });
+    expect(users.findManyForListing).toHaveBeenCalledWith({ roles: ["admin"] });
     expect(users.update).toHaveBeenCalledWith("u-other-admin", {
       roles: ["member"],
     });
@@ -201,7 +202,7 @@ describe("SetUserRole", () => {
       roles: ["admin"],
     });
     users.findById = vi.fn().mockResolvedValue(target);
-    users.findMany = vi.fn().mockResolvedValue([target]);
+    users.findManyForListing = vi.fn().mockResolvedValue([target]);
 
     const handler = new SetUserRole(users);
     const result = await handler.setRole({
@@ -215,6 +216,7 @@ describe("SetUserRole", () => {
       ok: false,
       reason: API_ERROR_REASON.user_role.last_admin,
     });
+    expect(users.findManyForListing).toHaveBeenCalledWith({ roles: ["admin"] });
     expect(users.update).not.toHaveBeenCalled();
   });
 

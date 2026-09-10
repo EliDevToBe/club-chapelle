@@ -67,6 +67,7 @@ export class AcceptInvitation {
       session: {
         id: user.id,
         name: user.name,
+        public_name: null,
         roles: user.roles,
       },
     };

@@ -58,11 +58,8 @@ export class SetUserRole {
     }
 
     if (isDemotingAdmin) {
-      const allUsers = await this.users.findMany();
-      const adminCount = allUsers.filter((user) => {
-        return user.roles.includes("admin");
-      }).length;
-      if (adminCount <= 1) {
+      const admins = await this.users.findManyForListing({ roles: ["admin"] });
+      if (admins.length <= 1) {
         return { ok: false, reason: API_ERROR_REASON.user_role.last_admin };
       }
     }

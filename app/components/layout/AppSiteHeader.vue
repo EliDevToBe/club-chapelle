@@ -26,23 +26,20 @@
           additional-class="min-h-0 h-fit!"
         />
 
-        <ChapButton
+        <UDropdownMenu
           v-else
-          @click="
-            async () => {
-              await logout();
-              navigateTo('/');
-              addToastInfo({
-                title: 'Vous avez été déconnecté',
-              });
-            }
-          "
-          label="Se déconnecter"
-          size="sm"
-          variant="ghost"
-          color="error"
-          additional-class="min-h-0 h-fit!"
-        />
+          :items="profileMenuItems"
+          :content="{ align: 'end' }"
+        >
+          <UButton
+            :label="displayName"
+            variant="ghost"
+            color="secondary"
+            size="sm"
+            trailing-icon="i-ph-caret-down"
+            class="min-h-0 h-fit!"
+          />
+        </UDropdownMenu>
       </div>
     </template>
 
@@ -58,18 +55,59 @@
 </template>
 
 <script setup lang="ts">
-import type { NavigationMenuItem } from "@nuxt/ui";
+import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 import Title from "~/components/title/Title.vue";
 import ChapButton from "~/components/ui/ChapButton.vue";
 import { useAuthUser } from "~/composables/useAuthUser";
 import { useChapToast } from "~/composables/useChapToasts";
 
 const route = useRoute();
-const { navItems } = useSiteNavItems();
+const { navItems, drawerNavItems } = useSiteNavItems();
 const { user, logout } = useAuthUser();
 const { addToastInfo } = useChapToast();
 
 const isMenuOpen = ref(false);
+
+const displayName = computed(() => {
+  const accountName = user.value?.name?.trim();
+  if (accountName) {
+    return accountName;
+  }
+
+  const publicName = user.value?.public_name?.trim();
+  if (publicName) {
+    return publicName;
+  }
+
+  return "Mon compte";
+});
+
+const signOut = async () => {
+  await logout();
+  isMenuOpen.value = false;
+  navigateTo("/");
+  addToastInfo({
+    title: "Vous avez été déconnecté",
+  });
+};
+
+const profileMenuItems = computed<DropdownMenuItem[][]>(() => {
+  return [
+    [
+      {
+        label: "Paramètres",
+        to: "/settings",
+      },
+    ],
+    [
+      {
+        label: "Se déconnecter",
+        onSelect: signOut,
+        color: "error",
+      },
+    ],
+  ];
+});
 
 const actionItems = computed<NavigationMenuItem[]>(() => {
   const items: NavigationMenuItem[] = [];
@@ -85,14 +123,7 @@ const actionItems = computed<NavigationMenuItem[]>(() => {
   } else {
     items.push({
       label: "Se déconnecter",
-      onSelect: async () => {
-        await logout();
-        isMenuOpen.value = false;
-        navigateTo("/");
-        addToastInfo({
-          title: "Vous avez été déconnecté",
-        });
-      },
+      onSelect: signOut,
       class:
         "cursor-pointer text-error-500 hover:text-error-400! hover:bg-error/10 focus:bg-error/10 rounded-lg active:text-error-700!",
     });
@@ -103,7 +134,7 @@ const actionItems = computed<NavigationMenuItem[]>(() => {
 
 /** Grouped lists render a separator between groups in vertical `UNavigationMenu` (mobile drawer). */
 const drawerMenuItems = computed<NavigationMenuItem[][]>(() => [
-  ...navItems.value,
+  ...drawerNavItems.value,
   actionItems.value,
 ]);
 </script>

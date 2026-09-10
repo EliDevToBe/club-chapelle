@@ -65,7 +65,32 @@ export const useSiteNavItems = () => {
     return finalItems;
   });
 
+  const drawerNavItems = computed<NavigationMenuItem[][]>(() => {
+    const items = navItems.value.map((group) => {
+      return [...group];
+    });
+
+    if (!user.value) {
+      return items;
+    }
+
+    const settingsItem: NavigationMenuItem = {
+      label: "Paramètres",
+      to: "/settings",
+      active: route.path.startsWith("/settings"),
+    };
+
+    const lastGroup = items[items.length - 1];
+    if (isAdmin.value && lastGroup) {
+      lastGroup.push(settingsItem);
+      return items;
+    }
+
+    return [...items, [settingsItem]];
+  });
+
   return {
     navItems,
+    drawerNavItems,
   };
 };

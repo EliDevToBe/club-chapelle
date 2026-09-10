@@ -27,7 +27,13 @@ describe("SendInvitationEmail", () => {
   };
 
   beforeEach(() => {
-    tokens = { issueToken: vi.fn() };
+    tokens = {
+      issueToken: vi.fn(),
+      findUnusedByUserAndType: vi.fn(),
+      updateTokenValue: vi.fn(),
+      markUsed: vi.fn(),
+      revokeUnusedByUserAndType: vi.fn(),
+    };
     jwt = {
       signAccess: vi.fn(),
       signRefresh: vi.fn(),

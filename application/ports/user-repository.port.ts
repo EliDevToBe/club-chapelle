@@ -27,6 +27,13 @@ export type UpdateUserInput = {
   password?: string | null;
 };
 
+/** Optional filters for staff user listing (roles, auth state, email/name search). */
+export type UserListFilter = {
+  roles?: readonly RoleEnum[];
+  authenticated?: boolean;
+  search?: string;
+};
+
 /** Row for password-reset eligibility (same checks as login for “can sign in with password”). */
 export type UserPasswordResetLookup = {
   id: UserId;
@@ -42,13 +49,11 @@ export interface UserRepository {
   findByEmailWithPasswordHash: (
     email: string,
   ) => Promise<UserAuthCredentials | null>;
-  findByEmailForPasswordReset: (
-    email: string,
-  ) => Promise<UserPasswordResetLookup | null>;
   findForPasswordResetById: (
     id: UserId,
   ) => Promise<UserPasswordResetLookup | null>;
   findMany: () => Promise<User[]>;
+  findManyForListing: (filter: UserListFilter) => Promise<User[]>;
   update: (id: UserId, input: UpdateUserInput) => Promise<User | null>;
   delete: (id: UserId) => Promise<boolean>;
 }

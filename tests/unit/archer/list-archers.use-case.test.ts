@@ -20,6 +20,7 @@ describe("ListArchers", () => {
       create: vi.fn(),
       findById: vi.fn(),
       findByPublicName: vi.fn(),
+      findLinkedByAuthUserId: vi.fn(),
       findMany: vi.fn(),
       findPage: vi.fn(),
       update: vi.fn(),

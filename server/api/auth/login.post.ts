@@ -1,3 +1,4 @@
+import { enrichSessionPublicName } from "~~/application/user/enrich-session-public-name";
 import { LoginUser } from "~~/application/user/login-user.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
@@ -19,7 +20,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<LoginBody>(event);
-  const { userRepository } = getRepositories();
+  const { userRepository, archerRepository } = getRepositories();
   const authServices = createAuthServices({
     accessSecret,
     refreshSecret,
@@ -39,5 +40,9 @@ export default defineEventHandler(async (event) => {
   }
 
   setAuthSessionCookies(event, result.accessToken, result.refreshToken);
-  return { ok: true, session: result.session };
+  const session = await enrichSessionPublicName(
+    result.session,
+    archerRepository,
+  );
+  return { ok: true, session };
 });

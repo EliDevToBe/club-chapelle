@@ -56,7 +56,7 @@ export class InviteMember {
       return { ok: false, reason: API_ERROR_REASON.common.invalid_request };
     }
 
-    const existing = await this.users.findByEmailForPasswordReset(email);
+    const existing = await this.users.findByEmailWithPasswordHash(email);
     if (existing?.authenticated) {
       return {
         ok: false,
@@ -112,7 +112,7 @@ export class InviteMember {
     email: string,
     allowResent: boolean,
   ): Promise<InviteMemberResult> => {
-    const raced = await this.users.findByEmailForPasswordReset(email);
+    const raced = await this.users.findByEmailWithPasswordHash(email);
     if (raced?.authenticated) {
       return {
         ok: false,
