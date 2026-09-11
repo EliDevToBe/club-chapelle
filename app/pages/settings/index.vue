@@ -1,215 +1,296 @@
 <template>
   <ContentPageWrapper>
-    <ChapSection is-main-section title="Paramètres">
-      <div class="flex flex-col gap-8 max-w-xl">
-        <p>
-          Gérez le nom d’affichage de votre compte, votre e-mail et votre mot de
-          passe.
-        </p>
+    <ChapSection
+      is-main-section
+      title="Paramètres"
+      description="Gère le nom d’affichage de ton compte, ton email et ton mot de passe."
+    >
+      <div :class="ui.page">
         <p v-if="loadError" class="text-error text-sm">
           {{ loadError }}
         </p>
 
-        <UForm :state="nameForm" @submit="onSaveName">
-          <ChapSection
-            title="Nom du compte"
-            description="Ce nom sert à vous reconnaître dans l’espace connecté. Il n’est pas le nom public affiché sur les compétitions."
-          >
-            <UFormField label="Nom" name="name" required>
-              <USkeleton v-if="isLoadingProfile" class="h-9 w-full" />
-              <UInput
-                v-else
-                v-model="nameForm.name"
-                :maxlength="OWN_PROFILE_NAME_MAX_LENGTH"
-                :disabled="isSavingName"
-              />
-            </UFormField>
-            <UButton
-              type="submit"
-              label="Enregistrer le nom"
-              size="sm"
-              :loading="isSavingName"
-              :disabled="isSavingName || isLoadingProfile"
-              class="mt-3"
-            />
-          </ChapSection>
-        </UForm>
+        <SettingsPendingEmailBanner
+          v-if="isLoadingProfile && pendingEmail"
+          :pending-email="pendingEmail"
+        />
 
-        <ChapSection
-          title="E-mail"
-          description="Un code à 6 chiffres sera envoyé à la nouvelle adresse. Votre e-mail actuel ne change qu’après validation."
-        >
-          <p class="text-sm text-muted">
-            Adresse actuelle :
-            <USkeleton
-              v-if="isLoadingProfile"
-              class="inline-block h-4 w-48 align-middle ml-1"
-            />
-            <span v-else class="text-highlighted">{{ currentEmail }}</span>
-          </p>
+        <div :class="ui.grid">
+          <SettingsSidebar />
 
-          <template v-if="!isLoadingProfile && pendingEmail">
-            <p class="text-sm mt-3">
-              Code envoyé à
-              <span class="text-highlighted">{{ pendingEmail }}</span>
-            </p>
-            <UForm :state="otpForm" @submit="onConfirmEmailChange">
-              <UFormField label="Code à 6 chiffres" name="otp" required>
-                <UInput
-                  v-model="otpForm.otp"
-                  inputmode="numeric"
-                  autocomplete="one-time-code"
-                  :disabled="isSavingEmail"
-                />
-              </UFormField>
-              <div class="flex flex-wrap gap-2 mt-3">
-                <UButton
-                  type="submit"
-                  label="Valider le code"
-                  size="sm"
-                  :loading="isSavingEmail"
-                  :disabled="isSavingEmail"
-                />
-                <UButton
-                  label="Renvoyer"
-                  size="sm"
-                  variant="outline"
-                  color="secondary"
-                  :disabled="isSavingEmail"
-                  @click="onResendEmailChange"
-                />
-                <UButton
-                  label="Annuler"
-                  size="sm"
-                  variant="ghost"
-                  color="neutral"
-                  :disabled="isSavingEmail"
-                  @click="onCancelEmailChange"
-                />
-              </div>
-            </UForm>
-          </template>
-
-          <template v-else>
-            <UForm :state="emailForm" @submit="onRequestEmailChange">
-              <UFormField
-                label="Nouvel e-mail"
-                name="email"
-                required
-                class="mt-3"
-              >
-                <UInput
-                  v-model="emailForm.email"
-                  type="email"
-                  :disabled="isSavingEmail || isLoadingProfile"
-                />
-              </UFormField>
-              <UFormField
-                label="Mot de passe actuel"
-                name="current_password"
-                required
-                class="mt-3"
-              >
-                <UInput
-                  v-model="emailForm.current_password"
-                  type="password"
-                  :disabled="isSavingEmail || isLoadingProfile"
-                />
-              </UFormField>
-              <UButton
-                type="submit"
-                label="Envoyer le code"
-                size="sm"
-                :loading="isSavingEmail"
-                :disabled="isSavingEmail || isLoadingProfile"
-                class="mt-3"
-              />
-            </UForm>
-          </template>
-        </ChapSection>
-
-        <UForm :state="passwordForm" @submit="onChangePassword">
-          <ChapSection title="Mot de passe">
-            <UFormField
-              label="Mot de passe actuel"
-              name="current_password"
-              required
+          <div :class="ui.sections">
+            <section
+              :id="SETTINGS_SECTION_IDS.profile"
+              :class="ui.sectionAnchor"
             >
-              <UInput
-                v-model="passwordForm.current_password"
-                type="password"
-                :disabled="isSavingPassword"
-              />
-            </UFormField>
-            <UFormField
-              label="Nouveau mot de passe"
-              name="new_password"
-              required
-              class="mt-3"
-            >
-              <UInput
-                v-model="passwordForm.new_password"
-                type="password"
-                :disabled="isSavingPassword"
-              />
-            </UFormField>
-            <UFormField
-              label="Confirmer le nouveau mot de passe"
-              name="confirm_password"
-              required
-              class="mt-3"
-            >
-              <UInput
-                v-model="passwordForm.confirm_password"
-                type="password"
-                :disabled="isSavingPassword"
-              />
-            </UFormField>
-            <UButton
-              type="submit"
-              label="Mettre à jour le mot de passe"
-              size="sm"
-              :loading="isSavingPassword"
-              :disabled="isSavingPassword"
-              class="mt-3"
-            />
-          </ChapSection>
-        </UForm>
+              <UCard>
+                <template #header>
+                  <h2 :class="ui.cardTitle">Profil</h2>
+                  <p :class="ui.cardDescription">Ce nom n’est pas public.</p>
+                </template>
 
-        <ChapSection
-          title="Suppression du compte"
-          description="Votre compte sera supprimé. Vos données seront effacées et vous ne pourrez plus vous connecter."
-        >
-          <UButton
-            label="Supprimer mon compte"
-            color="error"
-            variant="outline"
-            size="sm"
-            @click="
-              () => {
-                isRevokeOpen = true;
-              }
-            "
-          />
-        </ChapSection>
+                <UForm
+                  class="flex flex-col gap-4"
+                  :state="nameForm"
+                  @submit="onSaveName"
+                >
+                  <UFormField label="Nom" name="name" required>
+                    <USkeleton
+                      v-if="isLoadingProfile"
+                      :class="[ui.formInput, 'h-9']"
+                    />
+                    <ChapInput
+                      v-else
+                      v-model="nameForm.name"
+                      :maxlength="OWN_PROFILE_NAME_MAX_LENGTH"
+                      :disabled="isSavingName"
+                      :class="ui.formInput"
+                    />
+                  </UFormField>
+                  <div :class="ui.formActions">
+                    <UButton
+                      type="submit"
+                      label="Sauvegarder"
+                      size="sm"
+                      icon="i-ph-floppy-disk-duotone"
+                      :loading="isSavingName"
+                      :disabled="isSavingName || isLoadingProfile"
+                    />
+                  </div>
+                </UForm>
+              </UCard>
+            </section>
+
+            <section :id="SETTINGS_SECTION_IDS.email" :class="ui.sectionAnchor">
+              <UCard>
+                <template #header>
+                  <h2 :class="ui.cardTitle">Email</h2>
+                  <p :class="ui.cardDescription">
+                    Un code à 6 chiffres sera envoyé à la nouvelle adresse. Ton
+                    email actuel ne change qu’après validation.
+                  </p>
+                </template>
+
+                <p class="text-sm text-muted mb-2">
+                  Adresse actuelle :
+                  <USkeleton
+                    v-if="isLoadingProfile"
+                    class="inline-block h-4 w-48 align-middle ml-1"
+                  />
+                  <span v-else class="text-highlighted">{{
+                    currentEmail
+                  }}</span>
+                </p>
+
+                <template v-if="!isLoadingProfile && pendingEmail">
+                  <p class="text-sm mt-3">
+                    Code envoyé à
+                    <span class="text-highlighted">{{ pendingEmail }}</span>
+                  </p>
+                  <UForm
+                    class="flex flex-col gap-4"
+                    :state="otpForm"
+                    @submit="onConfirmEmailChange"
+                  >
+                    <UFormField
+                      label="Code à 6 chiffres"
+                      name="otp"
+                      required
+                      class="mt-3"
+                    >
+                      <UInput
+                        v-model="otpForm.otp"
+                        inputmode="numeric"
+                        autocomplete="one-time-code"
+                        :disabled="isSavingEmail"
+                        :class="ui.formInput"
+                      />
+                    </UFormField>
+                    <div :class="ui.formActionsWrap">
+                      <UButton
+                        type="submit"
+                        label="Valider le code"
+                        size="sm"
+                        :loading="isSavingEmail"
+                        :disabled="isSavingEmail"
+                      />
+                      <UButton
+                        label="Renvoyer"
+                        size="sm"
+                        variant="outline"
+                        color="secondary"
+                        :disabled="isSavingEmail"
+                        @click="onResendEmailChange"
+                      />
+                      <UButton
+                        label="Annuler"
+                        size="sm"
+                        variant="ghost"
+                        color="neutral"
+                        :disabled="isSavingEmail"
+                        @click="onCancelEmailChange"
+                      />
+                    </div>
+                  </UForm>
+                </template>
+
+                <template v-else>
+                  <UForm
+                    class="flex flex-col gap-4"
+                    :state="emailForm"
+                    @submit="onRequestEmailChange"
+                  >
+                    <UFormField label="Nouvel email" name="email" required>
+                      <UInput
+                        v-model="emailForm.email"
+                        type="email"
+                        :disabled="isSavingEmail || isLoadingProfile"
+                        :class="ui.formInput"
+                      />
+                    </UFormField>
+                    <UFormField
+                      label="Mot de passe actuel"
+                      name="current_password"
+                      required
+                    >
+                      <UInput
+                        v-model="emailForm.current_password"
+                        type="password"
+                        :disabled="isSavingEmail || isLoadingProfile"
+                        :class="ui.formInput"
+                      />
+                    </UFormField>
+                    <div :class="ui.formActions">
+                      <UButton
+                        type="submit"
+                        label="Envoyer le code"
+                        size="sm"
+                        icon="i-ph-telegram-logo-duotone"
+                        :loading="isSavingEmail"
+                        :disabled="isSavingEmail || isLoadingProfile"
+                      />
+                    </div>
+                  </UForm>
+                </template>
+              </UCard>
+            </section>
+
+            <section
+              :id="SETTINGS_SECTION_IDS.password"
+              :class="ui.sectionAnchor"
+            >
+              <UCard>
+                <template #header>
+                  <h2 :class="ui.cardTitle">Mot de passe</h2>
+                </template>
+
+                <UForm
+                  class="flex flex-col gap-4"
+                  :state="passwordForm"
+                  @submit="onChangePassword"
+                >
+                  <UFormField
+                    label="Mot de passe actuel"
+                    name="current_password"
+                    required
+                  >
+                    <UInput
+                      v-model="passwordForm.current_password"
+                      type="password"
+                      :disabled="isSavingPassword"
+                      :class="ui.formInput"
+                    />
+                  </UFormField>
+                  <UFormField
+                    label="Nouveau mot de passe"
+                    name="new_password"
+                    required
+                  >
+                    <UInput
+                      v-model="passwordForm.new_password"
+                      type="password"
+                      :disabled="isSavingPassword"
+                      :class="ui.formInput"
+                    />
+                  </UFormField>
+                  <UFormField
+                    label="Confirmer le nouveau mot de passe"
+                    name="confirm_password"
+                    required
+                  >
+                    <UInput
+                      v-model="passwordForm.confirm_password"
+                      type="password"
+                      :disabled="isSavingPassword"
+                      :class="ui.formInput"
+                    />
+                  </UFormField>
+                  <div :class="ui.formActions">
+                    <UButton
+                      type="submit"
+                      label="Mettre à jour le mot de passe"
+                      size="sm"
+                      icon="i-ph-key-duotone"
+                      :loading="isSavingPassword"
+                      :disabled="isSavingPassword"
+                    />
+                  </div>
+                </UForm>
+              </UCard>
+            </section>
+
+            <section
+              :id="SETTINGS_SECTION_IDS.account"
+              :class="ui.sectionAnchor"
+            >
+              <UCard :ui="{ root: ui.dangerCard }">
+                <template #header>
+                  <h2 :class="ui.dangerTitle">Compte</h2>
+                  <p :class="ui.cardDescription">
+                    Ton compte sera supprimé. Tes données seront effacées et tu
+                    ne pourras plus te connecter. Une ré-invitation sera
+                    nécessaire pour te reconnecter.
+                  </p>
+                </template>
+
+                <div :class="ui.formActions">
+                  <UButton
+                    label="Supprimer mon compte"
+                    color="error"
+                    variant="outline"
+                    size="sm"
+                    @click="
+                      () => {
+                        isRevokeOpen = true;
+                      }
+                    "
+                  />
+                </div>
+              </UCard>
+            </section>
+          </div>
+        </div>
       </div>
     </ChapSection>
 
     <UModal v-model:open="isRevokeOpen" title="Supprimer le compte ?">
       <template #body>
         <p class="text-sm text-muted mb-3">
-          Saisissez votre mot de passe pour confirmer. Vous ne pourrez plus vous
-          connecter tant qu’un administrateur ne vous réinvitera pas.
+          Saisis ton mot de passe pour confirmer.
         </p>
         <UFormField label="Mot de passe" name="revoke_password" required>
-          <UInput v-model="revokePassword" type="password" />
+          <UInput
+            v-model="revokePassword"
+            type="password"
+            :class="ui.formInput"
+          />
         </UFormField>
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-2">
           <UButton
             label="Annuler"
-            variant="outline"
+            variant="solid"
             color="secondary"
             @click="
               () => {
@@ -218,8 +299,9 @@
             "
           />
           <UButton
-            label="Révoquer"
+            label="Oui, supprimer mon compte"
             color="error"
+            variant="subtle"
             :loading="isRevoking"
             :disabled="isRevoking"
             @click="onRevokeAccess"
@@ -232,10 +314,14 @@
 
 <script setup lang="ts">
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
+import SettingsPendingEmailBanner from "~/components/settings/SettingsPendingEmailBanner.vue";
+import SettingsSidebar from "~/components/settings/SettingsSidebar.vue";
+import ChapInput from "~/components/ui/ChapInput.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 import { useAuthUser } from "~/composables/useAuthUser";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useOwnProfile } from "~/composables/useOwnProfile";
+import { SETTINGS_SECTION_IDS } from "~/constants/settings-sections";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import type { OwnProfileDto } from "~~/shared/user/own-profile.dto";
 import {
@@ -254,6 +340,20 @@ definePageMeta({
 useHead({
   title: "Paramètres - Arc18",
 });
+
+const ui = {
+  page: "mx-auto w-full max-w-3xl md:max-w-4xl flex flex-col gap-6 mt-8",
+  grid: "md:grid md:grid-cols-[minmax(11rem,14rem)_1fr] md:gap-10 md:items-start",
+  sections: "flex flex-col gap-6 min-w-0",
+  sectionAnchor: "scroll-mt-24",
+  cardTitle: "text-lg font-semibold text-highlighted",
+  cardDescription: "text-sm text-muted mt-1",
+  dangerCard: "border border-error/40 bg-error/5 rounded-lg",
+  dangerTitle: "text-lg font-semibold text-error",
+  formInput: "w-full",
+  formActions: "flex justify-end",
+  formActionsWrap: "flex flex-wrap justify-end gap-2 mt-4",
+};
 
 const { setUser, clearSession, logout, hydrateIfNeeded } = useAuthUser();
 const { addToastError, addToastSuccess, addToastInfo } = useChapToast();
@@ -308,10 +408,10 @@ const describeProfileError = (error: unknown): string => {
     return "Mot de passe incorrect.";
   }
   if (reason === API_ERROR_REASON.auth.email_unchanged) {
-    return "Cette adresse est déjà la vôtre.";
+    return "Cette adresse email est déjà associée à ton compte.";
   }
   if (reason === API_ERROR_REASON.invitation.email_already_linked) {
-    return "Cette adresse e-mail est déjà utilisée.";
+    return "Cette adresse email est déjà utilisée.";
   }
   if (reason === API_ERROR_REASON.auth.otp_invalid) {
     return "Code invalide ou expiré. Demandez un nouveau code.";
@@ -378,7 +478,7 @@ const onRequestEmailChange = async () => {
     });
   } catch {
     addToastError({
-      description: "Vérifiez l’e-mail et le mot de passe.",
+      description: "Vérifiez l’email et le mot de passe.",
     });
     return;
   }
@@ -416,7 +516,7 @@ const onConfirmEmailChange = async () => {
     await confirmEmailChange(otpForm.otp);
     otpForm.otp = "";
     applyProfile(await fetchProfile());
-    addToastSuccess({ title: "E-mail mis à jour" });
+    addToastSuccess({ title: "Email mis à jour" });
   } catch (error) {
     addToastError({ description: describeProfileError(error) });
   } finally {
@@ -445,7 +545,7 @@ const onCancelEmailChange = async () => {
     await cancelEmailChange();
     otpForm.otp = "";
     applyProfile(await fetchProfile());
-    addToastInfo({ title: "Changement d’e-mail annulé" });
+    addToastInfo({ title: "Changement d’email annulé" });
   } catch (error) {
     addToastError({ description: describeProfileError(error) });
   } finally {
@@ -505,8 +605,8 @@ const onRevokeAccess = async () => {
     await logout();
     clearSession();
     addToastInfo({
-      title: "Accès révoqué",
-      description: "Votre compte ne peut plus se connecter.",
+      title: "Compte supprimé",
+      description: "À bientôt !",
     });
     navigateTo("/");
   } catch (error) {
