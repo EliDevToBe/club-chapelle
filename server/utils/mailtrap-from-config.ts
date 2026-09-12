@@ -4,14 +4,14 @@ import { createMailtrapTransactionalMailSender } from "~~/infrastructure/mail/ma
 import { ApiError } from "~~/server/utils/api-error";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
-export const createMailtrapFromEvent = (
-  event: H3Event,
-): {
+export type MailtrapFromEvent = {
   mail: TransactionalMailPort;
   fromEmail: string;
   fromName: string;
   siteOrigin: string;
-} => {
+};
+
+const buildMailtrapFromEvent = (event: H3Event): MailtrapFromEvent => {
   const config = useRuntimeConfig(event);
   const {
     mailtrapApiKey: apiKey,
@@ -47,4 +47,9 @@ export const createMailtrapFromEvent = (
     fromName,
     siteOrigin: (config.baseUrl as string) || "",
   };
+};
+
+/** Mailtrap sender + from/site metadata; throws when mail is not configured. */
+export const createMailtrapFromEvent = (event: H3Event): MailtrapFromEvent => {
+  return buildMailtrapFromEvent(event);
 };

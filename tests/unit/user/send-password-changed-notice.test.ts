@@ -79,41 +79,25 @@ describe("SendPasswordChangedNotice", () => {
     );
   });
 
-  it("still sends with empty links when the site origin is invalid", async () => {
+  it("rejects when the site origin is invalid", async () => {
     const notice = new SendPasswordChangedNotice(mail, jwt, tokens, {
       ...options,
       siteOrigin: "not-a-valid-origin",
     });
-    await notice.send({ userId: "u1", email: "a@b.c", name: "Alex" });
 
-    expect(mail.sendTemplateEmail).toHaveBeenCalledWith(
-      expect.objectContaining({
-        variables: {
-          user_name: "Alex",
-          user_email: "a@b.c",
-          recovery_link: "",
-          privacy_policy_url: "",
-        },
-      }),
-    );
+    await expect(
+      notice.send({ userId: "u1", email: "a@b.c", name: "Alex" }),
+    ).rejects.toThrow();
+    expect(tokens.issueToken).not.toHaveBeenCalled();
+    expect(mail.sendTemplateEmail).not.toHaveBeenCalled();
   });
 
-  it("swallows mail delivery failures", async () => {
+  it("propagates mail delivery failures", async () => {
     mail.sendTemplateEmail = vi.fn().mockRejectedValue(new Error("smtp"));
     const notice = new SendPasswordChangedNotice(mail, jwt, tokens, options);
 
     await expect(
       notice.send({ userId: "u1", email: "a@b.c", name: "Alex" }),
-    ).resolves.toBeUndefined();
-  });
-
-  it("skips silently when mail is not configured", async () => {
-    const notice = new SendPasswordChangedNotice(null, jwt, tokens, options);
-
-    await expect(
-      notice.send({ userId: "u1", email: "a@b.c", name: "Alex" }),
-    ).resolves.toBeUndefined();
-    expect(mail.sendTemplateEmail).not.toHaveBeenCalled();
-    expect(tokens.issueToken).not.toHaveBeenCalled();
+    ).rejects.toThrow("smtp");
   });
 });

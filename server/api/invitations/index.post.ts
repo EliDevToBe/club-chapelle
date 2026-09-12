@@ -1,12 +1,10 @@
 import { InviteMember } from "~~/application/user/invite-member.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
-import {
-  createMailtrapTransactionalMailSender,
-  MAILTRAP_TEMPLATES_IDS,
-} from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
+import { MAILTRAP_TEMPLATES_IDS } from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { toUserDto } from "~~/server/mappers/user.mapper";
 import { ApiError } from "~~/server/utils/api-error";
+import { createMailtrapFromEvent } from "~~/server/utils/mailtrap-from-config";
 import { requireRoles } from "~~/server/utils/rbac";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import type { RoleEnum } from "~~/shared/db-enums";
@@ -22,35 +20,11 @@ export default defineEventHandler(async (event) => {
   requireRoles(event, allowedRoles);
 
   const config = useRuntimeConfig(event);
-  const {
-    mailtrapApiKey: apiKey,
-    mailtrapInboxId: inboxIdRaw,
-    mailtrapFromEmail: fromEmail,
-    mailtrapFromName: fromName,
-    authJwtAccessSecret: accessSecret,
-    authJwtRefreshSecret: refreshSecret,
-  } = config;
-  const sandbox = Boolean(config.mailtrapUseSandbox);
-
-  if (!apiKey) {
-    throw ApiError(API_ERROR_REASON.mail.not_configured);
-  }
-
-  if (!fromEmail) {
-    throw ApiError(API_ERROR_REASON.mail.sender_not_configured);
-  }
+  const accessSecret = config.authJwtAccessSecret;
+  const refreshSecret = config.authJwtRefreshSecret;
 
   if (!accessSecret || !refreshSecret || accessSecret === refreshSecret) {
     throw ApiError(API_ERROR_REASON.auth.not_configured);
-  }
-
-  let testInboxId: number | undefined;
-  if (sandbox) {
-    const parsedInbox = Number.parseInt(inboxIdRaw, 10);
-    if (!Number.isFinite(parsedInbox) || parsedInbox <= 0) {
-      throw ApiError(API_ERROR_REASON.mail.sandbox_inbox_not_configured);
-    }
-    testInboxId = parsedInbox;
   }
 
   const body = await readBody<Record<string, unknown>>(event);
@@ -76,13 +50,7 @@ export default defineEventHandler(async (event) => {
     accessSecret,
     refreshSecret,
   });
-  const mailSender = createMailtrapTransactionalMailSender({
-    apiKey,
-    sandbox,
-    testInboxId,
-  });
-
-  const inviteOrigin = (config.baseUrl as string) || "";
+  const mailtrap = createMailtrapFromEvent(event);
 
   const inviteMemberHandler = new InviteMember(
     userRepository,
@@ -90,12 +58,12 @@ export default defineEventHandler(async (event) => {
     inviteMemberPersistence,
     tokenRepository,
     authServices.jwt,
-    mailSender,
+    mailtrap.mail,
     {
-      fromEmail,
-      fromName,
+      fromEmail: mailtrap.fromEmail,
+      fromName: mailtrap.fromName,
       templateId: MAILTRAP_TEMPLATES_IDS.invitation,
-      inviteOrigin,
+      inviteOrigin: mailtrap.siteOrigin,
     },
   );
 

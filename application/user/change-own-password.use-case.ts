@@ -1,8 +1,16 @@
+import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port";
 import type { PasswordHasher } from "~~/application/ports/password-hasher.port";
+import type { TokenRepository } from "~~/application/ports/token-repository.port";
+import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
-import type { SendPasswordChangedNotice } from "~~/application/user/send-password-changed-notice";
+import {
+  SendPasswordChangedNotice,
+  type SendPasswordChangedNoticeOptions,
+} from "~~/application/user/send-password-changed-notice";
 import type { UserId } from "~~/domain/user/user";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
+
+export type ChangeOwnPasswordOptions = SendPasswordChangedNoticeOptions;
 
 export type ChangeOwnPasswordResult =
   | { ok: true }
@@ -14,11 +22,23 @@ export type ChangeOwnPasswordResult =
     };
 
 export class ChangeOwnPassword {
+  private readonly sendPasswordChangedNotice: SendPasswordChangedNotice;
+
   constructor(
     private readonly users: UserRepository,
     private readonly passwords: PasswordHasher,
-    private readonly notice: SendPasswordChangedNotice,
-  ) {}
+    tokens: TokenRepository,
+    jwt: JwtAuthService,
+    mail: TransactionalMailPort,
+    options: ChangeOwnPasswordOptions,
+  ) {
+    this.sendPasswordChangedNotice = new SendPasswordChangedNotice(
+      mail,
+      jwt,
+      tokens,
+      options,
+    );
+  }
 
   public change = async (input: {
     userId: UserId;
@@ -47,11 +67,16 @@ export class ChangeOwnPassword {
       return { ok: false, reason: API_ERROR_REASON.common.not_found };
     }
 
-    await this.notice.send({
-      userId: input.userId,
-      email: row.email,
-      name: row.name,
-    });
+    try {
+      await this.sendPasswordChangedNotice.send({
+        userId: input.userId,
+        email: row.email,
+        name: row.name,
+      });
+    } catch (error) {
+      console.error("ChangeOwnPassword: Error sending password-changed notice");
+      console.error(error);
+    }
 
     return { ok: true };
   };

@@ -1,9 +1,10 @@
 import { ChangeOwnPassword } from "~~/application/user/change-own-password.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
+import { MAILTRAP_TEMPLATES_IDS } from "~~/infrastructure/mail/mailtrap-transactional-mail.sender";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { ApiError } from "~~/server/utils/api-error";
 import { setAuthSessionCookies } from "~~/server/utils/auth-cookies";
-import { createPasswordChangedNotice } from "~~/server/utils/password-changed-notice";
+import { createMailtrapFromEvent } from "~~/server/utils/mailtrap-from-config";
 import { requireAuthenticated } from "~~/server/utils/rbac";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import { parseOwnChangePasswordBody } from "~~/shared/user/own-profile.schema";
@@ -20,16 +21,25 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<Record<string, unknown>>(event);
   try {
     const parsed = parseOwnChangePasswordBody(body);
-    const { userRepository } = getRepositories();
+    const { userRepository, tokenRepository } = getRepositories();
     const authServices = createAuthServices({
       accessSecret,
       refreshSecret,
     });
+    const mailtrap = createMailtrapFromEvent(event);
 
     const changeOwnPasswordHandler = new ChangeOwnPassword(
       userRepository,
       authServices.password,
-      createPasswordChangedNotice(event),
+      tokenRepository,
+      authServices.jwt,
+      mailtrap.mail,
+      {
+        fromEmail: mailtrap.fromEmail,
+        fromName: mailtrap.fromName,
+        templateId: MAILTRAP_TEMPLATES_IDS.passwordChanged,
+        siteOrigin: mailtrap.siteOrigin,
+      },
     );
 
     const result = await changeOwnPasswordHandler.change({
