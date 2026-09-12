@@ -255,6 +255,7 @@ _Can ship after v2 or be pulled earlier if the club prioritises fee follow-up._
 
 | Date       | Change                                                                 |
 | ---------- | ---------------------------------------------------------------------- |
+| 2026-09-12 | **Password security:** `password_changed_at` invalidates older session JWTs on change/reset (current browser re-issued cookies); best-effort **password-changed warning e-mail** on settings change-password only. |
 | 2026-09-07 | **Member settings:** `/settings` self-service (name, e-mail OTP, password, own revoke); header dropdown / drawer Paramètres; spec matrix + last-Admin self-revoke exception. |
 | 2026-09-05 | **Shell archive:** roster `archived` status + `archived_only` filter; `POST /api/archers/:id/offboard`; hard delete requires archive; re-invite clears `offboarded_at`. |
 | 2026-09-05 | **v1.5 promote/demote:** Admin roster role picker + `PATCH /api/users/:id/role` (replace role set with Member or Manager); self-edit blocked; Admin-on-Admin info toast; developer-only Admin demote; last Admin protected. Inheritance checkbox left open. |
