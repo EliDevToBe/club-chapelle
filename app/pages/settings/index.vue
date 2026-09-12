@@ -155,12 +155,11 @@
                       name="current_password"
                       required
                     >
-                      <UInput
+                      <ChapPasswordInput
                         v-model="emailForm.current_password"
-                        type="password"
                         autocomplete="current-password"
                         :disabled="isSavingEmail || isLoadingProfile"
-                        :class="ui.formInput"
+                        :input-class="ui.formInput"
                       />
                     </UFormField>
                     <div :class="ui.formActions">
@@ -197,12 +196,11 @@
                     name="current_password"
                     required
                   >
-                    <UInput
+                    <ChapPasswordInput
                       v-model="passwordForm.current_password"
-                      type="password"
                       autocomplete="current-password"
                       :disabled="isSavingPassword"
-                      :class="ui.formInput"
+                      :input-class="ui.formInput"
                     />
                   </UFormField>
                   <UFormField
@@ -210,12 +208,11 @@
                     name="new_password"
                     required
                   >
-                    <UInput
+                    <ChapPasswordInput
                       v-model="passwordForm.new_password"
-                      type="password"
                       autocomplete="new-password"
                       :disabled="isSavingPassword"
-                      :class="ui.formInput"
+                      :input-class="ui.formInput"
                     />
                   </UFormField>
                   <UFormField
@@ -223,12 +220,11 @@
                     name="confirm_password"
                     required
                   >
-                    <UInput
+                    <ChapPasswordInput
                       v-model="passwordForm.confirm_password"
-                      type="password"
                       autocomplete="new-password"
                       :disabled="isSavingPassword"
-                      :class="ui.formInput"
+                      :input-class="ui.formInput"
                     />
                   </UFormField>
                   <div :class="ui.formActions">
@@ -285,11 +281,10 @@
           Saisis ton mot de passe pour confirmer.
         </p>
         <UFormField label="Mot de passe" name="revoke_password" required>
-          <UInput
+          <ChapPasswordInput
             v-model="revokePassword"
-            type="password"
             autocomplete="current-password"
-            :class="ui.formInput"
+            :input-class="ui.formInput"
           />
         </UFormField>
       </template>
@@ -324,6 +319,7 @@ import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import SettingsPendingEmailBanner from "~/components/settings/SettingsPendingEmailBanner.vue";
 import SettingsSidebar from "~/components/settings/SettingsSidebar.vue";
 import ChapInput from "~/components/ui/ChapInput.vue";
+import ChapPasswordInput from "~/components/ui/ChapPasswordInput.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 import { useAuthUser } from "~/composables/useAuthUser";
 import { useChapToast } from "~/composables/useChapToasts";
