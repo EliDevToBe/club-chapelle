@@ -13,7 +13,6 @@ beforeEach(() => {
   users = {
     create: vi.fn(),
     findById: vi.fn(),
-    findByEmailForPasswordReset: vi.fn(),
     findForPasswordResetById: vi.fn(),
     findByEmailWithPasswordHash: vi.fn().mockResolvedValue({
       id: "u1",
@@ -24,6 +23,7 @@ beforeEach(() => {
       passwordHash: "argon-hash",
     }),
     findMany: vi.fn(),
+    findManyForListing: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
   };
@@ -58,6 +58,7 @@ describe("LoginUser", () => {
       session: {
         id: "u1",
         name: null,
+        public_name: null,
         roles: ["member"],
       },
     });

@@ -16,6 +16,7 @@ export type ResolveAuthContextResult = {
 
 /**
  * Validates `club-access` then `club-refresh`; if refresh is used, returns a new access JWT string to set on the response.
+ * Session JWTs issued before `passwordChangedAt` are rejected (password change invalidates other devices).
  */
 export const resolveAuthContextFromCookies = async (options: {
   accessToken: string | undefined;
@@ -25,11 +26,21 @@ export const resolveAuthContextFromCookies = async (options: {
 }): Promise<ResolveAuthContextResult> => {
   const { accessToken, refreshToken, jwt, findUserById } = options;
 
+  const isIssuedBeforePasswordChange = (
+    user: User,
+    iatSeconds: number,
+  ): boolean => {
+    if (user.passwordChangedAt === null) {
+      return false;
+    }
+    return iatSeconds * 1000 < user.passwordChangedAt.getTime();
+  };
+
   if (accessToken) {
-    const accessSub = jwt.verifyAccess(accessToken);
-    if (accessSub) {
-      const user = await findUserById(accessSub);
-      if (user) {
+    const accessVerified = jwt.verifyAccess(accessToken);
+    if (accessVerified) {
+      const user = await findUserById(accessVerified.sub);
+      if (user && !isIssuedBeforePasswordChange(user, accessVerified.iat)) {
         return {
           authUser: {
             id: user.id,
@@ -44,10 +55,10 @@ export const resolveAuthContextFromCookies = async (options: {
   }
 
   if (refreshToken) {
-    const refreshSub = jwt.verifyRefresh(refreshToken);
-    if (refreshSub) {
-      const user = await findUserById(refreshSub);
-      if (user) {
+    const refreshVerified = jwt.verifyRefresh(refreshToken);
+    if (refreshVerified) {
+      const user = await findUserById(refreshVerified.sub);
+      if (user && !isIssuedBeforePasswordChange(user, refreshVerified.iat)) {
         return {
           authUser: {
             id: user.id,

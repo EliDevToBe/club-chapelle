@@ -11,6 +11,7 @@ const invitedUser: User = {
   name: "Alex Archer",
   roles: ["member"],
   authenticated: false,
+  passwordChangedAt: null,
   createdAt: new Date("2026-09-01"),
 };
 
@@ -23,11 +24,17 @@ describe("SendInvitationEmail", () => {
     fromEmail: "noreply@example.com",
     fromName: "Club",
     templateId: "template-mail-placeholder",
-    inviteOrigin: "https://app.example.com",
+    siteOrigin: "https://app.example.com",
   };
 
   beforeEach(() => {
-    tokens = { issueToken: vi.fn() };
+    tokens = {
+      issueToken: vi.fn(),
+      findUnusedByUserAndType: vi.fn(),
+      updateTokenValue: vi.fn(),
+      markUsed: vi.fn(),
+      revokeUnusedByUserAndType: vi.fn(),
+    };
     jwt = {
       signAccess: vi.fn(),
       signRefresh: vi.fn(),
@@ -105,10 +112,10 @@ describe("SendInvitationEmail", () => {
     expect(tokens.issueToken).toHaveBeenCalled();
   });
 
-  it("skips mail when the invite origin is invalid", async () => {
+  it("skips mail when the site origin is invalid", async () => {
     const handler = new SendInvitationEmail(tokens, jwt, mail, {
       ...options,
-      inviteOrigin: "not-a-valid-origin",
+      siteOrigin: "not-a-valid-origin",
     });
     const result = await handler.send({ user: invitedUser, resent: false });
 

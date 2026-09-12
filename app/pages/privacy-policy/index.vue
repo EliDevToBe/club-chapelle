@@ -77,11 +77,13 @@
         </p>
         <p>
           <span :class="ui.listObject">Durée : </span>
-          <span
-            >tant que l’accès est actif. Après révocation ou période
-            d'inactivité (1 an), effacement des données. Une ré-invitation est
-            nécessaire pour accéder à nouveau à l'espace membre.</span
-          >
+          <span>
+            tant que l’accès est actif. Vous pouvez rectifier votre nom, votre
+            e-mail et votre mot de passe depuis vos paramètres, ou supprimer
+            vous-même votre compte. Après suppression ou période d'inactivité
+            (+1 an), effacement des données. Une ré-invitation sera nécessaire
+            pour accéder à nouveau à l'espace membre.
+          </span>
         </p>
       </ContentTextWrapper>
     </ChapSection>
@@ -243,7 +245,7 @@
           Le club peut accueillir les jeunes à partir de 14 ans. En France, un
           mineur·e de moins de 15 ans ne peut pas, seul·e, consentir à un
           service en ligne. Les comptes restent ouverts sur invitation. Pour les
-          14–15 ans, l’invitation s’inscrit dans le cadre parental /
+          14-15 ans, l’invitation s’inscrit dans le cadre parental /
           représentant légal.
         </p>
       </ContentTextWrapper>
@@ -253,9 +255,9 @@
       <ContentTextWrapper class="text-muted">
         <p>
           Les mots de passe sont chiffrés. L’accès aux comptes est protégé par
-          des cookies de session et des contrôles selon les rôles. Les clés
-          d’accès aux services externes restent sur le serveur et ne sont pas
-          exposées dans le navigateur.
+          des cookies de session et des contrôles selon certaines permissions.
+          Les clés d’accès aux services externes restent sur le serveur et ne
+          sont pas exposées dans le navigateur.
         </p>
       </ContentTextWrapper>
     </ChapSection>
@@ -265,7 +267,9 @@
         <p>
           Vous pouvez demander l’accès, la rectification, l’effacement, la
           limitation, l’opposition, et la portabilité lorsque le droit
-          l’applique. Écrivez à
+          l’applique. Les membres connectés peuvent aussi rectifier leur nom,
+          leur e-mail et leur mot de passe, ou révoquer leur accès, depuis
+          <ChapLink to="/settings" label="leurs paramètres" />. Écrivez à
           <ChapLink
             :to="`mailto:${contactEmail}`"
             :label="contactEmail"

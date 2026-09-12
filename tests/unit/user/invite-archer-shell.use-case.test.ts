@@ -13,6 +13,7 @@ const boundUser: User = {
   name: "Shell Archer",
   roles: ["member"],
   authenticated: false,
+  passwordChangedAt: null,
   createdAt: new Date("2026-09-01"),
 };
 
@@ -26,7 +27,7 @@ describe("InviteArcherShell", () => {
     fromEmail: "noreply@example.com",
     fromName: "Club",
     templateId: "template-mail-placeholder",
-    inviteOrigin: "https://app.example.com",
+    siteOrigin: "https://app.example.com",
   };
 
   beforeEach(() => {
@@ -38,7 +39,13 @@ describe("InviteArcherShell", () => {
         resent: false,
       }),
     };
-    tokens = { issueToken: vi.fn() };
+    tokens = {
+      issueToken: vi.fn(),
+      findUnusedByUserAndType: vi.fn(),
+      updateTokenValue: vi.fn(),
+      markUsed: vi.fn(),
+      revokeUnusedByUserAndType: vi.fn(),
+    };
     jwt = {
       signAccess: vi.fn(),
       signRefresh: vi.fn(),

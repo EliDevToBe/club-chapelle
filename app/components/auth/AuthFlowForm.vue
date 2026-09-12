@@ -11,6 +11,7 @@
 
         <UInput
           v-model="form.email"
+          autocomplete="email"
           :disabled="loading"
           :class="ui.formInput"
           placeholder="robin@sherwood.bow"
@@ -27,11 +28,11 @@
       "
     >
       <UFormField label="Mot de passe" name="password" required>
-        <UInput
+        <ChapPasswordInput
           v-model="form.password"
-          type="password"
+          :autocomplete="passwordAutocomplete"
           :disabled="loading"
-          :class="ui.formInput"
+          :input-class="ui.formInput"
         />
       </UFormField>
     </template>
@@ -43,14 +44,15 @@
         name="confirmPassword"
         required
       >
-        <UInput
+        <ChapPasswordInput
           v-model="form.confirmPassword"
-          type="password"
-          autocomplete="off"
+          autocomplete="new-password"
           :disabled="loading"
-          :class="ui.formInput"
+          :input-class="ui.formInput"
         />
-        <div class="mt-2">
+
+        <!-- Progress bar -->
+        <div class="mt-2 w-full md:w-80">
           <UProgress
             size="sm"
             :model-value="successfulRequirements"
@@ -138,6 +140,7 @@
 <script setup lang="ts">
 import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapLink from "~/components/ui/ChapLink.vue";
+import ChapPasswordInput from "~/components/ui/ChapPasswordInput.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useZod } from "~/composables/useZod";
 import {
@@ -206,6 +209,9 @@ const form = reactive({
 });
 const successfulRequirements = computed(
   () => requirements.value.filter((requirement) => requirement.value).length,
+);
+const passwordAutocomplete = computed(() =>
+  props.mode === "login" ? "current-password" : "new-password",
 );
 
 const requirements = computed(() => [

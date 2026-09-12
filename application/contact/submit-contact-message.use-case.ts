@@ -1,17 +1,14 @@
 import { contactFormSchema } from "~~/app/schemas/contact-form.zod";
 import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
+import type { EmailOptions } from "~~/domain/mail/email-options";
 
 export type SubmitContactMessageResult =
   | { ok: true }
   | { ok: false; error: "validation" }
   | { ok: false; error: "send_failed" };
 
-export type SubmitContactMessageOptions = {
+export type SubmitContactMessageOptions = EmailOptions & {
   toEmail: string;
-  fromEmail: string;
-  fromName: string;
-  templateId: string;
-  inviteOrigin: string;
 };
 
 export class SubmitContactMessage {
@@ -44,7 +41,7 @@ export class SubmitContactMessage {
 
     const privacyPolicyUrl = new URL(
       "/privacy-policy",
-      this.options.inviteOrigin,
+      this.options.siteOrigin,
     ).toString();
 
     try {

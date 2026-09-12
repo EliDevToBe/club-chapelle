@@ -38,6 +38,9 @@ export default defineAppConfig({
           active: false,
           variant: "link",
           class: {
+            base: "group transition-colors",
+            linkLeadingIcon:
+              "group-hover:text-secondary group-active:text-secondary-600!",
             link: [
               "hover:text-secondary active:text-secondary-600!",
               "transition-colors",

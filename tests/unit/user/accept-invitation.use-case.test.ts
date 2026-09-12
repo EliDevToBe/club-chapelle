@@ -34,9 +34,9 @@ describe("AcceptInvitation", () => {
       create: vi.fn(),
       findById: vi.fn(),
       findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn(),
       findForPasswordResetById: vi.fn(),
       findMany: vi.fn(),
+      findManyForListing: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
     };
@@ -118,6 +118,7 @@ describe("AcceptInvitation", () => {
       session: {
         id: "u1",
         name: "Alex",
+        public_name: null,
         roles: ["member"],
       },
     });

@@ -9,24 +9,24 @@ export const useSiteNavItems = () => {
   const competitionFlag = isEnabled("competition_dashboard");
   const facebookFeedFlag = isEnabled("facebook_feed");
 
-  const navItems = computed<NavigationMenuItem[][]>(() => {
-    const baseItems: NavigationMenuItem[] = [];
+  const baseNavItems = computed<NavigationMenuItem[]>(() => {
+    const items: NavigationMenuItem[] = [];
 
-    baseItems.push({
+    items.push({
       label: "Accueil",
       to: "/",
       active: route.path === "/" || route.path === "",
     });
 
     if (facebookFeedFlag.value) {
-      baseItems.push({
+      items.push({
         label: "Actualités",
         to: "/feed",
         active: route.path.startsWith("/feed"),
       });
     }
 
-    baseItems.push(
+    items.push(
       {
         label: "Infos",
         to: "/infos",
@@ -40,32 +40,61 @@ export const useSiteNavItems = () => {
     );
 
     if (user.value && competitionFlag.value) {
-      baseItems.push({
+      items.push({
         label: "Compétitions",
         to: "/competitions",
         active: route.path.startsWith("/competitions"),
       });
     }
 
-    // This serves as a spacer between the base items and the admin items
-    baseItems.push({});
+    return items;
+  });
 
-    const adminItems: NavigationMenuItem[] = [];
+  /** Admin + settings links shown in the mobile drawer and desktop profile dropdown. */
+  const accountNavItems = computed<NavigationMenuItem[]>(() => {
+    if (!user.value) {
+      return [];
+    }
+
+    const items: NavigationMenuItem[] = [];
 
     if (isAdmin.value) {
-      adminItems.push({
+      items.push({
         label: "Admin",
         to: "/admin",
         active: route.path.startsWith("/admin"),
-        class: "text-info",
+        color: "info",
+        icon: "i-ph-shield-check-duotone",
       });
     }
 
-    const finalItems = [baseItems, ...(isAdmin.value ? [adminItems] : [])];
-    return finalItems;
+    items.push({
+      label: "Paramètres",
+      to: "/settings",
+      active: route.path.startsWith("/settings"),
+      icon: "i-ph-gear-six-duotone",
+    });
+
+    return items;
+  });
+
+  const navItems = computed<NavigationMenuItem[][]>(() => {
+    return [baseNavItems.value];
+  });
+
+  const drawerNavItems = computed<NavigationMenuItem[][]>(() => {
+    const groups: NavigationMenuItem[][] = [baseNavItems.value];
+
+    if (accountNavItems.value.length > 0) {
+      groups.push(accountNavItems.value);
+    }
+
+    return groups;
   });
 
   return {
     navItems,
+    drawerNavItems,
+    accountNavItems,
   };
 };

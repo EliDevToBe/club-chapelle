@@ -9,7 +9,7 @@ export const DEFAULT_HOMEPAGE_WELCOME: TextSection = {
   subtitle: "",
   paragraphs: [
     "Les Archers de La Chapelle (ARC18) est un club de tir à l’arc à Paris. Ce site remplace l’ancienne vitrine pour offrir une information plus claire aux visiteurs, aux futurs adhérents et aux membres.",
-    "Vous y trouverez bientôt l’actualité du club, des informations pratiques et les moyens de nous contacter — le tout au même endroit.",
+    "Retrouvez toutes les informations pratiques et les moyens de nous contacter, le tout au même endroit.",
   ],
 };
 

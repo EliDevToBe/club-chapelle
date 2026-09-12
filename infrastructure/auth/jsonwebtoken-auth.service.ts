@@ -81,22 +81,34 @@ export class JsonWebTokenAuthService implements JwtAuthService {
     }
   };
 
-  public verifyAccess = (token: string): string | null => {
+  public verifyAccess = (
+    token: string,
+  ): { sub: string; iat: number } | null => {
     try {
       const payload = jwt.verify(token, this.accessSecret) as AccessPayload;
       if (isMagicLinkPayload(payload)) {
         return null;
       }
-      return readSub(payload);
+      const sub = readSub(payload);
+      if (!sub || typeof payload.iat !== "number") {
+        return null;
+      }
+      return { sub, iat: payload.iat };
     } catch {
       return null;
     }
   };
 
-  public verifyRefresh = (token: string): string | null => {
+  public verifyRefresh = (
+    token: string,
+  ): { sub: string; iat: number } | null => {
     try {
       const payload = jwt.verify(token, this.refreshSecret) as jwt.JwtPayload;
-      return readSub(payload);
+      const sub = readSub(payload);
+      if (!sub || typeof payload.iat !== "number") {
+        return null;
+      }
+      return { sub, iat: payload.iat };
     } catch {
       return null;
     }

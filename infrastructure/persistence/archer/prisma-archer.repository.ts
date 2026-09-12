@@ -43,6 +43,18 @@ export class PrismaArcherRepository implements ArcherRepository {
     return row ? toDomain(row) : null;
   };
 
+  public findLinkedByAuthUserId = async (
+    authUserId: string,
+  ): Promise<Archer | null> => {
+    const row = await prismaClient.archer.findUnique({
+      where: {
+        auth_user_id: authUserId,
+        offboarded_at: null,
+      },
+    });
+    return row ? toDomain(row) : null;
+  };
+
   public findMany = async (): Promise<Archer[]> => {
     const rows = await prismaClient.archer.findMany({
       orderBy: { created_at: "desc" },

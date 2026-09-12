@@ -13,7 +13,7 @@ describe("SubmitContactMessage", () => {
     fromEmail: "noreply@example.com",
     fromName: "ARC18",
     templateId: "contact-template-uuid",
-    inviteOrigin: "https://app.example.com",
+    siteOrigin: "https://app.example.com",
   };
 
   beforeEach(() => {

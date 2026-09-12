@@ -14,14 +14,20 @@ beforeEach(() => {
   users = {
     create: vi.fn(),
     findById: vi.fn(),
-    findByEmailWithPasswordHash: vi.fn(),
-    findByEmailForPasswordReset: vi.fn().mockResolvedValue(null),
+    findByEmailWithPasswordHash: vi.fn().mockResolvedValue(null),
     findForPasswordResetById: vi.fn(),
     findMany: vi.fn(),
+    findManyForListing: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
   };
-  tokens = { issueToken: vi.fn() };
+  tokens = {
+    issueToken: vi.fn(),
+    findUnusedByUserAndType: vi.fn(),
+    updateTokenValue: vi.fn(),
+    markUsed: vi.fn(),
+    revokeUnusedByUserAndType: vi.fn(),
+  };
   jwt = {
     signAccess: vi.fn(),
     signRefresh: vi.fn(),
@@ -43,7 +49,7 @@ describe("RequestForgotPassword", () => {
     fromEmail: "noreply@example.com",
     fromName: "Club",
     templateId: "tpl-uuid",
-    passwordResetOrigin: "https://app.example.com",
+    siteOrigin: "https://app.example.com",
   };
 
   it("does nothing when the user is unknown", async () => {
@@ -62,10 +68,11 @@ describe("RequestForgotPassword", () => {
   });
 
   it("issues a token and sends mail when the user can log in with a password", async () => {
-    users.findByEmailForPasswordReset = vi.fn().mockResolvedValue({
+    users.findByEmailWithPasswordHash = vi.fn().mockResolvedValue({
       id: "u1",
       email: "a@b.c",
       name: "Alex",
+      roles: ["member"],
       authenticated: true,
       passwordHash: "hash",
     });
@@ -105,10 +112,11 @@ describe("RequestForgotPassword", () => {
   });
 
   it("skips when the account has no password", async () => {
-    users.findByEmailForPasswordReset = vi.fn().mockResolvedValue({
+    users.findByEmailWithPasswordHash = vi.fn().mockResolvedValue({
       id: "u1",
       email: "a@b.c",
       name: null,
+      roles: ["member"],
       authenticated: true,
       passwordHash: null,
     });

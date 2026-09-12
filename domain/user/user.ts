@@ -13,5 +13,7 @@ export type User = {
   name: string | null;
   roles: RoleEnum[];
   authenticated: boolean;
+  /** When set, session JWTs issued before this instant are rejected. */
+  passwordChangedAt: Date | null;
   createdAt: Date;
 };

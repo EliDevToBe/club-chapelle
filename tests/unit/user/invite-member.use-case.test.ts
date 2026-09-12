@@ -15,6 +15,7 @@ const invitedUser: User = {
   name: "Alex Archer",
   roles: ["member"],
   authenticated: false,
+  passwordChangedAt: null,
   createdAt: new Date("2026-09-01"),
 };
 
@@ -24,6 +25,7 @@ const existingInvited: User = {
   name: "Pat Pending",
   roles: ["member"],
   authenticated: false,
+  passwordChangedAt: null,
   createdAt: new Date("2026-08-01"),
 };
 
@@ -39,17 +41,17 @@ describe("InviteMember", () => {
     fromEmail: "noreply@example.com",
     fromName: "Club",
     templateId: "template-mail-placeholder",
-    inviteOrigin: "https://app.example.com",
+    siteOrigin: "https://app.example.com",
   };
 
   beforeEach(() => {
     users = {
       create: vi.fn(),
       findById: vi.fn(),
-      findByEmailWithPasswordHash: vi.fn(),
-      findByEmailForPasswordReset: vi.fn().mockResolvedValue(null),
+      findByEmailWithPasswordHash: vi.fn().mockResolvedValue(null),
       findForPasswordResetById: vi.fn(),
       findMany: vi.fn(),
+      findManyForListing: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
     };
@@ -57,6 +59,7 @@ describe("InviteMember", () => {
       create: vi.fn(),
       findById: vi.fn(),
       findByPublicName: vi.fn().mockResolvedValue(null),
+      findLinkedByAuthUserId: vi.fn(),
       findMany: vi.fn(),
       findPage: vi.fn(),
       update: vi.fn(),
@@ -69,7 +72,13 @@ describe("InviteMember", () => {
       }),
       bindInvitedMemberToArcher: vi.fn(),
     };
-    tokens = { issueToken: vi.fn() };
+    tokens = {
+      issueToken: vi.fn(),
+      findUnusedByUserAndType: vi.fn(),
+      updateTokenValue: vi.fn(),
+      markUsed: vi.fn(),
+      revokeUnusedByUserAndType: vi.fn(),
+    };
     jwt = {
       signAccess: vi.fn(),
       signRefresh: vi.fn(),
@@ -134,7 +143,7 @@ describe("InviteMember", () => {
   });
 
   it("rejects when the account is already active", async () => {
-    users.findByEmailForPasswordReset = vi.fn().mockResolvedValue({
+    users.findByEmailWithPasswordHash = vi.fn().mockResolvedValue({
       id: "u-active",
       email: "active@club.test",
       name: "Active",
@@ -165,7 +174,7 @@ describe("InviteMember", () => {
   });
 
   it("resends when the user is already invited and allowResent is true", async () => {
-    users.findByEmailForPasswordReset = vi.fn().mockResolvedValue({
+    users.findByEmailWithPasswordHash = vi.fn().mockResolvedValue({
       id: existingInvited.id,
       email: existingInvited.email,
       name: existingInvited.name,
@@ -200,7 +209,7 @@ describe("InviteMember", () => {
   });
 
   it("rejects a pending invite when allowResent is false", async () => {
-    users.findByEmailForPasswordReset = vi.fn().mockResolvedValue({
+    users.findByEmailWithPasswordHash = vi.fn().mockResolvedValue({
       id: existingInvited.id,
       email: existingInvited.email,
       name: existingInvited.name,
