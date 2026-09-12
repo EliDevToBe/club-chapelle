@@ -71,7 +71,7 @@
                   </p>
                 </template>
 
-                <p class="text-sm text-muted mb-2">
+                <p class="text-sm text-muted">
                   Adresse actuelle :
                   <USkeleton
                     v-if="isLoadingProfile"
@@ -82,23 +82,29 @@
                   </span>
                 </p>
 
-                <template v-if="!isLoadingProfile && pendingEmail">
-                  <p class="text-sm mt-3">
+                <div
+                  class="flex flex-col gap-4 mt-2"
+                  v-if="!isLoadingProfile && pendingEmail"
+                >
+                  <p class="text-sm">
                     Code envoyé à
                     <span class="text-highlighted">{{ pendingEmail }}</span>
                   </p>
+
                   <UForm
                     class="flex flex-col gap-4"
                     :state="otpForm"
                     @submit="onConfirmEmailChange"
                   >
                     <UFormField label="Code à 6 chiffres" name="otp" required>
-                      <UInput
-                        v-model="otpForm.otp"
-                        inputmode="numeric"
-                        autocomplete="one-time-code"
+                      <UPinInput
+                        v-model="otpForm.otpDigits"
+                        type="number"
+                        :length="6"
+                        otp
                         :disabled="isSavingEmail"
-                        :class="ui.formInput"
+                        @complete="onConfirmEmailChange"
+                        class="mt-1"
                       />
                     </UFormField>
                     <div :class="ui.formActionsWrap">
@@ -127,7 +133,7 @@
                       />
                     </div>
                   </UForm>
-                </template>
+                </div>
 
                 <template v-else>
                   <UForm
@@ -395,7 +401,7 @@ const emailForm = reactive({
   current_password: "",
 });
 const otpForm = reactive({
-  otp: "",
+  otpDigits: [] as number[],
 });
 const passwordForm = reactive({
   current_password: "",
@@ -505,8 +511,9 @@ const onRequestEmailChange = async () => {
 };
 
 const onConfirmEmailChange = async () => {
+  const otp = otpForm.otpDigits.join("");
   try {
-    parseOwnConfirmEmailChangeBody({ otp: otpForm.otp });
+    parseOwnConfirmEmailChangeBody({ otp });
   } catch {
     addToastError({ description: "Saisissez le code à 6 chiffres." });
     return;
@@ -514,8 +521,8 @@ const onConfirmEmailChange = async () => {
 
   isSavingEmail.value = true;
   try {
-    await confirmEmailChange(otpForm.otp);
-    otpForm.otp = "";
+    await confirmEmailChange(otp);
+    otpForm.otpDigits = [];
     applyProfile(await fetchProfile());
     addToastSuccess({ title: "Email mis à jour" });
   } catch (error) {
@@ -544,7 +551,7 @@ const onCancelEmailChange = async () => {
   isSavingEmail.value = true;
   try {
     await cancelEmailChange();
-    otpForm.otp = "";
+    otpForm.otpDigits = [];
     applyProfile(await fetchProfile());
     addToastInfo({ title: "Changement d’email annulé" });
   } catch (error) {
