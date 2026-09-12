@@ -77,9 +77,9 @@
                     v-if="isLoadingProfile"
                     class="inline-block h-4 w-48 align-middle ml-1"
                   />
-                  <span v-else class="text-highlighted">{{
-                    currentEmail
-                  }}</span>
+                  <span v-else class="text-highlighted">
+                    {{ currentEmail }}
+                  </span>
                 </p>
 
                 <template v-if="!isLoadingProfile && pendingEmail">
@@ -92,12 +92,7 @@
                     :state="otpForm"
                     @submit="onConfirmEmailChange"
                   >
-                    <UFormField
-                      label="Code à 6 chiffres"
-                      name="otp"
-                      required
-                      class="mt-3"
-                    >
+                    <UFormField label="Code à 6 chiffres" name="otp" required>
                       <UInput
                         v-model="otpForm.otp"
                         inputmode="numeric"
@@ -144,6 +139,7 @@
                       <UInput
                         v-model="emailForm.email"
                         type="email"
+                        autocomplete="email"
                         :disabled="isSavingEmail || isLoadingProfile"
                         :class="ui.formInput"
                       />
@@ -156,6 +152,7 @@
                       <UInput
                         v-model="emailForm.current_password"
                         type="password"
+                        autocomplete="current-password"
                         :disabled="isSavingEmail || isLoadingProfile"
                         :class="ui.formInput"
                       />
@@ -197,6 +194,7 @@
                     <UInput
                       v-model="passwordForm.current_password"
                       type="password"
+                      autocomplete="current-password"
                       :disabled="isSavingPassword"
                       :class="ui.formInput"
                     />
@@ -209,6 +207,7 @@
                     <UInput
                       v-model="passwordForm.new_password"
                       type="password"
+                      autocomplete="new-password"
                       :disabled="isSavingPassword"
                       :class="ui.formInput"
                     />
@@ -221,6 +220,7 @@
                     <UInput
                       v-model="passwordForm.confirm_password"
                       type="password"
+                      autocomplete="new-password"
                       :disabled="isSavingPassword"
                       :class="ui.formInput"
                     />
@@ -282,6 +282,7 @@
           <UInput
             v-model="revokePassword"
             type="password"
+            autocomplete="current-password"
             :class="ui.formInput"
           />
         </UFormField>

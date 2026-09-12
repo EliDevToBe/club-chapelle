@@ -58,6 +58,7 @@ export class IssueChangeEmailOtp {
         templateId: this.options.templateId,
         variables: {
           user_name: displayName,
+          user_email: input.user.email,
           new_email: input.newEmail,
           otp_code: otp,
           privacy_policy_url: privacyPolicyUrl,

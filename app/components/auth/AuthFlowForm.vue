@@ -11,6 +11,7 @@
 
         <UInput
           v-model="form.email"
+          autocomplete="email"
           :disabled="loading"
           :class="ui.formInput"
           placeholder="robin@sherwood.bow"
@@ -30,6 +31,7 @@
         <UInput
           v-model="form.password"
           type="password"
+          :autocomplete="passwordAutocomplete"
           :disabled="loading"
           :class="ui.formInput"
         />
@@ -46,7 +48,7 @@
         <UInput
           v-model="form.confirmPassword"
           type="password"
-          autocomplete="off"
+          autocomplete="new-password"
           :disabled="loading"
           :class="ui.formInput"
         />
@@ -206,6 +208,9 @@ const form = reactive({
 });
 const successfulRequirements = computed(
   () => requirements.value.filter((requirement) => requirement.value).length,
+);
+const passwordAutocomplete = computed(() =>
+  props.mode === "login" ? "current-password" : "new-password",
 );
 
 const requirements = computed(() => [
