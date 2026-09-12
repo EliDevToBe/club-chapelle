@@ -64,6 +64,12 @@ export class InviteMember {
     let resent = false;
 
     if (existing) {
+      const linkedArcher = await this.archers.findLinkedByAuthUserId(
+        existing.id,
+      );
+      if (!linkedArcher) {
+        return { ok: false, reason: API_ERROR_REASON.common.invalid_request };
+      }
       if (!allowResent) {
         return {
           ok: false,
@@ -116,6 +122,11 @@ export class InviteMember {
       };
     }
     if (!raced) {
+      return { ok: false, reason: API_ERROR_REASON.common.invalid_request };
+    }
+
+    const linkedArcher = await this.archers.findLinkedByAuthUserId(raced.id);
+    if (!linkedArcher) {
       return { ok: false, reason: API_ERROR_REASON.common.invalid_request };
     }
     if (!allowResent) {

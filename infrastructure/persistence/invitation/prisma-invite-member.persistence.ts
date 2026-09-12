@@ -120,45 +120,22 @@ export class PrismaInviteMemberPersistence implements InviteMemberPersistence {
             email: { equals: input.email, mode: "insensitive" },
           },
           include: {
-            roles: true,
             archers: { select: { id: true } },
           },
         });
 
-        if (existingUser) {
-          if (existingUser.authenticated) {
-            return {
-              ok: false,
-              reason: API_ERROR_REASON.invitation.account_already_active,
-            };
-          }
+        if (existingUser?.authenticated) {
+          return {
+            ok: false,
+            reason: API_ERROR_REASON.invitation.account_already_active,
+          };
+        }
 
-          const linkedElsewhere = existingUser.archers.some(
-            (linkedArcher) => linkedArcher.id !== input.archerId,
-          );
-          if (linkedElsewhere) {
-            return {
-              ok: false,
-              reason: API_ERROR_REASON.invitation.email_already_linked,
-            };
-          }
-
-          await tx.archer.update({
-            where: { id: input.archerId },
-            data: { auth_user_id: existingUser.id, offboarded_at: null },
-          });
-
-          const updated = await tx.auth_user.update({
-            where: { id: existingUser.id },
-            data: {
-              name: input.name,
-              authenticated: false,
-              password: null,
-            },
-            include: { roles: true },
-          });
-
-          return { ok: true, user: toDomain(updated), resent: true };
+        if (existingUser && existingUser.archers.length > 0) {
+          return {
+            ok: false,
+            reason: API_ERROR_REASON.invitation.email_already_linked,
+          };
         }
 
         const created = await tx.auth_user.create({
