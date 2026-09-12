@@ -1,5 +1,6 @@
 import type { PasswordHasher } from "~~/application/ports/password-hasher.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
+import type { SendPasswordChangedNotice } from "~~/application/user/send-password-changed-notice";
 import type { UserId } from "~~/domain/user/user";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
@@ -16,6 +17,7 @@ export class ChangeOwnPassword {
   constructor(
     private readonly users: UserRepository,
     private readonly passwords: PasswordHasher,
+    private readonly notice: SendPasswordChangedNotice,
   ) {}
 
   public change = async (input: {
@@ -44,6 +46,12 @@ export class ChangeOwnPassword {
     if (!updated) {
       return { ok: false, reason: API_ERROR_REASON.common.not_found };
     }
+
+    await this.notice.send({
+      userId: input.userId,
+      email: row.email,
+      name: row.name,
+    });
 
     return { ok: true };
   };

@@ -3,6 +3,7 @@ import { createAuthServices } from "~~/infrastructure/auth/auth-services.provide
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { ApiError } from "~~/server/utils/api-error";
 import { setAuthSessionCookies } from "~~/server/utils/auth-cookies";
+import { createPasswordChangedNotice } from "~~/server/utils/password-changed-notice";
 import { requireAuthenticated } from "~~/server/utils/rbac";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import { parseOwnChangePasswordBody } from "~~/shared/user/own-profile.schema";
@@ -28,6 +29,7 @@ export default defineEventHandler(async (event) => {
     const changeOwnPasswordHandler = new ChangeOwnPassword(
       userRepository,
       authServices.password,
+      createPasswordChangedNotice(event),
     );
 
     const result = await changeOwnPasswordHandler.change({
