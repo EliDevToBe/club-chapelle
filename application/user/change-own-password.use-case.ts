@@ -3,14 +3,10 @@ import type { PasswordHasher } from "~~/application/ports/password-hasher.port";
 import type { TokenRepository } from "~~/application/ports/token-repository.port";
 import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
-import {
-  SendPasswordChangedNotice,
-  type SendPasswordChangedNoticeOptions,
-} from "~~/application/user/send-password-changed-notice";
+import { SendPasswordChangedNotice } from "~~/application/user/send-password-changed-notice";
+import type { EmailOptions } from "~~/domain/mail/email-options";
 import type { UserId } from "~~/domain/user/user";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
-
-export type ChangeOwnPasswordOptions = SendPasswordChangedNoticeOptions;
 
 export type ChangeOwnPasswordResult =
   | { ok: true }
@@ -30,7 +26,7 @@ export class ChangeOwnPassword {
     tokens: TokenRepository,
     jwt: JwtAuthService,
     mail: TransactionalMailPort,
-    options: ChangeOwnPasswordOptions,
+    options: EmailOptions,
   ) {
     this.sendPasswordChangedNotice = new SendPasswordChangedNotice(
       mail,

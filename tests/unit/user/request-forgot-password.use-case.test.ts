@@ -49,7 +49,7 @@ describe("RequestForgotPassword", () => {
     fromEmail: "noreply@example.com",
     fromName: "Club",
     templateId: "tpl-uuid",
-    passwordResetOrigin: "https://app.example.com",
+    siteOrigin: "https://app.example.com",
   };
 
   it("does nothing when the user is unknown", async () => {

@@ -92,12 +92,13 @@ describe("SendPasswordChangedNotice", () => {
     expect(mail.sendTemplateEmail).not.toHaveBeenCalled();
   });
 
-  it("propagates mail delivery failures", async () => {
+  it("keeps the recovery token when mail delivery fails", async () => {
     mail.sendTemplateEmail = vi.fn().mockRejectedValue(new Error("smtp"));
     const notice = new SendPasswordChangedNotice(mail, jwt, tokens, options);
 
     await expect(
       notice.send({ userId: "u1", email: "a@b.c", name: "Alex" }),
-    ).rejects.toThrow("smtp");
+    ).resolves.toBeUndefined();
+    expect(tokens.issueToken).toHaveBeenCalled();
   });
 });

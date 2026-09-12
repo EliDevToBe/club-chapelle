@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
     fromEmail: mailtrap.fromEmail,
     fromName: mailtrap.fromName,
     templateId: MAILTRAP_TEMPLATES_IDS.contact,
-    inviteOrigin: mailtrap.siteOrigin,
+    siteOrigin: mailtrap.siteOrigin,
   });
 
   const result = await submitContactMessageHandler.submit({

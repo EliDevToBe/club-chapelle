@@ -2,22 +2,16 @@ import type { PasswordHasher } from "~~/application/ports/password-hasher.port";
 import type { TokenRepository } from "~~/application/ports/token-repository.port";
 import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
 import { generateEmailChangeOtp } from "~~/application/user/generate-email-change-otp";
+import type { EmailOptions } from "~~/domain/mail/email-options";
 import type { User } from "~~/domain/user/user";
 import { CHANGE_EMAIL_OTP_MAX_AGE_SECONDS } from "~~/shared/auth/email-change";
-
-export type IssueChangeEmailOtpOptions = {
-  fromEmail: string;
-  fromName: string;
-  templateId: string;
-  siteOrigin: string;
-};
 
 export class IssueChangeEmailOtp {
   constructor(
     private readonly tokens: TokenRepository,
     private readonly passwords: PasswordHasher,
     private readonly mail: TransactionalMailPort,
-    private readonly options: IssueChangeEmailOtpOptions,
+    private readonly options: EmailOptions,
   ) {}
 
   public issue = async (input: {

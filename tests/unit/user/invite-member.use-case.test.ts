@@ -41,7 +41,7 @@ describe("InviteMember", () => {
     fromEmail: "noreply@example.com",
     fromName: "Club",
     templateId: "template-mail-placeholder",
-    inviteOrigin: "https://app.example.com",
+    siteOrigin: "https://app.example.com",
   };
 
   beforeEach(() => {

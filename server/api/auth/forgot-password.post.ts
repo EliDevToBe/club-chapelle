@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
       fromEmail: mailtrap.fromEmail,
       fromName: mailtrap.fromName,
       templateId: MAILTRAP_TEMPLATES_IDS.forgotPassword,
-      passwordResetOrigin: mailtrap.siteOrigin,
+      siteOrigin: mailtrap.siteOrigin,
     },
   );
 

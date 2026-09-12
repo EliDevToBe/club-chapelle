@@ -24,7 +24,7 @@ describe("SendInvitationEmail", () => {
     fromEmail: "noreply@example.com",
     fromName: "Club",
     templateId: "template-mail-placeholder",
-    inviteOrigin: "https://app.example.com",
+    siteOrigin: "https://app.example.com",
   };
 
   beforeEach(() => {
@@ -112,10 +112,10 @@ describe("SendInvitationEmail", () => {
     expect(tokens.issueToken).toHaveBeenCalled();
   });
 
-  it("skips mail when the invite origin is invalid", async () => {
+  it("skips mail when the site origin is invalid", async () => {
     const handler = new SendInvitationEmail(tokens, jwt, mail, {
       ...options,
-      inviteOrigin: "not-a-valid-origin",
+      siteOrigin: "not-a-valid-origin",
     });
     const result = await handler.send({ user: invitedUser, resent: false });
 
