@@ -380,6 +380,21 @@ const formatStatusDateDayMonth = (value: string | null): string | null => {
   }).format(date);
 };
 
+const formatStatusDateDayMontYear = (value: string | null): string | null => {
+  if (!value) {
+    return null;
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  }).format(date);
+};
+
 const statusLabel = (row: MemberRow): string => {
   if (row.status === "active") {
     return "Actif";
@@ -392,9 +407,9 @@ const statusLabel = (row: MemberRow): string => {
     return "Invité";
   }
   if (row.status === "archived") {
-    const dayMonth = formatStatusDateDayMonth(row.offboarded_at);
-    if (dayMonth) {
-      return `Archivé ${dayMonth}`;
+    const dayMonthYear = formatStatusDateDayMontYear(row.offboarded_at);
+    if (dayMonthYear) {
+      return `Archivé ${dayMonthYear}`;
     }
     return "Archivé";
   }
