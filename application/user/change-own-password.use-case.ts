@@ -39,6 +39,7 @@ export class ChangeOwnPassword {
     const passwordHash = await this.passwords.hash(input.newPassword);
     const updated = await this.users.update(input.userId, {
       password: passwordHash,
+      passwordChangedAt: new Date(),
     });
     if (!updated) {
       return { ok: false, reason: API_ERROR_REASON.common.not_found };

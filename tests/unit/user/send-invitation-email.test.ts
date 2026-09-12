@@ -11,6 +11,7 @@ const invitedUser: User = {
   name: "Alex Archer",
   roles: ["member"],
   authenticated: false,
+  passwordChangedAt: null,
   createdAt: new Date("2026-09-01"),
 };
 

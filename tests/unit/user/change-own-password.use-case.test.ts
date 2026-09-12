@@ -48,7 +48,10 @@ describe("ChangeOwnPassword", () => {
 
     expect(result).toEqual({ ok: true });
     expect(passwords.verify).toHaveBeenCalledWith("Oldpass1!", "old-hash");
-    expect(users.update).toHaveBeenCalledWith("u1", { password: "new-hash" });
+    expect(users.update).toHaveBeenCalledWith("u1", {
+      password: "new-hash",
+      passwordChangedAt: expect.any(Date),
+    });
   });
 
   it("rejects a wrong current password", async () => {

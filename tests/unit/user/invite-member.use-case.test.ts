@@ -15,6 +15,7 @@ const invitedUser: User = {
   name: "Alex Archer",
   roles: ["member"],
   authenticated: false,
+  passwordChangedAt: null,
   createdAt: new Date("2026-09-01"),
 };
 
@@ -24,6 +25,7 @@ const existingInvited: User = {
   name: "Pat Pending",
   roles: ["member"],
   authenticated: false,
+  passwordChangedAt: null,
   createdAt: new Date("2026-08-01"),
 };
 

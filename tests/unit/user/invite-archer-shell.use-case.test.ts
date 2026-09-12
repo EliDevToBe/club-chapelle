@@ -13,6 +13,7 @@ const boundUser: User = {
   name: "Shell Archer",
   roles: ["member"],
   authenticated: false,
+  passwordChangedAt: null,
   createdAt: new Date("2026-09-01"),
 };
 

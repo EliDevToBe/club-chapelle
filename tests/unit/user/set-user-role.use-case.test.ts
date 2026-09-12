@@ -13,6 +13,7 @@ const makeUser = (
     email: `${overrides.id}@example.com`,
     name: overrides.id,
     authenticated: true,
+    passwordChangedAt: null,
     createdAt,
     ...overrides,
   };

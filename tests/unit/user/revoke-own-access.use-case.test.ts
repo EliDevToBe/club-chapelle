@@ -17,6 +17,7 @@ describe("RevokeOwnAccess", () => {
     name: "Alex",
     roles: ["member"],
     authenticated: true,
+    passwordChangedAt: null,
     createdAt: new Date("2026-01-01"),
   };
 

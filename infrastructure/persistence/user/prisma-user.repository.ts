@@ -23,6 +23,7 @@ const toDomain = (row: AuthUserWithRoles): User => ({
   name: row.name,
   roles: sortRolesByOrder(row.roles.map((r) => r.role)),
   authenticated: row.authenticated,
+  passwordChangedAt: row.password_changed_at,
   createdAt: row.created_at,
 });
 
@@ -172,6 +173,9 @@ export class PrismaUserRepository implements UserRepository {
     }
     if (input.password !== undefined) {
       data.password = input.password;
+    }
+    if (input.passwordChangedAt !== undefined) {
+      data.password_changed_at = input.passwordChangedAt;
     }
 
     const hasScalars = Object.keys(data).length > 0;

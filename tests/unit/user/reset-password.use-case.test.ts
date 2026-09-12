@@ -26,6 +26,7 @@ describe("ResetPassword", () => {
     name: "Alex",
     roles: ["member"] as const,
     authenticated: true,
+    passwordChangedAt: null,
     createdAt: new Date("2026-01-01"),
   };
 

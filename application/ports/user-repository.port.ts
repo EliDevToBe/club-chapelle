@@ -25,6 +25,8 @@ export type UpdateUserInput = {
   roles?: RoleEnum[];
   authenticated?: boolean;
   password?: string | null;
+  /** Set when the password is changed; used to invalidate older session JWTs. */
+  passwordChangedAt?: Date | null;
 };
 
 /** Optional filters for staff user listing (roles, auth state, email/name search). */

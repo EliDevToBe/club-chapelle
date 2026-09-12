@@ -2,6 +2,7 @@ import { ChangeOwnPassword } from "~~/application/user/change-own-password.use-c
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { ApiError } from "~~/server/utils/api-error";
+import { setAuthSessionCookies } from "~~/server/utils/auth-cookies";
 import { requireAuthenticated } from "~~/server/utils/rbac";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import { parseOwnChangePasswordBody } from "~~/shared/user/own-profile.schema";
@@ -37,6 +38,14 @@ export default defineEventHandler(async (event) => {
     if (!result.ok) {
       throw ApiError(result.reason);
     }
+
+    // Re-issue session cookies so this browser stays signed in; other devices
+    // are rejected on next request because their JWTs predate password_changed_at.
+    setAuthSessionCookies(
+      event,
+      authServices.jwt.signAccess(authUser.id),
+      authServices.jwt.signRefresh(authUser.id),
+    );
 
     return { ok: true };
   } catch (error) {
