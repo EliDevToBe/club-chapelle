@@ -1,32 +1,14 @@
 import type { H3Event } from "h3";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
+import { resolveSessionFromEvent } from "~~/server/utils/resolve-session-from-event";
 
-let resolveSessionFromEvent: (event: H3Event) => {
-  session: {
-    id: string;
-    name: string | null;
-    public_name: string | null;
-    roles: string[];
-  } | null;
-};
-
-beforeAll(async () => {
-  vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
-  const mod = await import("~~/server/api/auth/session.get");
-  resolveSessionFromEvent = mod.resolveSessionFromEvent;
-});
-
-afterAll(() => {
-  vi.unstubAllGlobals();
-});
-
-describe("/api/auth/session", () => {
-  it("returns null session when authUser is missing", async () => {
+describe("resolveSessionFromEvent", () => {
+  it("returns null session when authUser is missing", () => {
     const event = { context: {} } as H3Event;
     expect(resolveSessionFromEvent(event)).toEqual({ session: null });
   });
 
-  it("returns null session when authUser is not authenticated", async () => {
+  it("returns null session when authUser is not authenticated", () => {
     const event = {
       context: {
         authUser: {
@@ -40,7 +22,7 @@ describe("/api/auth/session", () => {
     expect(resolveSessionFromEvent(event)).toEqual({ session: null });
   });
 
-  it("returns public session payload when authenticated", async () => {
+  it("returns public session payload when authenticated", () => {
     const event = {
       context: {
         authUser: {
