@@ -21,6 +21,7 @@ const toDomain = (row: AuthUserWithRoles): User => {
     name: row.name,
     roles: sortRolesByOrder(row.roles.map((roleRow) => roleRow.role)),
     authenticated: row.authenticated,
+    passwordChangedAt: row.password_changed_at,
     createdAt: row.created_at,
   };
 };

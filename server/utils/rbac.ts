@@ -21,6 +21,18 @@ const readAuthUser = (event: H3Event): AuthUserContext | null => {
 };
 
 /**
+ * Requires a signed-in user (any club or maintainer role).
+ */
+export const requireAuthenticated = (event: H3Event): AuthUserContext => {
+  const authUser = readAuthUser(event);
+  if (!authUser?.authenticated) {
+    throw ApiError(API_ERROR_REASON.common.unauthenticated);
+  }
+
+  return authUser;
+};
+
+/**
  * Requires an authenticated user with at least one role in `allowedRoles`.
  * Role hierarchy is **not** applied: list every role that may call the route (e.g. `["manager", "admin"]`).
  * Users with multiple roles pass if **any** role matches. For developer-only routes, use `requireDeveloper`.

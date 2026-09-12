@@ -1,19 +1,14 @@
 import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port";
 import type { TokenRepository } from "~~/application/ports/token-repository.port";
 import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
+import type { EmailOptions } from "~~/domain/mail/email-options";
 import type { User } from "~~/domain/user/user";
 import { INVITATION_TOKEN_MAX_AGE_SECONDS } from "~~/shared/auth/jwt-lifetimes";
-
-export type SendInvitationEmailOptions = {
-  fromEmail: string;
-  fromName: string;
-  templateId: string;
-  inviteOrigin: string;
-};
 
 export type SendInvitationEmailResult = {
   user: User;
   mailSent: boolean;
+  // set by caller, not used when sending
   resent: boolean;
 };
 
@@ -22,7 +17,7 @@ export class SendInvitationEmail {
     private readonly tokens: TokenRepository,
     private readonly jwt: JwtAuthService,
     private readonly mail: TransactionalMailPort,
-    private readonly options: SendInvitationEmailOptions,
+    private readonly options: EmailOptions,
   ) {}
 
   public send = async (input: {
@@ -48,15 +43,15 @@ export class SendInvitationEmail {
     let privacyPolicyUrl = "";
 
     try {
-      const inviteUrl = new URL("/accept-invite", this.options.inviteOrigin);
+      const inviteUrl = new URL("/accept-invite", this.options.siteOrigin);
       inviteUrl.searchParams.set("t", tokenString);
       inviteLink = inviteUrl.toString();
       privacyPolicyUrl = new URL(
         "/privacy-policy",
-        this.options.inviteOrigin,
+        this.options.siteOrigin,
       ).toString();
     } catch (error) {
-      console.error("SendInvitationEmail: Invalid invite origin");
+      console.error("SendInvitationEmail: Invalid site origin");
       console.error(error);
       mailSent = false;
     }

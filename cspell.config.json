@@ -9,6 +9,8 @@
     "chapblack",
     "clearable",
     "color",
+    "cooldown",
+    "COOLDOWN",
     "creneau",
     "datasource",
     "dbgenerated",

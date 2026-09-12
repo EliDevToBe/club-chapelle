@@ -1,0 +1,44 @@
+---
+description: Defer authenticated same-origin API reads to client mount after session hydration
+globs: app/pages/**/*.vue,app/components/**/*.vue
+alwaysApply: false
+---
+
+# Authenticated client fetch
+
+## Requirement
+
+Do **not** call authenticated same-origin APIs (`/api/me`, `/api/competitions`, admin roster, etc.) via top-level `await` in page or component setup during SSR.
+
+Fetch in **`onMounted`** (or another explicit client-only lifecycle), after **`await hydrateIfNeeded()`** when the route is auth-gated.
+
+## Rationale
+
+During SSR, `$fetch` with `credentials: "include"` does not attach the browser session to Nitro’s internal request. Only session bootstrap forwards cookies (see `useAuthUser.fetchSession`). Top-level setup fetches therefore return **401** on refresh and can show spurious toasts or empty state.
+
+## Initial load errors
+
+Prefer **inline page error state** for the first fetch failure. Reserve **toasts** for user-triggered mutations (save, delete, etc.).
+
+## Exception
+
+Session bootstrap uses cookie forwarding in [`app/composables/useAuthUser.ts`](app/composables/useAuthUser.ts). Do not duplicate that pattern ad hoc for other endpoints unless there is a deliberate SSR requirement (e.g. SEO or no-JS first paint).
+
+## Reference implementations
+
+- [`app/pages/competitions/index.vue`](app/pages/competitions/index.vue) — `onMounted` → `hydrateIfNeeded` → fetch; inline `errorMessage`
+- [`app/pages/settings/index.vue`](app/pages/settings/index.vue) — same pattern for `GET /api/me`
+- [`app/components/admin/MemberManagement.vue`](app/components/admin/MemberManagement.vue) — `onMounted` → `loadRoster`
+
+## Example
+
+```typescript
+// ❌ Avoid — runs on SSR without session cookies
+await loadProfile();
+
+// ✅ Prefer
+onMounted(async () => {
+  await hydrateIfNeeded();
+  await loadProfile();
+});
+```

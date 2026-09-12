@@ -9,6 +9,7 @@ const sampleUser: User = {
   name: "Sam",
   roles: ["member"],
   authenticated: true,
+  passwordChangedAt: null,
   createdAt: new Date("2026-01-01"),
 };
 
@@ -31,7 +32,10 @@ describe("resolveAuthContextFromCookies", () => {
   });
 
   it("returns auth from a valid access token", async () => {
-    jwt.verifyAccess = vi.fn().mockReturnValue("u1");
+    jwt.verifyAccess = vi.fn().mockReturnValue({
+      sub: "u1",
+      iat: 1_800_000_000,
+    });
     findUserById = vi.fn().mockResolvedValue(sampleUser);
     const result = await resolveAuthContextFromCookies({
       accessToken: "access",
@@ -52,7 +56,10 @@ describe("resolveAuthContextFromCookies", () => {
   it("issues new access when access fails but refresh is valid", async () => {
     jwt.signAccess = vi.fn().mockReturnValue("new-access");
     jwt.verifyAccess = vi.fn().mockReturnValue(null);
-    jwt.verifyRefresh = vi.fn().mockReturnValue("u1");
+    jwt.verifyRefresh = vi.fn().mockReturnValue({
+      sub: "u1",
+      iat: 1_800_000_000,
+    });
     findUserById = vi.fn().mockResolvedValue(sampleUser);
     const result = await resolveAuthContextFromCookies({
       accessToken: "bad",
@@ -94,7 +101,10 @@ describe("resolveAuthContextFromCookies", () => {
   });
 
   it("returns null when access verifies but user no longer exists", async () => {
-    jwt.verifyAccess = vi.fn().mockReturnValue("u1");
+    jwt.verifyAccess = vi.fn().mockReturnValue({
+      sub: "u1",
+      iat: 1_800_000_000,
+    });
     findUserById = vi.fn().mockResolvedValue(null);
     const result = await resolveAuthContextFromCookies({
       accessToken: "access",
@@ -108,7 +118,10 @@ describe("resolveAuthContextFromCookies", () => {
 
   it("returns null when refresh verifies but user no longer exists", async () => {
     jwt.verifyAccess = vi.fn().mockReturnValue(null);
-    jwt.verifyRefresh = vi.fn().mockReturnValue("u1");
+    jwt.verifyRefresh = vi.fn().mockReturnValue({
+      sub: "u1",
+      iat: 1_800_000_000,
+    });
     findUserById = vi.fn().mockResolvedValue(null);
     const result = await resolveAuthContextFromCookies({
       accessToken: undefined,
@@ -142,5 +155,49 @@ describe("resolveAuthContextFromCookies", () => {
       findUserById,
     });
     expect(result).toEqual({ authUser: null, newAccessToken: null });
+  });
+
+  it("returns null when the access token predates passwordChangedAt", async () => {
+    const passwordChangedAt = new Date("2027-06-01T00:00:00.000Z");
+    jwt.verifyAccess = vi.fn().mockReturnValue({
+      sub: "u1",
+      iat: Math.floor(passwordChangedAt.getTime() / 1000) - 60,
+    });
+    findUserById = vi.fn().mockResolvedValue({
+      ...sampleUser,
+      passwordChangedAt,
+    });
+    const result = await resolveAuthContextFromCookies({
+      accessToken: "old-access",
+      refreshToken: undefined,
+      jwt,
+      findUserById,
+    });
+    expect(result).toEqual({ authUser: null, newAccessToken: null });
+  });
+
+  it("accepts an access token issued after passwordChangedAt", async () => {
+    const passwordChangedAt = new Date("2027-06-01T00:00:00.000Z");
+    jwt.verifyAccess = vi.fn().mockReturnValue({
+      sub: "u1",
+      iat: Math.floor(passwordChangedAt.getTime() / 1000) + 60,
+    });
+    findUserById = vi.fn().mockResolvedValue({
+      ...sampleUser,
+      passwordChangedAt,
+    });
+    const result = await resolveAuthContextFromCookies({
+      accessToken: "new-access",
+      refreshToken: undefined,
+      jwt,
+      findUserById,
+    });
+    expect(result.authUser).toEqual({
+      id: "u1",
+      name: "Sam",
+      roles: ["member"],
+      authenticated: true,
+    });
+    expect(result.newAccessToken).toBeNull();
   });
 });

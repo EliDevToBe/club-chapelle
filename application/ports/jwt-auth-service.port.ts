@@ -22,8 +22,11 @@ export interface JwtAuthService {
    * or `null` if invalid, expired, or not an invitation token.
    */
   verifyInvitationToken: (token: string) => string | null;
-  /** Returns user id (`sub`) or `null` if invalid or expired. */
-  verifyAccess: (token: string) => string | null;
-  /** Returns user id (`sub`) or `null` if invalid or expired. */
-  verifyRefresh: (token: string) => string | null;
+  /**
+   * Session tokens only: returns `sub` and `iat` (seconds since epoch) or `null`.
+   * `iat` is used to reject tokens issued before `auth_user.password_changed_at`.
+   */
+  verifyAccess: (token: string) => { sub: string; iat: number } | null;
+  /** Same as `verifyAccess` for the refresh cookie. */
+  verifyRefresh: (token: string) => { sub: string; iat: number } | null;
 }

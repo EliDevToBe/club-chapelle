@@ -1,6 +1,6 @@
 import type { H3Event } from "h3";
 import { describe, expect, it } from "vitest";
-import { requireRoles } from "~~/server/utils/rbac";
+import { requireAuthenticated, requireRoles } from "~~/server/utils/rbac";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
 const baseEvent = {
@@ -178,6 +178,43 @@ describe("requireRoles", () => {
     } as unknown as H3Event;
 
     expect(() => requireRoles(event, ["admin"])).toThrow(
+      expect.objectContaining({
+        statusCode: 401,
+        data: { reason: API_ERROR_REASON.common.unauthenticated },
+      }),
+    );
+  });
+});
+
+describe("requireAuthenticated", () => {
+  it("allows any authenticated user", () => {
+    expect(() => requireAuthenticated(baseEvent)).not.toThrow();
+  });
+
+  it("rejects when the session is not authenticated", () => {
+    const event = {
+      ...baseEvent,
+      context: {
+        ...baseEvent.context,
+        authUser: {
+          ...baseEvent.context.authUser,
+          authenticated: false,
+        },
+      },
+    } as unknown as H3Event;
+
+    expect(() => requireAuthenticated(event)).toThrow(
+      expect.objectContaining({
+        statusCode: 401,
+        data: { reason: API_ERROR_REASON.common.unauthenticated },
+      }),
+    );
+  });
+
+  it("rejects when authUser is missing", () => {
+    const event = { context: {} } as unknown as H3Event;
+
+    expect(() => requireAuthenticated(event)).toThrow(
       expect.objectContaining({
         statusCode: 401,
         data: { reason: API_ERROR_REASON.common.unauthenticated },

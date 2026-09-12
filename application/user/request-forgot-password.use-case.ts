@@ -2,14 +2,8 @@ import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port"
 import type { TokenRepository } from "~~/application/ports/token-repository.port";
 import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
 import type { UserRepository } from "~~/application/ports/user-repository.port";
+import type { EmailOptions } from "~~/domain/mail/email-options";
 import { FORGOT_PASSWORD_TOKEN_MAX_AGE_SECONDS } from "~~/shared/auth/jwt-lifetimes";
-
-export type RequestForgotPasswordOptions = {
-  fromEmail: string;
-  fromName: string;
-  templateId: string;
-  passwordResetOrigin: string;
-};
 
 export class RequestForgotPassword {
   constructor(
@@ -17,7 +11,7 @@ export class RequestForgotPassword {
     private readonly tokens: TokenRepository,
     private readonly jwt: JwtAuthService,
     private readonly mail: TransactionalMailPort,
-    private readonly options: RequestForgotPasswordOptions,
+    private readonly options: EmailOptions,
   ) {}
 
   public request = async (input: { email: string }): Promise<void> => {
@@ -27,7 +21,7 @@ export class RequestForgotPassword {
       return;
     }
 
-    const row = await this.users.findByEmailForPasswordReset(email);
+    const row = await this.users.findByEmailWithPasswordHash(email);
     if (!row) {
       console.info("RequestForgotPassword: User not found");
       return;
@@ -52,16 +46,13 @@ export class RequestForgotPassword {
       expiresAt,
     });
 
-    const resetUrl = new URL(
-      "/reset-password",
-      this.options.passwordResetOrigin,
-    );
+    const resetUrl = new URL("/reset-password", this.options.siteOrigin);
     resetUrl.searchParams.set("t", tokenString);
 
     const recoveryLink = resetUrl.toString();
     const privacyPolicyUrl = new URL(
       "/privacy-policy",
-      this.options.passwordResetOrigin,
+      this.options.siteOrigin,
     ).toString();
 
     const displayName = row.name?.trim() || "Archer·ère";

@@ -77,11 +77,13 @@
         </p>
         <p>
           <span :class="ui.listObject">Durée : </span>
-          <span
-            >tant que l’accès est actif. Après révocation ou période
-            d'inactivité (1 an), effacement des données. Une ré-invitation est
-            nécessaire pour accéder à nouveau à l'espace membre.</span
-          >
+          <span>
+            tant que l’accès est actif. Vous pouvez rectifier votre nom, votre
+            e-mail et votre mot de passe depuis vos paramètres, ou supprimer
+            vous-même votre compte. Après suppression ou période d'inactivité
+            (+1 an), effacement des données. Une ré-invitation sera nécessaire
+            pour accéder à nouveau à l'espace membre.
+          </span>
         </p>
       </ContentTextWrapper>
     </ChapSection>
@@ -265,7 +267,9 @@
         <p>
           Vous pouvez demander l’accès, la rectification, l’effacement, la
           limitation, l’opposition, et la portabilité lorsque le droit
-          l’applique. Écrivez à
+          l’applique. Les membres connectés peuvent aussi rectifier leur nom,
+          leur e-mail et leur mot de passe, ou révoquer leur accès, depuis
+          <ChapLink to="/settings" label="leurs paramètres" />. Écrivez à
           <ChapLink
             :to="`mailto:${contactEmail}`"
             :label="contactEmail"

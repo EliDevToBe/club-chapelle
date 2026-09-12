@@ -1,4 +1,5 @@
 import { authResetPasswordBodySchema } from "~~/app/schemas/auth-flow.zod";
+import { enrichSessionPublicName } from "~~/application/user/enrich-session-public-name";
 import { ResetPassword } from "~~/application/user/reset-password.use-case";
 import { createAuthServices } from "~~/infrastructure/auth/auth-services.provider";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
@@ -26,7 +27,8 @@ export default defineEventHandler(async (event) => {
     throw ApiError(API_ERROR_REASON.common.invalid_request);
   }
 
-  const { userRepository, passwordResetPersistence } = getRepositories();
+  const { userRepository, passwordResetPersistence, archerRepository } =
+    getRepositories();
   const authServices = createAuthServices({
     accessSecret,
     refreshSecret,
@@ -47,5 +49,9 @@ export default defineEventHandler(async (event) => {
   }
 
   setAuthSessionCookies(event, result.accessToken, result.refreshToken);
-  return { ok: true, session: result.session };
+  const session = await enrichSessionPublicName(
+    result.session,
+    archerRepository,
+  );
+  return { ok: true, session };
 });

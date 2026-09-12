@@ -14,7 +14,10 @@ export class PrismaPasswordResetPersistence
       await prismaClient.$transaction(async (tx) => {
         await tx.auth_user.update({
           where: { id: input.authUserId },
-          data: { password: input.passwordHash },
+          data: {
+            password: input.passwordHash,
+            password_changed_at: new Date(),
+          },
         });
 
         const tokenResult = await tx.token.updateMany({

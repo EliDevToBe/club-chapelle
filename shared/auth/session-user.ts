@@ -4,5 +4,6 @@ import type { RoleEnum } from "~~/shared/db-enums";
 export type SessionUser = {
   id: string;
   name: string | null;
+  public_name: string | null;
   roles: RoleEnum[];
 };

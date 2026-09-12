@@ -2,10 +2,8 @@ import type { InviteMemberPersistence } from "~~/application/ports/invite-member
 import type { JwtAuthService } from "~~/application/ports/jwt-auth-service.port";
 import type { TokenRepository } from "~~/application/ports/token-repository.port";
 import type { TransactionalMailPort } from "~~/application/ports/transactional-mail.port";
-import {
-  SendInvitationEmail,
-  type SendInvitationEmailOptions,
-} from "~~/application/user/send-invitation-email";
+import { SendInvitationEmail } from "~~/application/user/send-invitation-email";
+import type { EmailOptions } from "~~/domain/mail/email-options";
 import type { User } from "~~/domain/user/user";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 
@@ -29,7 +27,7 @@ export class InviteArcherShell {
     tokens: TokenRepository,
     jwt: JwtAuthService,
     mail: TransactionalMailPort,
-    options: SendInvitationEmailOptions,
+    options: EmailOptions,
   ) {
     this.sendInvitationEmail = new SendInvitationEmail(
       tokens,

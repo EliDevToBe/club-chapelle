@@ -36,7 +36,7 @@
         variant="link"
         to="https://archers-chapelle.sirv.com/Images/dakos.jpg"
         target="_blank"
-        label="Avec ❤️ pour les Archers de La Chapelle"
+        label="Avec ❤️ pour les Archers de la Chapelle"
         class="text-muted"
       />
     </template>

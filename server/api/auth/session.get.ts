@@ -1,23 +1,16 @@
-import type { H3Event } from "h3";
 import { defineEventHandler } from "h3";
-import type { SessionUser } from "~~/shared/auth/session-user";
+import { enrichSessionPublicName } from "~~/application/user/enrich-session-public-name";
+import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { resolveSessionFromEvent } from "~~/server/utils/resolve-session-from-event";
 
-export const resolveSessionFromEvent = (
-  event: H3Event,
-): { session: SessionUser | null } => {
-  const authUser = event.context.authUser;
-  if (!authUser?.authenticated) {
-    return { session: null };
+export default defineEventHandler(async (event) => {
+  const snapshot = resolveSessionFromEvent(event);
+  if (!snapshot.session) {
+    return snapshot;
   }
 
-  const session: SessionUser = {
-    id: authUser.id,
-    name: authUser.name,
-    roles: authUser.roles,
+  const { archerRepository } = getRepositories();
+  return {
+    session: await enrichSessionPublicName(snapshot.session, archerRepository),
   };
-  return { session };
-};
-
-export default defineEventHandler(async (event) =>
-  resolveSessionFromEvent(event),
-);
+});

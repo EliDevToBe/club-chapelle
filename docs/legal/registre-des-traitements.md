@@ -5,7 +5,7 @@ Internal document for Les Archers de La Chapelle (ARC18). This is the associatio
 **Data controller:** Les Archers de La Chapelle (association).  
 **Contact:** the public contact e-mail on the site (`contact_email` in site settings).  
 **DPO:** none designated (small sports association; no large-scale systematic monitoring).  
-**Last reviewed:** 2026-08-25.
+**Last reviewed:** 2026-09-07.
 
 | Purpose | Data | Legal basis | Recipients | Retention (indicative) |
 | --- | --- | --- | --- | --- |
@@ -13,6 +13,7 @@ Internal document for Les Archers de La Chapelle (ARC18). This is the associatio
 | Member accounts (invitation only) | Name, e-mail, password hash (Argon2id), roles | Legitimate interest / running the membership | Officers with access rights; hosting provider | While access is active; login removed on revoke |
 | Club operations (archers, competitions, participations, **fee status**) | Public name, event data, registration and payment **status** (no card data; no online payment) | Legitimate interest of club life; accounting duties where they apply | Officers (Admin/Manager per RBAC) | After unlink, archer row and history remain (Archer shell); season plus limited archive |
 | Password recovery | E-mail, one-time token | Legitimate interest (account security) | Mailtrap | Until `used_at` or about 1 hour |
+| E-mail change (member profile) | Current password check; new e-mail; hashed one-time code | Legitimate interest (account security / rectification) | Mailtrap (code to the new address only) | Until the code is used, cancelled, or about 15 minutes |
 | Session cookies (`club-access`, `club-refresh`) | JWT in HttpOnly cookies | Legitimate interest (strictly necessary auth) | Browser of the signed-in user only | Access ~20 minutes; refresh 7 days |
 | Landing carousel photos | Image files; possibly identifiable people | Legitimate interest of club life and/or consent (especially minors) | Sirv (CDN); public visitors | While published; removal on request |
 | Facebook news (Actualités) | Public page posts fetched server-side | Legitimate interest (communication) | Hosting; outbound links to Meta | No lasting copy of visitor data; no visitor tracking cookies |

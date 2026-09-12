@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware(async (to, _from) => {
   const { user, isAdmin, hydrateIfNeeded } = useAuthUser();
 
   const adminRoutes = ["/admin"];
-  const needAuthRoutes = ["/competitions"];
+  const needAuthRoutes = ["/competitions", "/settings"];
   const authRequiredRoutes = [...adminRoutes, ...needAuthRoutes];
   const preventAuthRoutes = ["/login", "/reset-password", "/accept-invite"];
 
