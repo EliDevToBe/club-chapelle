@@ -40,8 +40,9 @@ export interface InviteMemberPersistence {
   ) => Promise<CreateInvitedMemberResult>;
 
   /**
-   * Creates or reuses an invited `auth_user` and links it to an existing
-   * unlinked archer shell.
+   * Creates a fresh invited `auth_user` (member role) and links it to an
+   * existing unlinked archer shell. Clears `offboarded_at` when re-inviting
+   * an archived shell.
    */
   bindInvitedMemberToArcher: (
     input: BindInvitedMemberToArcherInput,

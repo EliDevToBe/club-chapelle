@@ -6,10 +6,10 @@ import {
 } from "~~/infrastructure/persistence/user/member-roster-query.where";
 
 describe("buildMemberRosterWhere", () => {
-  it("always excludes archers linked to a developer account and non-archived shells by default", () => {
-    expect(buildMemberRosterWhere({})).toEqual({
-      AND: [excludeDeveloperFromRosterWhere(), { offboarded_at: null }],
-    });
+  it("always excludes archers linked to a developer account and includes archived by default", () => {
+    expect(buildMemberRosterWhere({})).toEqual(
+      excludeDeveloperFromRosterWhere(),
+    );
     expect(excludeDeveloperFromRosterWhere()).toEqual({
       auth_user: {
         isNot: {
@@ -27,7 +27,6 @@ describe("buildMemberRosterWhere", () => {
     expect(buildMemberRosterWhere({ search: "robin" })).toEqual({
       AND: [
         excludeDeveloperFromRosterWhere(),
-        { offboarded_at: null },
         {
           OR: [
             {
@@ -112,7 +111,6 @@ describe("buildMemberRosterWhere", () => {
     expect(buildMemberRosterWhere({ role: "manager" })).toEqual({
       AND: [
         excludeDeveloperFromRosterWhere(),
-        { offboarded_at: null },
         {
           auth_user: {
             is: {

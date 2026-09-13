@@ -182,6 +182,13 @@ describe("InviteMember", () => {
       passwordHash: null,
     });
     users.findById = vi.fn().mockResolvedValue(existingInvited);
+    archers.findLinkedByAuthUserId = vi.fn().mockResolvedValue({
+      id: "a-pending",
+      publicName: existingInvited.name,
+      authUserId: existingInvited.id,
+      createdAt: new Date("2026-08-01"),
+      offboardedAt: null,
+    });
 
     const handler = new InviteMember(
       users,
@@ -216,6 +223,13 @@ describe("InviteMember", () => {
       authenticated: false,
       passwordHash: null,
     });
+    archers.findLinkedByAuthUserId = vi.fn().mockResolvedValue({
+      id: "a-pending",
+      publicName: existingInvited.name,
+      authUserId: existingInvited.id,
+      createdAt: new Date("2026-08-01"),
+      offboardedAt: null,
+    });
 
     const handler = new InviteMember(
       users,
@@ -235,6 +249,38 @@ describe("InviteMember", () => {
     expect(result).toEqual({
       ok: false,
       reason: API_ERROR_REASON.invitation.account_already_invited,
+    });
+    expect(persistence.createInvitedMember).not.toHaveBeenCalled();
+    expect(tokens.issueToken).not.toHaveBeenCalled();
+  });
+
+  it("rejects when auth_user exists but is not linked to an archer", async () => {
+    users.findByEmailWithPasswordHash = vi.fn().mockResolvedValue({
+      id: "u-orphan",
+      email: "orphan@club.test",
+      name: "Orphan",
+      authenticated: false,
+      passwordHash: null,
+    });
+    archers.findLinkedByAuthUserId = vi.fn().mockResolvedValue(null);
+
+    const handler = new InviteMember(
+      users,
+      archers,
+      persistence,
+      tokens,
+      jwt,
+      mail,
+      options,
+    );
+    const result = await handler.invite({
+      name: "Orphan",
+      email: "orphan@club.test",
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      reason: API_ERROR_REASON.common.invalid_request,
     });
     expect(persistence.createInvitedMember).not.toHaveBeenCalled();
     expect(tokens.issueToken).not.toHaveBeenCalled();
