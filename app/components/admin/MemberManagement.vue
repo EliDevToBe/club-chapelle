@@ -432,7 +432,7 @@ const statusBadgeColor = (
 };
 
 const canEditPublicName = (row: MemberRow): boolean => {
-  return row.status !== "archived" && Boolean(row.archer_id);
+  return Boolean(row.archer_id);
 };
 
 const canEditRowRole = (row: MemberRow): boolean => {

@@ -12,8 +12,8 @@ export type RevokeMemberAccessResult =
 
 export interface RevokeMemberAccessPersistence {
   /**
-   * Unlinks all archers from the user, clears password, sets authenticated
-   * false, and revokes unused tokens. Keeps the auth_user row.
+   * Unlinks all archers from the user, then deletes the auth_user row (roles
+   * and tokens cascade). Archer shells and participations remain.
    */
   revokeAccess: (userId: UserId) => Promise<boolean>;
 }

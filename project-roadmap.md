@@ -184,7 +184,7 @@ _Order: persistence and authenticated Admin surfaces before exposing mutations; 
 - [x] ✅ **Invitation privacy notice:** e-mail template variables include **`privacy_policy_url`**; activation form shows an **information** notice + `/privacy-policy` (no public CGU checkbox).
 - [ ] **RBAC** matches **inheritance** (Admin > Manager > Member) **or** document a deliberate exception and get product sign-off — today’s `requireRoles` uses **explicit** role lists (`server/utils/rbac.ts`).
 - [x] ✅ **Promote** Member → Manager; **demote** Manager → Member (Admin-only per matrix): roster role picker + `PATCH /api/users/:id/role` (replaces the role set). Self-edit blocked. Any **Admin** may promote to **Admin**; only **`developer`** may demote an **Admin** (Admin-on-Admin demote is a UI no-op + info toast); last Admin is protected. **`developer`** is not assignable. RBAC inheritance unchanged (explicit allow-lists).
-- [x] ✅ **Revoke** access and **unlink** login from **Archer** without deleting historical participations (Admin-only; **Archer shell** invariant in §4.1): `POST /api/users/:id/revoke`, roster `...` menu + confirm modal; disables login and keeps `auth_user`.
+- [x] ✅ **Revoke** access and **unlink** login from **Archer** without deleting historical participations (Admin-only; **Archer shell** invariant in §4.1): `POST /api/users/:id/revoke`, roster `...` menu + confirm modal; deletes `auth_user` (roles/tokens cascade); archer shell remains.
 - [ ] **Admin overview** surface: consolidated management for members, roles, and quick paths toward fee workflows (see also v2.5).
 
 ---

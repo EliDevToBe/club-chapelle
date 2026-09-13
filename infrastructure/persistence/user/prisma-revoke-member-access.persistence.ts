@@ -20,21 +20,8 @@ export class PrismaRevokeMemberAccessPersistence
         data: { auth_user_id: null },
       });
 
-      await tx.auth_user.update({
+      await tx.auth_user.delete({
         where: { id: userId },
-        data: {
-          authenticated: false,
-          password: null,
-        },
-      });
-
-      await tx.token.updateMany({
-        where: {
-          auth_user_id: userId,
-          used_at: null,
-          revoked_at: null,
-        },
-        data: { revoked_at: new Date() },
       });
 
       return true;

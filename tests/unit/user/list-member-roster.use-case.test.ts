@@ -220,6 +220,26 @@ describe("ListMemberRoster", () => {
     expect(page.items[0]?.invitedAt).toBe(resentInvitationAt);
   });
 
+  it("sorts archived rows after shell rows", async () => {
+    const rosterQuery: MemberRosterQuery = {
+      findMatching: vi.fn().mockResolvedValue({
+        rows: [archivedRow, shellRow, activeRow],
+      }),
+    };
+
+    const handler = new ListMemberRoster(rosterQuery);
+    const page = await handler.findPage({
+      limit: 10,
+      offset: 0,
+    });
+
+    expect(page.items.map((item) => item.status)).toEqual([
+      "active",
+      "shell",
+      "archived",
+    ]);
+  });
+
   it("slices the sorted roster using limit and offset", async () => {
     const rosterQuery: MemberRosterQuery = {
       findMatching: vi.fn().mockResolvedValue({

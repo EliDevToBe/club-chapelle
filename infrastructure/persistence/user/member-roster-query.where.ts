@@ -26,7 +26,11 @@ export const buildMemberRosterWhere = (
     conditions.push({
       offboarded_at: { not: null },
     });
-  } else {
+  } else if (
+    input.status === "active" ||
+    input.status === "invited" ||
+    input.status === "shell"
+  ) {
     conditions.push({
       offboarded_at: null,
     });
