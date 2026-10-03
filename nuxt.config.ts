@@ -9,6 +9,15 @@ export default defineNuxtConfig({
     },
   },
 
+  ui: {
+    colorMode: false,
+  },
+  app: {
+    head: {
+      htmlAttrs: { class: "dark" },
+    },
+  },
+
   css: ["~/assets/css/main.css"],
 
   compatibilityDate: "2025-07-15",
