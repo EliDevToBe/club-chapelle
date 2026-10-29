@@ -15,16 +15,16 @@ This document describes goals, functional requirements, role permissions, domain
 - Staff can create a competition, attach participants, and see **who still owes a fee** in one overview.
 - A **Member** can log in and see **only** their participations (and public competition listings as defined).
 - **Revoking** access does not erase historical participation data (see **Archer shell** below).
-- Public visitors can navigate **landing**, **infos**, and **Actualités**, reach the club through the **contact footer** on every page, view a **landing carousel** of **images curated by the club** (see **MVP** under §2 and §10.1), read **recent club news** from the **Facebook feed** (v0.8), and reach **Instagram** and **Facebook** profile links.
-- **Admins** can update **contact settings** (v1.1) and **Infos créneaux in place** on `/infos` (v1.2 POC) without code changes; remaining Infos/Accueil copy blocks follow later v1.2 slices.
+- Public visitors can navigate the **landing one-pager** (including the practical **Informations** section) and **Actualités**, reach the club through the **contact footer** on every page, view a **landing carousel** of **images curated by the club** (see **MVP** under §2 and §10.1), read **recent club news** from the **Facebook feed** (v0.8), and reach **Instagram** and **Facebook** profile links.
+- **Admins** can update **contact settings** (v1.1) and **créneaux in place** on the landing **Informations** section (v1.2 POC) without code changes; remaining Infos/Accueil copy blocks follow later v1.2 slices.
 
 ## 2. Public website
 
 
 | Area                    | Purpose                                                                                              |
 | ----------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Landing**             | First impression, key messages, entry to the rest of the site.                                       |
-| **Infos**               | Practical and club information (schedule, pricing, club philosophy—see **Editable public content**). |
+| **Landing**             | One-pager: hero welcome, Admin-editable **featured event**, **Découvrir** cards (social links for now), club philosophy with the curated carousel, and **Informations** (`#informations`). |
+| **Infos**               | The landing **Informations** section (introduction, tarifs, créneaux—see **Editable public content**); `/infos` redirects to `/#informations`. |
 | **Contact**             | Footer block on **every page** (anchor `#contact`; `/contact` redirects there): **site settings** (email, address, social links) plus the **contact form**; not a CMS page. |
 | **Actualités**          | Public **Facebook feed** (v0.8): read-only recent posts with links to each post on Facebook.         |
 | **Legal notice**        | LCEN publisher and host identification (`/legal-notice`); identity fields from **site settings**. |
@@ -33,7 +33,7 @@ This document describes goals, functional requirements, role permissions, domain
 
 **Navigation**
 
-- Sticky header: the club glyph links to **Accueil**; public links **Infos**, **Contact** (scrolls to the contact footer), and **Actualités** only while the `facebook_feed` flag is on; then **Se connecter**, or once signed in an **account menu** (**Compétitions** when its flag is on, **Admin** for Admins, **Paramètres**, **Se déconnecter**).
+- Sticky header: the club glyph links to **Accueil**; public links **Infos** (scrolls to `#informations` on the landing), **Contact** (scrolls to the contact footer), and **Actualités** only while the `facebook_feed` flag is on; then **Se connecter**, or once signed in an **account menu** (**Compétitions** when its flag is on, **Admin** for Admins, **Paramètres**, **Se déconnecter**).
 - The header is transparent at the top of the page and turns into a dark translucent bar on scroll so orange links stay legible over content.
 
 **Social feed (v0.8 — Actualités)**
@@ -63,10 +63,10 @@ This document describes goals, functional requirements, role permissions, domain
 **Editable public content (v1.2)**
 
 - **Admin-managed** content blocks, also in JSON **`website_config`**:
-  - **Accueil:** welcome / foreword (`homepage_welcome`) — title, optional subtitle, paragraphs.
+  - **Accueil:** welcome / foreword (`homepage_welcome`) — title (screen-reader only under the hero title), optional subtitle, paragraphs; **featured event** (`featured_event`) — on/off, title (screen-reader only), image URL and alt text, paragraphs, button label and link. Image URLs must be absolute `http(s)`; the button link may also be a site path starting with `/`; any other scheme (`javascript:`, `data:`, `//host`) is rejected.
   - **Infos:** introduction (`infos_introduction`); **créneaux** (structured availability list under **`opening_hours`**, including the Infos section title and optional subtitle); **tarifs** (structured pricing list under **`tarifs`**: title, optional subtitle, intro, label/amount rows, styled callout segments); club philosophy (`club_philosophy`).
 - **Hybrid editing model:** paragraphs are **text blocks**; créneaux and tarifs are **structured lists** with typed fields (labels, times, amounts)—not a single WYSIWYG page per section. Tarifs callout copy is a list of styled segments (`plain` / `highlight` / `emphasis`); a segment may insert the site-settings **contact email** as a `mailto:` link rather than storing an address.
-- **Schedule authority:** créneaux detail lives on **Infos**; **Admins** edit them **in place** on that page (gear beside the section title). Accueil welcome, Infos introduction, tarifs, and philosophy are Admin-editable **in place** on the public pages.
+- **Schedule authority:** créneaux detail lives in the landing **Informations** section; **Admins** edit them **in place** there (gear beside the section title). Accueil welcome, featured event, Infos introduction, tarifs, and philosophy are Admin-editable **in place** on the landing.
 
 **Media**
 
@@ -103,7 +103,7 @@ Capabilities are cumulative by level.
 | View public **Actualités** feed (Facebook; **§2**)                                                     | ✅     | ✅      | ✅    |
 | **Upload** and **curate** the **landing carousel** images (MVP club gallery; **§2**)                  | ❌     | ❌      | ✅    |
 | **Edit site settings** (contact email, address, social profile URLs; **v1.1**)                         | ❌     | ❌      | ✅    |
-| **Edit public content blocks** (Accueil welcome, Infos sections; **v1.2**)                             | ❌     | ❌      | ✅    |
+| **Edit public content blocks** (Accueil welcome, featured event, Informations sections; **v1.2**)       | ❌     | ❌      | ✅    |
 | Log in                                                                                                 | ✅     | ✅      | ✅    |
 | Browse **available competitions** (club-managed list/pool)                                             | ✅     | ✅      | ✅    |
 | View **own** participations                                                                            | ✅     | ✅      | ✅    |

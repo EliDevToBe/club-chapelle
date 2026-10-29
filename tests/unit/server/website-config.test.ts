@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { ZodError } from "zod";
 import {
+  mapFeaturedEventPatchError,
+  parseFeaturedEventPatchBody,
   parseFeatureFlagsPatchBody,
   parseHomepageCarouselPatchBody,
   parseOpeningHoursPatchBody,
@@ -9,6 +12,7 @@ import {
 } from "~~/server/utils/website-config";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 import { defaultFeatureFlags } from "~~/shared/website/feature-flags.schema";
+import { DEFAULT_FEATURED_EVENT } from "~~/shared/website/featured-event.seed";
 import { DEFAULT_OPENING_HOURS } from "~~/shared/website/opening-hours.seed";
 import { DEFAULT_TARIFS } from "~~/shared/website/tarifs.seed";
 import { DEFAULT_INFOS_INTRODUCTION } from "~~/shared/website/text-section.seed";
@@ -309,5 +313,60 @@ describe("parseTarifsPatchBody", () => {
         settings: DEFAULT_TARIFS,
       }),
     ).toEqual(DEFAULT_TARIFS);
+  });
+});
+
+describe("parseFeaturedEventPatchBody", () => {
+  it("rejects empty payloads", () => {
+    expect(() => {
+      return parseFeaturedEventPatchBody(null);
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.common.invalid_request },
+      }),
+    );
+  });
+
+  it("rejects a patch missing document fields", () => {
+    expect(() => {
+      return parseFeaturedEventPatchBody({
+        settings: { title: "T.E.A.M only" },
+      });
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.website.invalid_featured_event },
+      }),
+    );
+  });
+
+  it("returns a full featured-event document", () => {
+    expect(
+      parseFeaturedEventPatchBody({
+        settings: DEFAULT_FEATURED_EVENT,
+      }),
+    ).toEqual(DEFAULT_FEATURED_EVENT);
+  });
+});
+
+describe("mapFeaturedEventPatchError", () => {
+  it("maps validation errors to invalid_featured_event", () => {
+    expect(() => {
+      return mapFeaturedEventPatchError(new ZodError([]));
+    }).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        data: { reason: API_ERROR_REASON.website.invalid_featured_event },
+      }),
+    );
+  });
+
+  it("rethrows unrelated errors unchanged", () => {
+    const failure = new Error("database unavailable");
+
+    expect(() => {
+      return mapFeaturedEventPatchError(failure);
+    }).toThrow(failure);
   });
 });

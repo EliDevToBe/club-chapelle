@@ -96,3 +96,15 @@
     scroll-behavior: smooth;
   }
 }
+
+/* Driven by the `v-reveal` directive (app/plugins/reveal.ts). */
+.reveal {
+  transition:
+    opacity 700ms ease-out,
+    transform 700ms ease-out;
+}
+
+.reveal-pending {
+  opacity: 0;
+  transform: translateY(1.5rem);
+}

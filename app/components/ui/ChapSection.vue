@@ -8,12 +8,13 @@
         <div v-if="$slots.title" :class="ui.titleSlot">
           <slot name="title" />
         </div>
-        <div
+        <component
+          :is="isMainSection ? 'h2' : 'h3'"
           v-else-if="title"
           :class="isMainSection ? ui.mainTitle : ui.sectionTitle"
         >
           {{ title }}
-        </div>
+        </component>
 
         <div v-if="$slots['title-actions']" :class="ui.titleActions">
           <slot name="title-actions" />

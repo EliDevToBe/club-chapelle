@@ -1,18 +1,19 @@
 <template>
-  <ContentPageWrapper>
-    <IntroductionSection />
-
-    <CarouselSection class="mb-11" />
-
-    <div class="flex flex-col md:flex-row justify-between gap-9">
-      <ContactSection />
-      <SocialSection />
-    </div>
-  </ContentPageWrapper>
+  <div>
+    <HomeHero />
+    <FeaturedEventSection />
+    <DiscoverSection />
+    <PhilosophySection />
+    <InformationSection />
+  </div>
 </template>
 
 <script setup lang="ts">
-import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
+import DiscoverSection from "~/components/home/DiscoverSection.vue";
+import FeaturedEventSection from "~/components/home/FeaturedEventSection.vue";
+import HomeHero from "~/components/home/HomeHero.vue";
+import InformationSection from "~/components/home/InformationSection.vue";
+import PhilosophySection from "~/components/home/PhilosophySection.vue";
 
 definePageMeta({
   layout: "default",

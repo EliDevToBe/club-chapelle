@@ -6,6 +6,10 @@ export default defineAppConfig({
       neutral: "arc-grey",
     },
 
+    container: {
+      base: "w-full max-w-(--ui-container) mx-auto px-4 sm:px-8 lg:px-14",
+    },
+
     header: {
       slots: {
         center: "hidden md:flex",

@@ -24,8 +24,8 @@ export const useSiteNavItems = () => {
     items.push(
       {
         label: "Infos",
-        to: "/infos",
-        active: route.path.startsWith("/infos"),
+        to: { path: "/", hash: "#informations" },
+        active: false,
       },
       {
         label: "Contact",

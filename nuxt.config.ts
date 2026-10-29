@@ -73,7 +73,8 @@ export default defineNuxtConfig({
 
   routeRules: {
     // Club routes are now handled by the auth middleware
-    // Contact lives in the footer of every page.
+    // Infos and contact now live on the home one-pager and in the footer.
+    "/infos": { redirect: { to: "/#informations", statusCode: 301 } },
     "/contact": { redirect: { to: "/#contact", statusCode: 301 } },
   },
 });

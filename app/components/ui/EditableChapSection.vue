@@ -10,9 +10,13 @@
         :aria-label="ui.copy.titleAria"
         :placeholder="titlePlaceholder"
       />
-      <div v-else :class="titleClass">
+      <component
+        :is="isMainSection ? 'h2' : 'h3'"
+        v-else
+        :class="[titleClass, { 'sr-only': hideTitle }]"
+      >
         {{ title }}
-      </div>
+      </component>
     </template>
 
     <template v-if="enableSubtitle" #description>
@@ -77,6 +81,8 @@ const props = withDefaults(
     subtitle?: string;
     enableSubtitle?: boolean;
     isMainSection?: boolean;
+    /** Keeps the title for assistive tech and editing, but hides it visually (e.g. under the hero title). */
+    hideTitle?: boolean;
     isEditing: boolean;
     isAdmin?: boolean;
     pending?: boolean;
@@ -89,6 +95,7 @@ const props = withDefaults(
     subtitle: "",
     enableSubtitle: false,
     isMainSection: false,
+    hideTitle: false,
     isAdmin: false,
     pending: false,
     isSaving: false,
