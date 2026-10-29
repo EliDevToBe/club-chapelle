@@ -1,58 +1,49 @@
 <template>
-  <div
-    class="relative isolate min-h-dvh flex flex-col overflow-hidden bg-default"
-  >
-    <ChapWatermark>{{ backgroundCode }}</ChapWatermark>
-
-    <div class="relative z-10 flex flex-1 flex-col justify-center">
-      <div :class="ui.shell">
+  <UApp :locale="fr">
+    <NuxtLayout>
+      <SiteSection tone="base">
         <div :class="ui.body">
-          <h1 class="text-2xl font-semibold text-highlighted md:text-3xl">
-            {{ headline }}
-          </h1>
+          <p :class="ui.code" aria-hidden="true">{{ backgroundCode }}</p>
 
-          <p class="text-muted">
-            {{ subLine }}
-          </p>
+          <h1 :class="MAIN_SECTION_TITLE">{{ headline }}</h1>
 
-          <div v-if="statusLabel" class="text-sm text-dimmed">
-            {{ statusLabel }}
-          </div>
+          <p :class="ui.subLine">{{ subLine }}</p>
 
-          <div class="pt-2">
-            <UButton
-              color="primary"
-              size="lg"
-              label="Retour à l'accueil"
-              @click="goHome"
-              class="cursor-pointer"
-            />
+          <p v-if="statusLabel" :class="ui.status">{{ statusLabel }}</p>
+
+          <div class="pt-4">
+            <ChapButton label="Retour à l'accueil" @click="goHome" />
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+      </SiteSection>
+    </NuxtLayout>
+  </UApp>
 </template>
 
 <script setup lang="ts">
+import { fr } from "@nuxt/ui/locale";
 import type { NuxtError } from "#app";
-import ChapWatermark from "~/components/ui/ChapWatermark.vue";
+import SiteSection from "~/components/layout/SiteSection.vue";
+import ChapButton from "~/components/ui/ChapButton.vue";
+import { MAIN_SECTION_TITLE } from "~/components/ui/style";
+import { useAuthUser } from "~/composables/useAuthUser";
 
 const error = useError();
 
 const ui = {
-  backgroundCode: [
-    "select-none font-bold tabular-nums leading-none tracking-tighter",
-    "text-highlighted/[0.07] dark:text-highlighted/[0.11]",
-    "text-[min(36rem,58vw)] sm:text-[min(44rem,62vw)]",
-  ],
-  shell: [
-    "flex max-w-5xl flex-col",
-    "mx-auto px-4 py-8 md:py-12",
-    "text-muted",
-  ],
-  body: "flex flex-col gap-3 text-base leading-relaxed md:text-lg",
+  body: "flex min-h-[50dvh] flex-col justify-center gap-4",
+  code: "font-serif font-light leading-none text-primary-500 text-[clamp(6rem,20vw,13rem)]",
+  subLine: "text-lg text-muted",
+  status: "text-sm text-dimmed",
 };
+
+const { hydrateIfNeeded } = useAuthUser();
+
+try {
+  await hydrateIfNeeded();
+} catch {
+  // Render as a visitor if the session cannot be resolved.
+}
 
 const err = computed(() => error.value as NuxtError | undefined);
 

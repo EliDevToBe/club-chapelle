@@ -20,18 +20,15 @@ export class SubmitContactMessage {
   public submit = async (input: {
     name: string;
     email: string;
-    subject: string;
     message: string;
   }): Promise<SubmitContactMessageResult> => {
     const name = input.name.trim();
     const email = input.email.trim().toLowerCase();
-    const subjectRaw = input.subject.trim();
     const message = input.message.trim();
 
     const { success } = contactFormSchema.safeParse({
       name,
       email,
-      subject: subjectRaw,
       message,
     });
 

@@ -28,7 +28,7 @@ const ui = {
   root: "hidden md:block md:sticky md:top-24",
   link: [
     "w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-muted cursor-pointer",
-    "hover:bg-neutral-800/30 hover:text-neutral-300 transition-colors",
+    "hover:bg-muted hover:text-highlighted transition-colors",
   ],
   linkDanger: "text-error! hover:text-error! hover:bg-error/10!",
 };

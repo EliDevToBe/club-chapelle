@@ -2,74 +2,132 @@
 @import "@nuxt/ui";
 
 @theme static {
-  --color-brand-carrot-50: #fff4ef;
-  --color-brand-carrot-100: #ffeadf;
-  --color-brand-carrot-200: #ffd4bb;
-  --color-brand-carrot-300: #ffbe91;
-  --color-brand-carrot-400: #ffa857;
-  --color-brand-carrot-500: #f39300;
-  --color-brand-carrot-600: #c27400;
-  --color-brand-carrot-700: #905500;
-  --color-brand-carrot-800: #623800;
-  --color-brand-carrot-900: #371e00;
-  --color-brand-carrot-950: #241100;
+  /* ARC-18 2026 brand orange (#f07d00 is the designer's swatch). */
+  --color-arc-orange-50: #fff6eb;
+  --color-arc-orange-100: #ffead1;
+  --color-arc-orange-200: #ffd3a3;
+  --color-arc-orange-300: #ffb76a;
+  --color-arc-orange-400: #ff9a33;
+  --color-arc-orange-500: #f07d00;
+  --color-arc-orange-600: #c96800;
+  --color-arc-orange-700: #9a4f00;
+  --color-arc-orange-800: #763c00;
+  --color-arc-orange-900: #5c2f00;
+  --color-arc-orange-950: #361b00;
 
-  --color-brand-greenblue-50: #bbfcff;
-  --color-brand-greenblue-100: #36faff;
-  --color-brand-greenblue-200: #00dce1;
-  --color-brand-greenblue-300: #00c1c5;
-  --color-brand-greenblue-400: #00a4a7;
-  --color-brand-greenblue-500: #00878a;
-  --color-brand-greenblue-600: #006c6e;
-  --color-brand-greenblue-700: #005254;
-  --color-brand-greenblue-800: #003738;
-  --color-brand-greenblue-900: #002021;
-  --color-brand-greenblue-950: #001415;
+  /* Greys from the design: 100 page, 200 alternate section, 300 border, 600 text, 950 footer black. */
+  --color-arc-grey-50: #fafafa;
+  --color-arc-grey-100: #f2f2f2;
+  --color-arc-grey-200: #e4e4e4;
+  --color-arc-grey-300: #c5c5c5;
+  --color-arc-grey-400: #a3a3a2;
+  --color-arc-grey-500: #7c7c7b;
+  --color-arc-grey-600: #585857;
+  --color-arc-grey-700: #444443;
+  --color-arc-grey-800: #2b2b2a;
+  --color-arc-grey-900: #161a16;
+  --color-arc-grey-950: #000d00;
 
-  --color-brand-stone-50: #fff0cc;
-  --color-brand-stone-100: #ffe39e;
-  --color-brand-stone-200: #ffc639;
-  --color-brand-stone-300: #ffbb14;
-  --color-brand-stone-400: #eba700;
-  --color-brand-stone-500: #c28a00;
-  --color-brand-stone-600: #9e7100;
-  --color-brand-stone-700: #755400;
-  --color-brand-stone-800: #4d3600;
-  --color-brand-stone-900: #291d00;
-  --color-brand-stone-950: #140f00;
+  /* Newsreader for display and body copy; Jost stands in for Futura PT (unlicensed) on labels. */
+  --font-serif: "Newsreader", ui-serif, Georgia, serif;
+  --font-label: "Jost", "Futura PT", Futura, ui-sans-serif, sans-serif;
+  --default-font-family: var(--font-serif);
+}
 
-  /* --color-chapblack-50: #aeaeae; */
-  /* --color-chapblack-100: #a3a3a3; */
-  /* --color-chapblack-200: #8b8b8b; */
-  /* --color-chapblack-300: #777777; */
-  /* --color-chapblack-400: #636363; */
-  /* --color-chapblack-500: #4e4e4e; */
-  /* --color-chapblack-600: #3b3b3b; */
-  /* --color-chapblack-700: #2a2a2a; */
-  /* --color-chapblack-800: #181818; */
-  /* --color-chapblack-900: #000000; */
-  /* --color-chapblack-950: #000000; */
+:root {
+  --ui-radius: 0;
 
-  --color-chapblack-50: #00636f;
-  --color-chapblack-100: #005e68;
+  /* Page side gutter (container padding); ~55px on desktop as in the design grid. */
+  --container-gutter: 1rem;
 
-  /* --color-chapblack-200: #00545c; */
-  --color-chapblack-200: oklch(92.9% 0.013 255.508);
-  /* --color-chapblack-300: #00474d; */
-  --color-chapblack-300: oklch(86.9% 0.022 252.894);
-  /* --color-chapblack-400: #003e42; */
-  --color-chapblack-400: oklch(70.4% 0.04 256.788);
+  /*
+   * #f07d00 fails contrast on the light greys, so `primary` (text, icons, rings) uses the
+   * darker 700. Display titles and decorative fills opt into the bright brand 500 explicitly.
+   */
+  --ui-primary: var(--ui-color-primary-700);
 
-  /* --color-chapblack-500: #003437; */
-  --color-chapblack-500: oklch(55.4% 0.046 257.417);
-  --color-chapblack-600: #002b2d;
-  --color-chapblack-700: #002223;
-  /* --color-chapblack-800: #001717; */
-  /* --color-chapblack-800: oklch(28.799% 0.0374 252.215); */
-  --color-chapblack-800: oklch(27.8% 0.033 256.848);
-  /* --color-chapblack-800: #000a0a; */
-  /* --color-chapblack-900: #000a0a; */
-  /* --color-chapblack-900: #00090a; */
-  --color-chapblack-900: #000000;
-  --color-chapblack-950: #000505;
+  --ui-secondary: var(--ui-color-secondary-600);
+
+  --ui-text-dimmed: var(--ui-color-neutral-500);
+  --ui-text-muted: var(--ui-color-neutral-600);
+  --ui-text-toned: var(--ui-color-neutral-700);
+  --ui-text: var(--ui-color-neutral-700);
+  --ui-text-highlighted: var(--ui-color-neutral-950);
+  --ui-text-inverted: #fff;
+
+  --ui-bg: var(--ui-color-neutral-100);
+  --ui-bg-muted: var(--ui-color-neutral-200);
+  --ui-bg-elevated: var(--ui-color-neutral-200);
+  --ui-bg-accented: var(--ui-color-neutral-300);
+  --ui-bg-inverted: var(--ui-color-neutral-950);
+
+  --ui-border: var(--ui-color-neutral-300);
+  --ui-border-muted: var(--ui-color-neutral-200);
+  --ui-border-accented: var(--ui-color-neutral-400);
+  --ui-border-inverted: var(--ui-color-neutral-950);
+}
+
+/*
+ * Colour mode is off: `.dark` only scopes the "on black" palette to a subtree
+ * (footer, scrolled header), so Nuxt UI components inside adapt automatically.
+ */
+.dark {
+  --ui-primary: var(--ui-color-primary-500);
+  --ui-secondary: var(--ui-color-secondary-300);
+
+  --ui-text-dimmed: var(--ui-color-neutral-500);
+  --ui-text-muted: var(--ui-color-neutral-400);
+  --ui-text-toned: var(--ui-color-neutral-300);
+  --ui-text: #ececec;
+  --ui-text-highlighted: #fff;
+  --ui-text-inverted: var(--ui-color-neutral-950);
+
+  --ui-bg: var(--ui-color-neutral-950);
+  --ui-bg-muted: var(--ui-color-neutral-900);
+  --ui-bg-elevated: var(--ui-color-neutral-800);
+  --ui-bg-accented: var(--ui-color-neutral-700);
+  --ui-bg-inverted: #fff;
+
+  --ui-border: var(--ui-color-neutral-600);
+  --ui-border-muted: var(--ui-color-neutral-800);
+  --ui-border-accented: var(--ui-color-neutral-500);
+  --ui-border-inverted: #fff;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (width >= 40rem) {
+  :root {
+    --container-gutter: 2rem;
+  }
+}
+
+@media (width >= 64rem) {
+  :root {
+    --container-gutter: 3.5rem;
+  }
+}
+
+/* Pulls a block inside `UContainer` out to the right edge of the viewport. */
+@utility bleed-right {
+  margin-right: calc(
+    -1 *
+    (var(--container-gutter) + max(0px, (100vw - var(--ui-container)) / 2))
+  );
+}
+
+/* Driven by the `v-reveal` directive (app/plugins/reveal.ts). */
+.reveal {
+  transition:
+    opacity 700ms ease-out,
+    transform 700ms ease-out;
+}
+
+.reveal-pending {
+  opacity: 0;
+  transform: translateY(1.5rem);
 }

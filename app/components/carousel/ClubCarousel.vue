@@ -1,33 +1,46 @@
 <template>
-  <ChapSection title="Le club en photos">
+  <div :class="ui.root">
     <UCarousel
       v-slot="{ item }"
       loop
       dots
       wheel-gestures
-      class="w-full min-w-0"
+      :ui="{ container: 'ms-0', item: 'ps-0' }"
       :items="carouselItems"
-      :autoplay="{ delay: 4500 }"
+      :autoplay="autoplayOptions"
     >
       <img
         v-if="isCarouselSlide(item)"
         :src="item.src"
         :alt="item.alt"
         width="1200"
-        height="675"
-        class="aspect-video w-full rounded-lg object-contain"
+        height="840"
+        :class="ui.image"
         loading="lazy"
         decoding="async"
       />
     </UCarousel>
-  </ChapSection>
+  </div>
 </template>
 
 <script setup lang="ts">
-import ChapSection from "~/components/ui/ChapSection.vue";
+import { usePreferredReducedMotion } from "@vueuse/core";
 import { usePublicWebsiteConfig } from "~/composables/usePublicWebsiteConfig";
 
 const { publicCarouselConfigData } = usePublicWebsiteConfig();
+
+const AUTOPLAY_DELAY_MS = 4500;
+
+const prefersReducedMotion = usePreferredReducedMotion();
+
+/** No autoplay when the visitor prefers reduced motion. */
+const autoplayOptions = computed(() => {
+  if (prefersReducedMotion.value === "reduce") {
+    return false;
+  }
+
+  return { delay: AUTOPLAY_DELAY_MS };
+});
 
 type CarouselSlide = {
   src: string;
@@ -45,24 +58,30 @@ const isCarouselSlide = (value: unknown): value is CarouselSlide => {
   );
 };
 
+/** Landscape placeholders (Unsplash License) until the Admin curates the club's own photos. */
 const fallbackCarouselItems: CarouselSlide[] = [
   {
-    src: "https://images.unsplash.com/photo-1686445921828-d9c22e714f24?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    alt: "Archer tenant un arc classique en extérieur",
+    src: "https://images.unsplash.com/photo-1686445921828-d9c22e714f24?q=80&w=1600&auto=format&fit=crop",
+    alt: "Archère en pleine visée sur un terrain de tir extérieur",
   },
   {
-    src: "https://plus.unsplash.com/premium_photo-1718315735010-a382235a28b7?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    alt: "Cible de tir à l’arc avec flèches",
+    src: "https://images.unsplash.com/photo-1634188091931-6cb1aa2752db?q=80&w=1600&auto=format&fit=crop",
+    alt: "Archer à l'arc à poulies en pleine visée dans un jardin",
   },
   {
-    src: "https://images.unsplash.com/photo-1590585382453-8b749e9d5224?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    alt: "Archer traditionnel tenant un arc",
+    src: "https://images.unsplash.com/photo-1681752987706-e7345626a5da?q=80&w=1600&auto=format&fit=crop",
+    alt: "Trois cibles de tir à l'arc dans une salle",
   },
   {
-    src: "https://images.unsplash.com/photo-1510925758641-869d353cecc7?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    alt: "Archer visant à l'extérieur",
+    src: "https://images.unsplash.com/photo-1641531105535-1ead3c1784ab?q=80&w=1600&auto=format&fit=crop",
+    alt: "Jeune archer visant une cible en extérieur",
   },
 ];
+
+const ui = {
+  root: "min-w-0",
+  image: "aspect-[10/7] w-full object-cover",
+};
 
 const carouselItems = computed<CarouselSlide[]>(() => {
   const remoteItems = publicCarouselConfigData.value?.settings.data ?? [];
@@ -98,4 +117,3 @@ const carouselItems = computed<CarouselSlide[]>(() => {
 });
 </script>
 
-<style scoped lang=""></style>

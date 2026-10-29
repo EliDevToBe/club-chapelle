@@ -32,6 +32,7 @@
             :disabled="isSaving"
             :reorder-aria="`${ui.copy.reorderItemAria} ${itemIndex + 1}`"
             :remove-aria="`${ui.copy.removeItemAria} ${itemIndex + 1}`"
+            :bullet="false"
             @remove="removeItem(itemIndex)"
           >
             <span v-if="isEditing" :class="ui.editLine">
@@ -54,8 +55,10 @@
               />
             </span>
             <template v-else>
-              <span :class="ui.listMainElement">{{ item.label }} : </span>
-              <span :class="ui.amountView">{{ item.amount }}</span>
+              <span :class="LIST_ITEM_LABEL">{{ item.label }}</span>
+              <span :class="LIST_ITEM_DETAIL">
+                <span aria-hidden="true">-&gt; </span>{{ item.amount }}
+              </span>
             </template>
           </EditableChapListItem>
         </template>
@@ -160,6 +163,7 @@ import { useSortable } from "@vueuse/integrations/useSortable";
 import ContentTextWrapper from "~/components/layout/ContentTextWrapper.vue";
 import EditableChapListItem from "~/components/ui/EditableChapListItem.vue";
 import EditableChapSection from "~/components/ui/EditableChapSection.vue";
+import { LIST_ITEM_DETAIL, LIST_ITEM_LABEL } from "~/components/ui/style";
 import StructuredListBody from "~/components/website/StructuredListBody.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useSiteSettings } from "~/composables/useSiteSettings";
@@ -182,13 +186,11 @@ const styleOptions: { label: string; value: TarifsCalloutStyle }[] = [
 ];
 
 const ui = {
-  listMainElement: "text-default font-semibold",
-  amountView: "text-primary-500 font-semibold",
   editLine: "flex flex-wrap items-baseline gap-x-1 gap-y-1",
   inlineInput:
-    "min-w-[6ch] max-w-full bg-transparent border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary-500",
+    "min-w-[6ch] max-w-full bg-transparent border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary",
   labelInput: "font-semibold text-highlighted",
-  amountInput: "text-primary-500 font-semibold min-w-[8ch]",
+  amountInput: "text-primary font-semibold min-w-[8ch]",
   segmentsList: "flex flex-col gap-2",
   segmentRow: "flex flex-wrap items-center gap-2",
   dragHandle:
@@ -198,7 +200,7 @@ const ui = {
   segmentInput: "min-w-[12ch] flex-1 text-muted",
   addRow: "flex justify-center",
   emailLink:
-    "text-primary-500 font-bold hover:underline hover:underline-offset-4",
+    "text-primary font-bold hover:underline hover:underline-offset-4",
   copy: {
     editAria: "Modifier les tarifs",
     reorderItemAria: "Réordonner le tarif",
@@ -246,11 +248,11 @@ const visibleCalloutSegments = computed((): TarifsCalloutSegment[] => {
 
 const segmentClass = (segment: TarifsCalloutSegment): string | undefined => {
   if (segment.style === "highlight") {
-    return "text-default bg-secondary/40";
+    return "text-highlighted bg-primary/15";
   }
 
   if (segment.style === "emphasis") {
-    return "text-primary-500";
+    return "text-primary";
   }
 
   return undefined;

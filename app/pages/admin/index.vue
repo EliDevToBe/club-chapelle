@@ -3,7 +3,7 @@
     <ChapSection
       title="Administration"
       description="Gérez le club et le site depuis un seul espace."
-      :is-main-section="true"
+      :is-page-title="true"
     >
       <UTabs :items="tabs" default-value="club" class="w-full">
         <template #content="{ item }">
@@ -22,6 +22,10 @@ import ClubPanel from "~/components/admin/ClubPanel.vue";
 import WebsitePanel from "~/components/admin/WebsitePanel.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
+
+definePageMeta({
+  compactFooter: true,
+});
 
 useHead({
   title: "Admin - Arc18",

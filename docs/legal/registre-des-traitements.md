@@ -9,7 +9,7 @@ Internal document for Les Archers de La Chapelle (ARC18). This is the associatio
 
 | Purpose | Data | Legal basis | Recipients | Retention (indicative) |
 | --- | --- | --- | --- | --- |
-| Contact form | Name, e-mail, subject, message | Legitimate interest / pre-contractual steps | Club officers; Mailtrap | Duration of the exchange, then about 12 months; no prospecting file |
+| Contact form | Name, e-mail, message | Legitimate interest / pre-contractual steps | Club officers; Mailtrap | Duration of the exchange, then about 12 months; no prospecting file |
 | Member accounts (invitation only) | Name, e-mail, password hash (Argon2id), roles | Legitimate interest / running the membership | Officers with access rights; hosting provider | While access is active; account row deleted on revoke; archer operational data retained |
 | Club operations (archers, competitions, participations, **fee status**) | Public name, event data, registration and payment **status** (no card data; no online payment) | Legitimate interest of club life; accounting duties where they apply | Officers (Admin/Manager per RBAC) | After unlink, archer row and history remain (Archer shell); season plus limited archive |
 | Password recovery | E-mail, one-time token | Legitimate interest (account security) | Mailtrap | Until `used_at` or about 1 hour |

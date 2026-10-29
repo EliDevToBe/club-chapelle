@@ -8,8 +8,8 @@
     class="min-w-40"
     selected-icon="i-iconoir-arrow-archery"
     :ui="{
-      itemTrailingIcon: 'text-primary-500',
-      itemLeadingIcon: 'text-secondary-500',
+      itemTrailingIcon: 'text-primary',
+      itemLeadingIcon: 'text-muted',
     }"
   >
     <template #trailing>

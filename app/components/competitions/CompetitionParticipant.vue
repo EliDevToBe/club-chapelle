@@ -10,7 +10,7 @@
           <div class="flex items-center gap-1" v-if="row.session">
             <UIcon
               :name="sessionIcon[row.session as SessionEnum]"
-              class="size-3 text-secondary-200"
+              class="size-3 text-dimmed"
             />
             <span>{{ MEDIAN_PT }}</span>
           </div>

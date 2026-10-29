@@ -6,6 +6,7 @@ import {
 } from "~~/server/mappers/website-config.mapper";
 import { ApiError } from "~~/server/utils/api-error";
 import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
+import { hasFeaturedEventDocumentFields } from "~~/shared/website/featured-event.schema";
 import { hasOpeningHoursDocumentFields } from "~~/shared/website/opening-hours.schema";
 import { hasSiteSettingsPatchFields } from "~~/shared/website/site-settings.schema";
 import { hasTarifsDocumentFields } from "~~/shared/website/tarifs.schema";
@@ -36,6 +37,10 @@ type TextSectionPatchBody = {
 };
 
 type TarifsPatchBody = {
+  settings?: unknown;
+};
+
+type FeaturedEventPatchBody = {
   settings?: unknown;
 };
 
@@ -171,6 +176,33 @@ export const parseTarifsPatchBody = (
 export const mapTarifsPatchError = (error: unknown): never => {
   if (error instanceof ZodError) {
     throw ApiError(API_ERROR_REASON.website.invalid_tarifs);
+  }
+
+  throw error;
+};
+
+export const parseFeaturedEventPatchBody = (
+  body: FeaturedEventPatchBody | null | undefined,
+): Record<string, unknown> => {
+  if (!body || typeof body !== "object") {
+    throw ApiError(API_ERROR_REASON.common.invalid_request);
+  }
+
+  if (typeof body.settings !== "object" || body.settings === null) {
+    throw ApiError(API_ERROR_REASON.website.invalid_featured_event);
+  }
+
+  const patch = body.settings as Record<string, unknown>;
+  if (!hasFeaturedEventDocumentFields(patch)) {
+    throw ApiError(API_ERROR_REASON.website.invalid_featured_event);
+  }
+
+  return patch;
+};
+
+export const mapFeaturedEventPatchError = (error: unknown): never => {
+  if (error instanceof ZodError) {
+    throw ApiError(API_ERROR_REASON.website.invalid_featured_event);
   }
 
   throw error;
