@@ -29,7 +29,7 @@ export const useSiteNavItems = () => {
       },
       {
         label: "Contact",
-        to: { hash: "#contact" },
+        to: { path: "/", hash: "#contact" },
         active: false,
       },
     );

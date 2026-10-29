@@ -6,11 +6,13 @@
       <slot />
     </UMain>
 
-    <AppSiteFooter />
+    <AppSiteFooter :compact="route.meta.compactFooter === true" />
   </div>
 </template>
 
 <script setup lang="ts">
 import AppSiteFooter from "~/components/layout/AppSiteFooter.vue";
 import AppSiteHeader from "~/components/layout/AppSiteHeader.vue";
+
+const route = useRoute();
 </script>

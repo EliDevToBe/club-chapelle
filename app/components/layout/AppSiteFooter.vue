@@ -1,5 +1,9 @@
 <template>
-  <footer id="contact" :class="ui.root">
+  <footer v-if="compact" :class="ui.dark">
+    <SiteFooterBar />
+  </footer>
+
+  <footer v-else id="contact" :class="ui.root">
     <h2 class="sr-only">Contact</h2>
 
     <ContactMarquee />
@@ -45,41 +49,7 @@
         </div>
       </UContainer>
 
-      <div :class="ui.bottomBar">
-        <UContainer :class="ui.bottomContainer">
-          <p>© {{ currentYear }} {{ associationName }}</p>
-
-          <ul :class="ui.inlineList" aria-label="Affiliations">
-            <li v-for="affiliation in AFFILIATIONS" :key="affiliation.to">
-              <ULink :to="affiliation.to" target="_blank" :class="ui.bottomLink">
-                {{ affiliation.label }}
-              </ULink>
-            </li>
-          </ul>
-
-          <ul :class="ui.inlineList" aria-label="Informations légales">
-            <li>
-              <ULink to="/legal-notice" :class="ui.bottomLink">
-                Mentions légales
-              </ULink>
-            </li>
-            <li>
-              <ULink to="/privacy-policy" :class="ui.bottomLink">
-                Confidentialité
-              </ULink>
-            </li>
-            <li>
-              <ULink
-                to="https://archers-chapelle.sirv.com/Images/dakos.jpg"
-                target="_blank"
-                :class="ui.bottomLink"
-              >
-                Avec ❤️ pour les Archers de la Chapelle
-              </ULink>
-            </li>
-          </ul>
-        </UContainer>
-      </div>
+      <SiteFooterBar />
     </div>
   </footer>
 </template>
@@ -87,20 +57,16 @@
 <script setup lang="ts">
 import ContactForm from "~/components/contact/ContactForm.vue";
 import ContactMarquee from "~/components/layout/ContactMarquee.vue";
+import SiteFooterBar from "~/components/layout/SiteFooterBar.vue";
 import { useSiteSettings } from "~/composables/useSiteSettings";
-import { ASSOCIATION_LEGAL_NAME } from "~~/shared/website/site-settings.seed";
 
-const AFFILIATIONS = [
-  { label: "FFTA", to: "https://www.ffta.fr/" },
-  { label: "Comité régional Île-de-France", to: "https://www.tiralarcidf.com/" },
-  { label: "Comité départemental Paris", to: "https://www.tiralarc75.fr/" },
-];
+defineProps<{
+  /** Member area: footer bar only, without the CONTACT band and form. */
+  compact?: boolean;
+}>();
 
 const { contactEmail, clubAddress, instagramUrl, facebookUrl } =
   await useSiteSettings();
-
-const associationName = ASSOCIATION_LEGAL_NAME;
-const currentYear = new Date().getFullYear();
 
 const ui = {
   root: "scroll-mt-(--ui-header-height)",
@@ -120,10 +86,5 @@ const ui = {
     "relative z-10 w-48 sm:w-60 md:w-72 lg:w-80 h-auto",
     "md:-mt-36 lg:-mt-40",
   ],
-  bottomBar: "border-t border-default",
-  bottomContainer:
-    "flex flex-col gap-4 py-6 text-sm text-muted lg:flex-row lg:items-center lg:justify-between",
-  inlineList: "flex flex-wrap gap-x-5 gap-y-2",
-  bottomLink: "hover:text-highlighted transition-colors",
 };
 </script>

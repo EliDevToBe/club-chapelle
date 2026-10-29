@@ -32,6 +32,7 @@
             :disabled="isSaving"
             :reorder-aria="`${ui.copy.reorderAria} ${slotIndex + 1}`"
             :remove-aria="`${ui.copy.removeAria} ${slotIndex + 1}`"
+            :bullet="false"
             @remove="removeSlot(slotIndex)"
           >
             <span v-if="isEditing" :class="ui.editLine">
@@ -72,17 +73,20 @@
               />
             </span>
             <template v-else>
-              <span :class="[ui.listMainElement, scheduleClass(slot)]">
-                {{ slot.label }} de {{ slot.time_range }} :
+              <span :class="[LIST_ITEM_LABEL, scheduleClass(slot)]">
+                {{ slot.label }} de {{ slot.time_range }}
               </span>
-              <template v-if="slot.highlight && slot.highlight_text">
-                {{ " " }}
-                <span :class="ui.highlightText">{{ slot.highlight_text }}</span>
-              </template>
-              <template v-if="slot.audience">
-                {{ " " }}
-                <span :class="ui.audienceView">{{ slot.audience }}</span>
-              </template>
+              <span
+                v-if="(slot.highlight && slot.highlight_text) || slot.audience"
+                :class="LIST_ITEM_DETAIL"
+              >
+                <span aria-hidden="true">-&gt; </span>
+                <template v-if="slot.highlight && slot.highlight_text">
+                  <span :class="ui.highlightText">{{ slot.highlight_text }}</span>
+                  {{ " " }}
+                </template>
+                <span v-if="slot.audience">{{ slot.audience }}</span>
+              </span>
             </template>
 
             <template v-if="isEditing" #trailing>
@@ -122,6 +126,7 @@
 import ContentTextWrapper from "~/components/layout/ContentTextWrapper.vue";
 import EditableChapListItem from "~/components/ui/EditableChapListItem.vue";
 import EditableChapSection from "~/components/ui/EditableChapSection.vue";
+import { LIST_ITEM_DETAIL, LIST_ITEM_LABEL } from "~/components/ui/style";
 import StructuredListBody from "~/components/website/StructuredListBody.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useOpeningHours } from "~/composables/useOpeningHours";
@@ -134,9 +139,7 @@ import {
 } from "~~/shared/website/opening-hours.schema";
 
 const ui = {
-  listMainElement: "text-default font-semibold",
   highlightText: "text-highlighted font-semibold underline",
-  audienceView: "text-muted",
   editLine: "flex flex-wrap items-baseline gap-x-1 gap-y-1",
   inlineInput:
     "min-w-[6ch] max-w-full bg-transparent border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary",

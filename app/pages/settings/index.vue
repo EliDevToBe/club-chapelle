@@ -338,6 +338,7 @@ import { readApiErrorReason } from "~~/shared/utils/read-api-error.helper";
 
 definePageMeta({
   layout: "default",
+  compactFooter: true,
 });
 
 useHead({

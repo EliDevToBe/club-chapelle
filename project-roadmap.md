@@ -215,7 +215,7 @@ Covers the product through **v1.5** (not v2 calendars, not online payment). **No
 - [x] ✅ **Foundations:** light theme everywhere (forced dark removed), ARC-18 orange/grey palette, Newsreader + Jost (Futura PT stand-in), square corners; accessible darker orange for small text.
 - [x] ✅ **Shell:** sticky header (glyph, uppercase nav, account menu, dark bar on scroll), **CONTACT** marquee band, black contact footer with form, crest, legal links, and affiliations.
 - [x] ✅ **Home one-pager:** hero, featured event (Admin-editable `featured_event`), Découvrir cards, Philosophie + carousel, Informations (tarifs, créneaux); `/infos` redirects to `/#informations`; scroll-reveal (reduced-motion aware). Placeholder photos (Unsplash) until the club provides its own.
-- [ ] **Member surfaces:** login, settings, competitions, and admin restyled.
+- [x] ✅ **Member surfaces:** compact footer on `/admin`, `/settings`, `/competitions`; split login / password pages with the crest panel; error page inside the site shell; stacked tarifs and créneaux lists (Jost caps label, `->` detail).
 
 ---
 
@@ -266,6 +266,7 @@ _Can ship after v2 or be pulled earlier if the club prioritises fee follow-up._
 
 | Date       | Change                                                                 |
 | ---------- | ---------------------------------------------------------------------- |
+| 2026-10-29 | **Visual revamp — member surfaces:** compact member footer, split auth pages, error page in the shell, stacked tarifs/créneaux lists. |
 | 2026-10-29 | **Visual revamp — home one-pager:** hero, `featured_event` (Admin in-place edit), Découvrir, Philosophie + carousel, Informations; `/infos` → `/#informations`. |
 | 2026-10-29 | **Visual revamp:** foundations + shell shipped; contact moves to a footer on every page (`/contact` redirect), form drops **subject**; nav reduced to Infos · Contact with member links in the account menu. |
 | 2026-09-12 | **Password security:** `password_changed_at` invalidates older session JWTs on change/reset (current browser re-issued cookies); best-effort **password-changed warning e-mail** on settings change-password only. |

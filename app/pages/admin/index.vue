@@ -23,6 +23,10 @@ import WebsitePanel from "~/components/admin/WebsitePanel.vue";
 import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 
+definePageMeta({
+  compactFooter: true,
+});
+
 useHead({
   title: "Admin - Arc18",
 });

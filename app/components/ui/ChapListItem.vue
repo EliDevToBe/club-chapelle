@@ -4,7 +4,7 @@
       <span v-if="$slots.leading" :class="ui.leading">
         <slot name="leading" />
       </span>
-      <UIcon :name="ui.listIcon.icon" :class="ui.listIcon.class" />
+      <UIcon v-if="bullet" :name="ui.listIcon.icon" :class="ui.listIcon.class" />
       <span :class="ui.content">
         <slot />
       </span>
@@ -16,6 +16,16 @@
 </template>
 
 <script setup lang="ts">
+withDefaults(
+  defineProps<{
+    /** Leading arrow icon; off for stacked label/detail lists (tarifs, horaires). */
+    bullet?: boolean;
+  }>(),
+  {
+    bullet: true,
+  },
+);
+
 const ui = {
   listWrapper: "flex items-start md:items-center gap-2",
   leading: "shrink-0",

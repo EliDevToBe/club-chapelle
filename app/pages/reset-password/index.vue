@@ -1,8 +1,8 @@
 <template>
-  <ContentPageWrapper class="items-center">
+  <AuthPageShell>
     <ChapSection
       v-if="!recoveryToken"
-      class="place-self-center"
+     
       is-main-section
       title="Lien invalide ou expiré"
     >
@@ -22,14 +22,14 @@
         />
       </ChapSection>
     </div>
-  </ContentPageWrapper>
+  </AuthPageShell>
 </template>
 
 <script setup lang="ts">
 import AuthFlowForm, {
   type AuthFlowSubmitPayload,
 } from "~/components/auth/AuthFlowForm.vue";
-import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
+import AuthPageShell from "~/components/auth/AuthPageShell.vue";
 import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 import { useAuthUser } from "~/composables/useAuthUser";
