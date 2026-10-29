@@ -22,6 +22,7 @@ import { useChapToast } from "~/composables/useChapToasts";
 
 definePageMeta({
   layout: "default",
+  compactFooter: true,
 });
 
 useHead({

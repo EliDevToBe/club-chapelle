@@ -25,7 +25,7 @@ This document describes goals, functional requirements, role permissions, domain
 | ----------------------- | ---------------------------------------------------------------------------------------------------- |
 | **Landing**             | One-pager: hero welcome, Admin-editable **featured event**, **Découvrir** cards (social links for now), club philosophy with the curated carousel, and **Informations** (`#informations`). |
 | **Infos**               | The landing **Informations** section (introduction, tarifs, créneaux—see **Editable public content**); `/infos` redirects to `/#informations`. |
-| **Contact**             | Footer block on **every public page** (anchor `#contact`; `/contact` redirects there): **site settings** (email, address, social links) plus the **contact form**; not a CMS page. |
+| **Contact**             | Footer block on **public pages** (not auth or member pages) (anchor `#contact`; `/contact` redirects there): **site settings** (email, address, social links) plus the **contact form**; not a CMS page. |
 | **Actualités**          | Public **Facebook feed** (v0.8): read-only recent posts with links to each post on Facebook.         |
 | **Legal notice**        | LCEN publisher and host identification (`/legal-notice`); identity fields from **site settings**. |
 | **Privacy policy**      | GDPR/CNIL privacy policy (`/privacy-policy`), including strictly necessary session cookies.         |
@@ -35,7 +35,7 @@ This document describes goals, functional requirements, role permissions, domain
 
 - Sticky header: the club glyph links to **Accueil**; public links **Infos** (scrolls to `#informations` on the landing), **Contact** (`/#contact`, the contact footer), and **Actualités** only while the `facebook_feed` flag is on; then **Se connecter**, or once signed in an **account menu** (**Compétitions** when its flag is on, **Admin** for Admins, **Paramètres**, **Se déconnecter**).
 - The header is transparent at the top of the page and turns into a dark translucent bar on scroll so orange links stay legible over content.
-- **Member-area** pages (`/admin`, `/settings`, `/competitions`) use a **compact footer** (copyright, affiliations, legal links) without the CONTACT band and form.
+- **Member-area** pages (`/admin`, `/settings`, `/competitions`) and the **auth** pages (`/login`, `/reset-password`, `/accept-invite`) use a **compact footer** (copyright, affiliations, legal links) without the CONTACT band and form.
 
 **Social feed (v0.8 — Actualités)**
 

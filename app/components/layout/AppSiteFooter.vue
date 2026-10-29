@@ -61,7 +61,7 @@ import SiteFooterBar from "~/components/layout/SiteFooterBar.vue";
 import { useSiteSettings } from "~/composables/useSiteSettings";
 
 defineProps<{
-  /** Member area: footer bar only, without the CONTACT band and form. */
+  /** Member area and auth pages: footer bar only, without the CONTACT band and form. */
   compact?: boolean;
 }>();
 

@@ -215,7 +215,7 @@ Covers the product through **v1.5** (not v2 calendars, not online payment). **No
 - [x] ✅ **Foundations:** light theme everywhere (forced dark removed), ARC-18 orange/grey palette, Newsreader + Jost (Futura PT stand-in), square corners; accessible darker orange for small text.
 - [x] ✅ **Shell:** sticky header (glyph, uppercase nav, account menu, dark bar on scroll), **CONTACT** marquee band, black contact footer with form, crest, legal links, and affiliations.
 - [x] ✅ **Home one-pager:** hero, featured event (Admin-editable `featured_event`), Découvrir cards, Philosophie + carousel, Informations (tarifs, créneaux); `/infos` redirects to `/#informations`; scroll-reveal (reduced-motion aware). Placeholder photos (Unsplash) until the club provides its own.
-- [x] ✅ **Member surfaces:** compact footer on `/admin`, `/settings`, `/competitions`; split login / password pages with the crest panel; error page inside the site shell; stacked tarifs and créneaux lists (Jost caps label, `->` detail).
+- [x] ✅ **Member surfaces:** compact footer on `/admin`, `/settings`, `/competitions` and the auth pages; split login / password pages with the crest panel; error page inside the site shell; stacked tarifs and créneaux lists (Jost caps label, `->` detail).
 
 ---
 

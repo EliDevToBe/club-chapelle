@@ -38,6 +38,7 @@ import type { SessionUser } from "~~/shared/auth/session-user";
 
 definePageMeta({
   layout: "default",
+  compactFooter: true,
 });
 
 useHead({

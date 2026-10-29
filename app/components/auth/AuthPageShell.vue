@@ -22,7 +22,7 @@
 <script setup lang="ts">
 /** Login / password pages: form on the light side, black crest panel on desktop (echoes the footer). */
 const ui = {
-  root: "grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100dvh-var(--ui-header-height))]",
+  root: "grid grid-cols-1 lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--ui-header-height))]",
   formSide:
     "flex items-center justify-center px-(--container-gutter) py-16 lg:py-24",
   formInner: "w-full max-w-md",
