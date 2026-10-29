@@ -32,6 +32,8 @@
 </template>
 
 <script setup lang="ts">
+import { MAIN_SECTION_TITLE, SECTION_TITLE } from "./style";
+
 withDefaults(
   defineProps<{
     title?: string;
@@ -47,8 +49,8 @@ const ui = {
   titleRow: "group/title flex items-center gap-2 sm:relative",
   titleSlot: "min-w-0",
   titleActions: "shrink-0 sm:absolute sm:-translate-x-8",
-  mainTitle: "text-2xl font-semibold text-highlighted md:text-3xl",
-  sectionTitle: "text-lg font-semibold text-highlighted md:text-2xl",
+  mainTitle: MAIN_SECTION_TITLE,
+  sectionTitle: SECTION_TITLE,
   description: "text-muted text-sm",
 };
 </script>

@@ -19,10 +19,10 @@
   >
     <template v-if="createItemLabel" #create-item-label="{ item }">
       <div class="flex items-center gap-1 cursor-pointer">
-        <UIcon name="i-ph-plus-bold" class="size-4 text-primary-500" />
+        <UIcon name="i-ph-plus-bold" class="size-4 text-primary" />
         <span>
           {{ createItemLabel }}
-          <span :class="createItemClass || 'text-primary-500 font-semibold'">
+          <span :class="createItemClass || 'text-primary font-semibold'">
             {{ item }}
           </span>
         </span>

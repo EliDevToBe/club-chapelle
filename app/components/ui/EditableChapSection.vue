@@ -69,6 +69,7 @@
 
 <script setup lang="ts">
 import ChapSection from "~/components/ui/ChapSection.vue";
+import { MAIN_SECTION_TITLE, SECTION_TITLE } from "~/components/ui/style";
 
 const props = withDefaults(
   defineProps<{
@@ -117,9 +118,9 @@ const ui = {
   editTrigger:
     "opacity-0 transition-opacity duration-150 group-hover/title:opacity-100 group-focus-within/title:opacity-100 [@media(hover:none)]:opacity-100",
   inlineInput:
-    "w-full min-w-0 bg-transparent border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary-500",
-  mainTitle: "text-2xl font-semibold text-highlighted md:text-3xl",
-  sectionTitle: "text-lg font-semibold text-highlighted md:text-2xl",
+    "w-full min-w-0 bg-transparent border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary",
+  mainTitle: MAIN_SECTION_TITLE,
+  sectionTitle: SECTION_TITLE,
   description: "text-muted text-sm",
   actions: "flex justify-end gap-2 pt-2",
   copy: {

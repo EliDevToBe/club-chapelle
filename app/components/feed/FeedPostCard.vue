@@ -40,7 +40,7 @@
         <div class="relative">
           <div class="absolute inset-0">
             <div
-              class="absolute top-5 left-1/2 -translate-x-1/2 w-35 h-15 bg-secondary-200 rounded-full blur-[45px]"
+              class="absolute top-5 left-1/2 -translate-x-1/2 w-35 h-15 bg-default rounded-full blur-[45px]"
             ></div>
           </div>
 

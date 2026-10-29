@@ -30,7 +30,7 @@
           <ContentTextWrapper>
             <p>
               Au
-              <span class="text-primary-500">{{ clubAddress }}</span>
+              <span class="text-primary">{{ clubAddress }}</span>
             </p>
           </ContentTextWrapper>
         </ChapSection>

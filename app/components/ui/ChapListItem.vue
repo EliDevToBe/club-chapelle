@@ -23,7 +23,7 @@ const ui = {
   trailing: "shrink-0 flex items-center gap-1",
   listIcon: {
     icon: "i-ph-arrow-right-bold",
-    class: "mt-1 shrink-0 text-primary-500",
+    class: "mt-1 shrink-0 text-primary",
   },
 };
 </script>

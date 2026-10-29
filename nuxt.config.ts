@@ -14,8 +14,27 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      htmlAttrs: { class: "dark" },
+      htmlAttrs: { lang: "fr" },
     },
+  },
+
+  fonts: {
+    families: [
+      {
+        name: "Newsreader",
+        provider: "google",
+        weights: ["200 800"],
+        styles: ["normal", "italic"],
+        global: true,
+      },
+      {
+        name: "Jost",
+        provider: "google",
+        weights: ["400 800"],
+        styles: ["normal", "italic"],
+        global: true,
+      },
+    ],
   },
 
   css: ["~/assets/css/main.css"],

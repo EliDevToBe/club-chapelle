@@ -135,13 +135,13 @@ import {
 
 const ui = {
   listMainElement: "text-default font-semibold",
-  highlightText: "text-secondary-300 font-semibold underline",
+  highlightText: "text-highlighted font-semibold underline",
   audienceView: "text-muted",
   editLine: "flex flex-wrap items-baseline gap-x-1 gap-y-1",
   inlineInput:
-    "min-w-[6ch] max-w-full bg-transparent border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary-500",
+    "min-w-[6ch] max-w-full bg-transparent border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary",
   scheduleInput: "font-semibold text-highlighted",
-  highlightInput: "text-secondary-300 font-semibold underline min-w-[12ch]",
+  highlightInput: "text-highlighted font-semibold underline min-w-[12ch]",
   audienceInput: "text-muted min-w-[12ch] flex-1",
   epilogueInput: "w-full bg-transparent text-muted text-base md:text-lg",
   copy: {
@@ -180,7 +180,7 @@ const formState = reactive<OpeningHours>({
 
 const scheduleClass = (slot: OpeningHoursSlot): string | undefined => {
   if (slot.highlight) {
-    return "text-primary-500";
+    return "text-primary";
   }
 
   return undefined;

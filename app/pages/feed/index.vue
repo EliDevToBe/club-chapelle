@@ -52,7 +52,7 @@
             icon="i-ph-facebook-logo-duotone"
             label="Suivre le club sur Facebook"
             additional-class="shadow-md shadow-default/10"
-            class="bg-secondary-800/50"
+            class="bg-default"
           />
         </div>
       </div>
@@ -88,7 +88,7 @@ const ui = {
   facebookLinkWrapper: "flex justify-center pt-4",
   stickyOverlay:
     "fixed inset-x-0 bottom-6 md:bottom-12 z-40 flex justify-center px-4",
-  stickyButtonWrapper: "bg-neutral-900 rounded-lg",
+  stickyButtonWrapper: "bg-default",
 
   textError: "text-error text-sm",
   textPending: "text-muted text-sm",

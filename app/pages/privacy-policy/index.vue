@@ -309,6 +309,6 @@ const facebookFeedFlag = isEnabled("facebook_feed");
 const associationName = ASSOCIATION_LEGAL_NAME;
 
 const ui = {
-  listObject: "text-neutral-300 font-semibold",
+  listObject: "text-highlighted font-semibold",
 };
 </script>

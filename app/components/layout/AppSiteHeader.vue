@@ -124,7 +124,7 @@ const actionItems = computed<NavigationMenuItem[]>(() => {
       to: "/login",
       active: route.path.startsWith("/login"),
       class:
-        "cursor-pointer text-secondary-500 hover:text-secondary-300! active:text-secondary-600!",
+        "cursor-pointer text-muted hover:text-primary! active:text-primary-800!",
     });
   } else {
     items.push({

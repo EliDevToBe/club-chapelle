@@ -61,7 +61,7 @@
       <div class="flex justify-between items-center">
         <p
           v-if="competition.participations.length === 0"
-          class="text-secondary-500 text-sm"
+          class="text-muted text-sm"
         >
           Aucune participation enregistrée.
         </p>
@@ -131,12 +131,12 @@ const emit = defineEmits<{
 const ui = {
   rootHover: LIGHT_HOVER_BORDER_COLOR,
   header: "flex flex-col gap-2",
-  title: "text-lg font-semibold leading-tight text-gray-300",
+  title: "text-lg font-semibold leading-tight text-highlighted",
   content: "flex flex-col gap-2",
   details: "flex flex-wrap items-center gap-2 text-sm text-muted",
   detailsBadgeWrapper: "flex flex-wrap gap-1.5",
   participantWrapper: "flex flex-col gap-3 border-t border-default pt-3",
-  participantRow: "odd:bg-neutral-800/30 even:bg-default",
+  participantRow: "odd:bg-muted even:bg-default",
 };
 
 const { isAdmin } = useAuthUser();
