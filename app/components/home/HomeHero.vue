@@ -45,7 +45,7 @@ const ui = {
     "relative z-10 flex flex-col gap-10 md:col-span-3 md:row-start-1 md:gap-16 md:pt-20",
   title: [
     "font-serif font-light uppercase whitespace-nowrap text-primary-500",
-    "text-[clamp(2.75rem,7vw,6.5rem)] leading-[0.875]",
+    "text-[clamp(2.75rem,8.25vw,6.75rem)] leading-[0.875]",
   ],
   welcome: "text-primary font-medium md:max-w-md",
   image:

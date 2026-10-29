@@ -64,7 +64,7 @@ const fallbackCarouselItems: CarouselSlide[] = [
 ];
 
 const ui = {
-  root: "w-full min-w-0",
+  root: "min-w-0",
   image: "aspect-[10/7] w-full object-cover",
 };
 

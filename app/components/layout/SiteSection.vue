@@ -28,7 +28,7 @@ const TONE_CLASSES: Record<SiteSectionTone, string> = {
 };
 
 const ui = {
-  root: "scroll-mt-(--ui-header-height)",
+  root: "scroll-mt-(--ui-header-height) overflow-x-clip",
   inner: "py-16 md:py-24",
 };
 </script>

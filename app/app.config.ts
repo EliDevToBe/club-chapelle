@@ -7,7 +7,11 @@ export default defineAppConfig({
     },
 
     container: {
-      base: "w-full max-w-(--ui-container) mx-auto px-4 sm:px-8 lg:px-14",
+      // Each breakpoint is restated so tailwind-merge drops the theme's `sm:px-6 lg:px-8`.
+      base: [
+        "w-full max-w-(--ui-container) mx-auto",
+        "px-(--container-gutter) sm:px-(--container-gutter) lg:px-(--container-gutter)",
+      ],
     },
 
     header: {

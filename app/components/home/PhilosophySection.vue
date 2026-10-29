@@ -23,6 +23,6 @@ import { TEXT_SECTION_KEYS } from "~~/shared/website/website-config.keys";
 const ui = {
   grid: "grid grid-cols-1 gap-y-14 md:grid-cols-6 md:gap-x-2.5",
   text: "md:col-span-3 md:pr-10",
-  carousel: "md:col-span-3 md:col-start-4 pb-8",
+  carousel: "md:col-span-3 md:col-start-4 md:bleed-right pb-8",
 };
 </script>
