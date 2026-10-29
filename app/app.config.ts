@@ -80,6 +80,13 @@ export default defineAppConfig({
             list: "gap-2",
           },
         },
+        {
+          // The label's default `truncate` (overflow: hidden) clips the offset underline.
+          variant: "link",
+          class: {
+            linkLabel: "overflow-visible",
+          },
+        },
       ],
     },
 
