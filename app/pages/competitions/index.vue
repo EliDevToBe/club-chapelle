@@ -1,7 +1,7 @@
 <template>
   <ContentPageWrapper>
     <ChapSection
-      is-main-section
+      is-page-title
       title="Compétitions"
       description="Concours et présences du club."
     >

@@ -27,6 +27,10 @@ export const FEATURED_EVENT_FIELD_KEYS = [
 // Matches exactly the URL scheme names "http" or "https" (without the colon).
 const HTTP_PROTOCOL_PATTERN = /^https?$/;
 
+// Matches an absolute http(s) URL written out with "://" and a host (any case).
+// `z.url` alone also accepts forms like "https:host" that links treat as site paths.
+const ABSOLUTE_HTTP_URL_PATTERN = /^https?:\/\/[^/\\\s]/i;
+
 // Matches a site-relative path: a single leading "/" not followed by "/" or "\"
 // (both would make it protocol-relative in browsers), with no whitespace or
 // backslashes anywhere.
@@ -49,7 +53,9 @@ const CTA_URL_ERROR =
 export const featuredEventImageUrlSchema = z.union(
   [
     z.literal("", { error: IMAGE_URL_ERROR }),
-    z.url({ protocol: HTTP_PROTOCOL_PATTERN, error: IMAGE_URL_ERROR }),
+    z
+      .url({ protocol: HTTP_PROTOCOL_PATTERN, error: IMAGE_URL_ERROR })
+      .regex(ABSOLUTE_HTTP_URL_PATTERN, { error: IMAGE_URL_ERROR }),
   ],
   { error: IMAGE_URL_ERROR },
 );
@@ -57,7 +63,9 @@ export const featuredEventImageUrlSchema = z.union(
 export const featuredEventCtaUrlSchema = z.union(
   [
     z.literal("", { error: CTA_URL_ERROR }),
-    z.url({ protocol: HTTP_PROTOCOL_PATTERN, error: CTA_URL_ERROR }),
+    z
+      .url({ protocol: HTTP_PROTOCOL_PATTERN, error: CTA_URL_ERROR })
+      .regex(ABSOLUTE_HTTP_URL_PATTERN, { error: CTA_URL_ERROR }),
     z.string().regex(SITE_RELATIVE_PATH_PATTERN, { error: CTA_URL_ERROR }),
   ],
   { error: CTA_URL_ERROR },
@@ -163,6 +171,23 @@ export const parseFeaturedEvent = (raw: unknown): FeaturedEvent => {
   const record = isRecord(raw) ? raw : {};
 
   return featuredEventSchema.parse(prepareFeaturedEventRecord(record));
+};
+
+/** What visitors receive: a hidden event exposes no content in the public API or SSR payload. */
+export const toPublicFeaturedEvent = (event: FeaturedEvent): FeaturedEvent => {
+  if (event.enabled) {
+    return cloneFeaturedEvent(event);
+  }
+
+  return {
+    enabled: false,
+    title: "",
+    image_url: "",
+    image_alt: "",
+    paragraphs: [],
+    cta_label: "",
+    cta_url: "",
+  };
 };
 
 export const hasFeaturedEventDocumentFields = (

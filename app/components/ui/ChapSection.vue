@@ -9,9 +9,9 @@
           <slot name="title" />
         </div>
         <component
-          :is="isMainSection ? 'h2' : 'h3'"
+          :is="headingTag"
           v-else-if="title"
-          :class="isMainSection ? ui.mainTitle : ui.sectionTitle"
+          :class="isPageTitle || isMainSection ? ui.mainTitle : ui.sectionTitle"
         >
           {{ title }}
         </component>
@@ -35,16 +35,27 @@
 <script setup lang="ts">
 import { MAIN_SECTION_TITLE, SECTION_TITLE } from "./style";
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     title?: string;
     description?: string;
     isMainSection?: boolean;
+    /** The page's own title: renders the main style as the page `h1`. */
+    isPageTitle?: boolean;
   }>(),
   {
     isMainSection: false,
+    isPageTitle: false,
   },
 );
+
+const headingTag = computed(() => {
+  if (props.isPageTitle) {
+    return "h1";
+  }
+
+  return props.isMainSection ? "h2" : "h3";
+});
 
 const ui = {
   titleRow: "group/title flex items-center gap-2 sm:relative",

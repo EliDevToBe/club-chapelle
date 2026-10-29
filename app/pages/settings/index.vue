@@ -1,7 +1,7 @@
 <template>
   <ContentPageWrapper>
     <ChapSection
-      is-main-section
+      is-page-title
       title="Paramètres"
       description="Gère le nom d’affichage de ton compte, ton email et ton mot de passe."
     >

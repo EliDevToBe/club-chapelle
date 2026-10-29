@@ -1,7 +1,7 @@
 <template>
   <ContentPageWrapper>
     <ChapSection
-      is-main-section
+      is-page-title
       title="Politique de confidentialité"
       description="Comment l’association traite vos données personnelles"
     >

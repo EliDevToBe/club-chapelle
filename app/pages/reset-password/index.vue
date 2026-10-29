@@ -2,8 +2,7 @@
   <AuthPageShell>
     <ChapSection
       v-if="!recoveryToken"
-     
-      is-main-section
+      is-page-title
       title="Lien invalide ou expiré"
     >
       <p class="max-w-md text-muted mb-6">
@@ -14,7 +13,7 @@
     </ChapSection>
 
     <div v-else>
-      <ChapSection is-main-section title="Nouveau mot de passe">
+      <ChapSection is-page-title title="Nouveau mot de passe">
         <AuthFlowForm
           mode="resetPassword"
           :loading="pending"

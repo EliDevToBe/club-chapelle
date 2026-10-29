@@ -7,6 +7,7 @@
         <li v-for="affiliation in AFFILIATIONS" :key="affiliation.to">
           <ULink :to="affiliation.to" target="_blank" :class="ui.link">
             {{ affiliation.label }}
+            <span class="sr-only">(nouvel onglet)</span>
           </ULink>
         </li>
       </ul>
@@ -25,6 +26,7 @@
             :class="ui.link"
           >
             Avec ❤️ pour les Archers de la Chapelle
+            <span class="sr-only">(nouvel onglet)</span>
           </ULink>
         </li>
       </ul>

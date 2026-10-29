@@ -6,6 +6,7 @@ import {
   hasFeaturedEventDocumentFields,
   normaliseFeaturedEvent,
   parseFeaturedEvent,
+  toPublicFeaturedEvent,
 } from "~~/shared/website/featured-event.schema";
 import { DEFAULT_FEATURED_EVENT } from "~~/shared/website/featured-event.seed";
 
@@ -18,6 +19,8 @@ const UNSAFE_URLS = [
   "ftp://example.com/flyer.pdf",
   "mailto:club@example.com",
   "flyer.pdf",
+  "https:evil.example.com",
+  "http:/evil.example.com",
 ];
 
 describe("defaultFeaturedEvent", () => {
@@ -141,6 +144,11 @@ describe("parseFeaturedEvent", () => {
     expect(parseFeaturedEvent(valid).cta_url).toBe(
       "https://example.com/mandat.pdf",
     );
+
+    valid.cta_url = "HTTPS://example.com/mandat.pdf";
+    expect(parseFeaturedEvent(valid).cta_url).toBe(
+      "HTTPS://example.com/mandat.pdf",
+    );
   });
 
   it("rejects an empty title", () => {
@@ -174,6 +182,40 @@ describe("parseFeaturedEvent", () => {
     expect(() => {
       return parseFeaturedEvent(valid);
     }).toThrow("L'URL de l'image");
+  });
+});
+
+describe("toPublicFeaturedEvent", () => {
+  let event: FeaturedEvent;
+
+  beforeEach(() => {
+    event = {
+      enabled: true,
+      title: "T.E.A.M",
+      image_url: "https://example.com/team.png",
+      image_alt: "Logo du tournoi",
+      paragraphs: ["Inscriptions ouvertes."],
+      cta_label: "Infos & mandat",
+      cta_url: "/mandat.pdf",
+    };
+  });
+
+  it("returns the full event when it is enabled", () => {
+    expect(toPublicFeaturedEvent(event)).toEqual(event);
+  });
+
+  it("exposes no content when the event is hidden", () => {
+    event.enabled = false;
+
+    expect(toPublicFeaturedEvent(event)).toEqual({
+      enabled: false,
+      title: "",
+      image_url: "",
+      image_alt: "",
+      paragraphs: [],
+      cta_label: "",
+      cta_url: "",
+    });
   });
 });
 

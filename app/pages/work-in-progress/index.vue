@@ -9,7 +9,7 @@
       </ChapWatermark>
 
       <ChapSection
-        is-main-section
+        is-page-title
         title="Travaux en cours"
         description="Cette partie du site est encore en préparation."
       >

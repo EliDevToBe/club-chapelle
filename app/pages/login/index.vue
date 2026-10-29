@@ -1,6 +1,6 @@
 <template>
   <AuthPageShell>
-    <ChapSection is-main-section title="Connexion">
+    <ChapSection is-page-title title="Connexion">
       <AuthFlowForm
         v-model:mode="mode"
         :loading="authPending"

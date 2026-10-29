@@ -13,16 +13,31 @@ type FeaturedEventResponse = {
   settings: FeaturedEventDto;
 };
 
-export const useFeaturedEvent = async () => {
+/**
+ * Visitors read the public endpoint, which hides a disabled event's content;
+ * Admins read the Admin endpoint so they can still see and edit it.
+ */
+export const useFeaturedEvent = async (options: { asAdmin?: boolean } = {}) => {
   const isSaving = ref(false);
   const seed = cloneFeaturedEvent(DEFAULT_FEATURED_EVENT);
+  const asAdmin = options.asAdmin === true;
 
   const { data, pending, error, refresh } =
-    await useAsyncData<FeaturedEventResponse>("featured-event", async () => {
-      return $fetch<FeaturedEventResponse>(
-        WEBSITE_CONFIG_PUBLIC_ENDPOINTS.featuredEvent,
-      );
-    });
+    await useAsyncData<FeaturedEventResponse>(
+      asAdmin ? "featured-event-admin" : "featured-event",
+      async () => {
+        if (asAdmin) {
+          return $fetch<FeaturedEventResponse>(
+            WEBSITE_CONFIG_API_ENDPOINTS.featuredEvent,
+            { credentials: "include" },
+          );
+        }
+
+        return $fetch<FeaturedEventResponse>(
+          WEBSITE_CONFIG_PUBLIC_ENDPOINTS.featuredEvent,
+        );
+      },
+    );
 
   const featuredEvent = computed((): FeaturedEvent => {
     return data.value?.settings ?? seed;

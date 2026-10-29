@@ -1,5 +1,7 @@
+import { defineEventHandler } from "h3";
 import { GetFeaturedEvent } from "~~/application/website/get-featured-event.use-case";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
+import { toPublicFeaturedEvent } from "~~/shared/website/featured-event.schema";
 import { DEFAULT_FEATURED_EVENT } from "~~/shared/website/featured-event.seed";
 
 export default defineEventHandler(async () => {
@@ -11,6 +13,6 @@ export default defineEventHandler(async () => {
   const settings = await getFeaturedEventHandler.get();
 
   return {
-    settings,
+    settings: toPublicFeaturedEvent(settings),
   };
 });

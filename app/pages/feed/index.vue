@@ -1,7 +1,7 @@
 <template>
   <ContentPageWrapper>
     <ChapSection
-      is-main-section
+      is-page-title
       title="Actualités"
       description="Les dernières nouvelles du club"
     >

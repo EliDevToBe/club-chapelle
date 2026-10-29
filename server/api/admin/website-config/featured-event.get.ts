@@ -1,3 +1,4 @@
+import { defineEventHandler } from "h3";
 import { GetFeaturedEvent } from "~~/application/website/get-featured-event.use-case";
 import { getRepositories } from "~~/infrastructure/persistence/repositories.provider";
 import { toWebsiteConfigDto } from "~~/server/mappers/website-config.mapper";

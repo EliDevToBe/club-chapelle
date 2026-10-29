@@ -1,7 +1,7 @@
 <template>
   <ContentPageWrapper>
     <ChapSection
-      is-main-section
+      is-page-title
       title="Mentions légales"
       description="Identification de l’éditeur et de l’hébergeur du site."
     >

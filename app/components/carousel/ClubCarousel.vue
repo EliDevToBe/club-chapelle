@@ -1,31 +1,46 @@
 <template>
-  <UCarousel
-    v-slot="{ item }"
-    loop
-    dots
-    wheel-gestures
-    :class="ui.root"
-    :ui="{ container: 'ms-0', item: 'ps-0' }"
-    :items="carouselItems"
-    :autoplay="{ delay: 4500 }"
-  >
-    <img
-      v-if="isCarouselSlide(item)"
-      :src="item.src"
-      :alt="item.alt"
-      width="1200"
-      height="840"
-      :class="ui.image"
-      loading="lazy"
-      decoding="async"
-    />
-  </UCarousel>
+  <div :class="ui.root">
+    <UCarousel
+      v-slot="{ item }"
+      loop
+      dots
+      wheel-gestures
+      :ui="{ container: 'ms-0', item: 'ps-0' }"
+      :items="carouselItems"
+      :autoplay="autoplayOptions"
+    >
+      <img
+        v-if="isCarouselSlide(item)"
+        :src="item.src"
+        :alt="item.alt"
+        width="1200"
+        height="840"
+        :class="ui.image"
+        loading="lazy"
+        decoding="async"
+      />
+    </UCarousel>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { usePreferredReducedMotion } from "@vueuse/core";
 import { usePublicWebsiteConfig } from "~/composables/usePublicWebsiteConfig";
 
 const { publicCarouselConfigData } = usePublicWebsiteConfig();
+
+const AUTOPLAY_DELAY_MS = 4500;
+
+const prefersReducedMotion = usePreferredReducedMotion();
+
+/** No autoplay when the visitor prefers reduced motion. */
+const autoplayOptions = computed(() => {
+  if (prefersReducedMotion.value === "reduce") {
+    return false;
+  }
+
+  return { delay: AUTOPLAY_DELAY_MS };
+});
 
 type CarouselSlide = {
   src: string;

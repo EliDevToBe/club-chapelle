@@ -159,11 +159,23 @@ const actionItems = computed<NavigationMenuItem[]>(() => {
   return items;
 });
 
+/** Same-URL taps (e.g. Contact while on `/#contact`) don't navigate, so close the drawer explicitly. */
+const withMenuClose = (item: NavigationMenuItem): NavigationMenuItem => {
+  return {
+    ...item,
+    onSelect: (event: Event) => {
+      item.onSelect?.(event);
+      isMenuOpen.value = false;
+    },
+  };
+};
+
 /** Grouped lists render a separator between groups in vertical `UNavigationMenu` (mobile drawer). */
-const drawerMenuItems = computed<NavigationMenuItem[][]>(() => [
-  ...drawerNavItems.value,
-  actionItems.value,
-]);
+const drawerMenuItems = computed<NavigationMenuItem[][]>(() => {
+  return [...drawerNavItems.value, actionItems.value].map((group) => {
+    return group.map(withMenuClose);
+  });
+});
 
 const ui = {
   root: "border-b-0 transition-colors duration-300",
@@ -176,6 +188,8 @@ const ui = {
   navLink: [
     "px-0 py-1 font-label font-bold uppercase tracking-wide text-base",
     "text-primary! hover:underline underline-offset-6 decoration-2 before:hidden",
+    // The menu's default focus ring is drawn on `::before`, hidden above, so restore a visible one.
+    "focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary",
   ],
   accountTrigger: "inline-flex items-center gap-1.5 cursor-pointer",
   drawerLink:

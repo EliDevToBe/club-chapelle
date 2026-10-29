@@ -318,6 +318,8 @@ export default defineAppConfig({
 
     tabs: {
       slots: {
+        // Long uppercase labels wrap on phones instead of being cut ("GESTION DU C…").
+        label: "whitespace-normal text-center leading-tight",
         trigger: [
           "font-label uppercase tracking-wide",
           "data-[state=inactive]:text-muted",

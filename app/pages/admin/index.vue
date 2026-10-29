@@ -3,7 +3,7 @@
     <ChapSection
       title="Administration"
       description="Gérez le club et le site depuis un seul espace."
-      :is-main-section="true"
+      :is-page-title="true"
     >
       <UTabs :items="tabs" default-value="club" class="w-full">
         <template #content="{ item }">

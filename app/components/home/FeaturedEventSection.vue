@@ -164,8 +164,15 @@ const ui = {
 const { addToastError, addToastSuccess } = useChapToast();
 const { getZodIssues } = useZod();
 const { isAdmin, hydrateIfNeeded } = useAuthUser();
+
+try {
+  await hydrateIfNeeded();
+} catch {
+  // Stay in visitor view if the session cannot be resolved.
+}
+
 const { featuredEvent, saveFeaturedEvent, isSaving, pending } =
-  await useFeaturedEvent();
+  await useFeaturedEvent({ asAdmin: isAdmin.value === true });
 
 const isEditing = ref(false);
 const formState = reactive<FeaturedEventFormState>({
@@ -179,7 +186,7 @@ const formState = reactive<FeaturedEventFormState>({
 });
 
 const isExternalLink = computed(() => {
-  return /^https?:\/\//.test(featuredEvent.value.cta_url);
+  return /^https?:\/\//i.test(featuredEvent.value.cta_url);
 });
 
 const hydrateForm = (event: FeaturedEvent): void => {
@@ -243,10 +250,4 @@ const saveEdit = async (): Promise<void> => {
     });
   }
 };
-
-try {
-  await hydrateIfNeeded();
-} catch {
-  // Stay in visitor view if the session cannot be resolved.
-}
 </script>
