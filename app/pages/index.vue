@@ -8,8 +8,6 @@
       <ContactSection />
       <SocialSection />
     </div>
-
-    <AffiliationSection />
   </ContentPageWrapper>
 </template>
 

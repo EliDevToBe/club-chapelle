@@ -63,3 +63,36 @@
   --ui-border-accented: var(--ui-color-neutral-400);
   --ui-border-inverted: var(--ui-color-neutral-950);
 }
+
+/*
+ * Colour mode is off: `.dark` only scopes the "on black" palette to a subtree
+ * (footer, scrolled header), so Nuxt UI components inside adapt automatically.
+ */
+.dark {
+  --ui-primary: var(--ui-color-primary-500);
+  --ui-secondary: var(--ui-color-secondary-300);
+
+  --ui-text-dimmed: var(--ui-color-neutral-500);
+  --ui-text-muted: var(--ui-color-neutral-400);
+  --ui-text-toned: var(--ui-color-neutral-300);
+  --ui-text: #ececec;
+  --ui-text-highlighted: #fff;
+  --ui-text-inverted: var(--ui-color-neutral-950);
+
+  --ui-bg: var(--ui-color-neutral-950);
+  --ui-bg-muted: var(--ui-color-neutral-900);
+  --ui-bg-elevated: var(--ui-color-neutral-800);
+  --ui-bg-accented: var(--ui-color-neutral-700);
+  --ui-bg-inverted: #fff;
+
+  --ui-border: var(--ui-color-neutral-600);
+  --ui-border-muted: var(--ui-color-neutral-800);
+  --ui-border-accented: var(--ui-color-neutral-500);
+  --ui-border-inverted: #fff;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

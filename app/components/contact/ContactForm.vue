@@ -1,95 +1,90 @@
 <template>
-  <ChapSection title="Envoyer un message">
-    <form :class="ui.form" @submit.prevent="onSubmit">
-      <UFormField label="Nom" name="name" required>
+  <form :class="ui.form" @submit.prevent="onSubmit">
+    <h3 class="sr-only">Envoyer un message</h3>
+
+    <div :class="ui.identityRow">
+      <UFormField label="Nom" name="name" required :ui="fieldUi">
         <UInput
           v-model="form.name"
           type="text"
           autocomplete="name"
           :disabled="submitting"
           :class="ui.formInput"
-          placeholder="Robin des Bois"
+          size="lg"
+          placeholder="Nom"
         />
       </UFormField>
 
-      <UFormField label="Email" name="email" required>
+      <UFormField label="E-mail" name="email" required :ui="fieldUi">
         <UInput
           v-model="form.email"
+          type="email"
           autocomplete="email"
           :disabled="submitting"
           :class="ui.formInput"
-          placeholder="robin@sherwood.bow"
+          size="lg"
+          placeholder="E-mail"
         />
       </UFormField>
-      <UFormField label="Objet" name="subject" required>
-        <UInput
-          v-model="form.subject"
-          type="text"
-          autocomplete="off"
-          :disabled="submitting"
-          :class="ui.formInput"
-          placeholder="Demandes d'informations"
-        />
-      </UFormField>
-      <UFormField label="Message" name="message" required>
-        <div class="flex flex-col gap-1">
-          <UTextarea
-            v-model="form.message"
-            :rows="5"
-            autoresize
-            :maxrows="16"
-            :disabled="submitting"
-            :class="ui.formInput"
-            placeholder="Votre message ici..."
-          />
+    </div>
 
-          <span :class="ui.formInputHint">
-            <span
-              class="text-sm text-muted transition-all duration-300 ease-in-out"
-              :class="{
-                'text-error! font-semibold':
-                  form.message.length && form.message.length < 20,
-              }"
-            >
-              {{ `${form.message.length} / 3000` }}
-            </span>
-          </span>
-        </div>
-      </UFormField>
-      <div :class="ui.formInputHint">
-        <ChapButton
-          type="submit"
-          color="primary"
-          :loading="submitting"
-          label="Envoyer"
-          class="w-full sm:w-auto md:w-25 md:min-h-10"
-        />
-      </div>
-      <p :class="ui.privacyNotice">
-        Les informations envoyées servent uniquement à répondre à votre demande.
-      </p>
-      <p :class="ui.privacyNotice">
-        Voir la
-        <ChapLink to="/privacy-policy" label="politique de confidentialité" />.
-      </p>
-    </form>
-  </ChapSection>
+    <UFormField label="Message" name="message" required :ui="fieldUi">
+      <UTextarea
+        v-model="form.message"
+        :rows="6"
+        autoresize
+        :maxrows="16"
+        :disabled="submitting"
+        :class="ui.formInput"
+        size="lg"
+        placeholder="Message"
+      />
+    </UFormField>
+
+    <div :class="ui.actions">
+      <span
+        :class="[
+          ui.counter,
+          { 'text-error! font-semibold': isMessageTooShort },
+        ]"
+      >
+        {{ `${form.message.length} / 3000` }}
+      </span>
+
+      <ChapButton
+        type="submit"
+        color="primary"
+        :loading="submitting"
+        label="Envoyer"
+      />
+    </div>
+
+    <p :class="ui.privacyNotice">
+      Les informations envoyées servent uniquement à répondre à votre demande.
+      Voir la
+      <ChapLink to="/privacy-policy" label="politique de confidentialité" />.
+    </p>
+  </form>
 </template>
 
 <script setup lang="ts">
 import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapLink from "~/components/ui/ChapLink.vue";
-import ChapSection from "~/components/ui/ChapSection.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useZod } from "~/composables/useZod";
 import { contactFormSchema } from "~/schemas/contact-form.zod";
 
 const ui = {
-  form: "max-w-100 flex flex-col gap-4",
-  formInput: "w-full md:w-80",
-  formInputHint: "w-full md:w-80 flex items-center justify-end mr-1 gap-1",
-  privacyNotice: "w-full md:w-80 text-sm text-muted ",
+  form: "flex flex-col gap-3 w-full max-w-2xl",
+  identityRow: "grid grid-cols-1 sm:grid-cols-2 gap-3",
+  formInput: "w-full",
+  actions: "flex items-center justify-end gap-4",
+  counter: "text-sm text-muted transition-colors duration-300",
+  privacyNotice: "text-sm text-muted",
 };
+
+/** Labels stay in the accessibility tree; the design shows bare fields with placeholders. */
+const fieldUi = { label: "sr-only" };
 
 const { addToastError, addToastSuccess } = useChapToast();
 const { getZodIssues } = useZod();
@@ -97,17 +92,19 @@ const { getZodIssues } = useZod();
 const form = reactive({
   name: "",
   email: "",
-  subject: "",
   message: "",
 });
 
 const submitting = ref(false);
 
+const isMessageTooShort = computed(() => {
+  return form.message.length > 0 && form.message.length < 20;
+});
+
 const onSubmit = async () => {
   const body = {
     name: form.name,
     email: form.email,
-    subject: form.subject,
     message: form.message,
   };
 
@@ -133,7 +130,6 @@ const onSubmit = async () => {
     });
     form.name = "";
     form.email = "";
-    form.subject = "";
     form.message = "";
 
     addToastSuccess({
@@ -152,5 +148,3 @@ const onSubmit = async () => {
   }
 };
 </script>
-
-<style scoped lang=""></style>

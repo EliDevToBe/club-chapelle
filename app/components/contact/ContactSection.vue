@@ -4,7 +4,7 @@
     description="Une question ? Écrivez-nous ou rendez-vous sur la page dédiée."
   >
     <ChapButton
-      to="/contact"
+      to="#contact"
       size="lg"
       color="secondary"
       class="w-full sm:w-auto sm:justify-center"

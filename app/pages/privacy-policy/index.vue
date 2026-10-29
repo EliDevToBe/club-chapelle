@@ -29,7 +29,7 @@
       <ContentTextWrapper class="text-muted">
         <p>
           <span :class="ui.listObject">Données : </span>
-          <span>nom, adresse e-mail, objet et message</span>
+          <span>nom, adresse e-mail et message</span>
         </p>
         <p>
           <span :class="ui.listObject">Finalité : </span>

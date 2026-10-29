@@ -50,7 +50,12 @@ export default defineAppConfig({
         {
           active: true,
           variant: "link",
-          class: { link: ["text-primary", "active:text-primary-800!"] },
+          class: {
+            link: [
+              "text-primary underline underline-offset-6 decoration-2",
+              "active:text-primary-800!",
+            ],
+          },
         },
         {
           variant: "link",
@@ -104,7 +109,7 @@ export default defineAppConfig({
           variant: "solid",
           class: {
             base: [
-              "cursor-pointer text-highlighted bg-primary-500",
+              "cursor-pointer text-arc-grey-950 bg-primary-500",
               "hover:bg-primary-600",
               "active:bg-primary-600",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
