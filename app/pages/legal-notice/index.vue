@@ -93,6 +93,7 @@ import { ASSOCIATION_LEGAL_NAME } from "~~/shared/website/site-settings.seed";
 
 definePageMeta({
   layout: "default",
+  compactFooter: true,
 });
 
 useHead({
