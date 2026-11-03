@@ -20,14 +20,24 @@
 
           <ul :class="ui.socialList" aria-label="Réseaux sociaux">
             <li>
-              <ULink :to="instagramUrl" target="_blank" raw :class="ui.socialLink">
+              <ULink
+                :to="instagramUrl"
+                target="_blank"
+                raw
+                :class="ui.socialLink"
+              >
                 <UIcon name="i-ph-instagram-logo" class="size-5" />
                 Instagram
                 <span class="sr-only">(nouvel onglet)</span>
               </ULink>
             </li>
             <li>
-              <ULink :to="facebookUrl" target="_blank" raw :class="ui.socialLink">
+              <ULink
+                :to="facebookUrl"
+                target="_blank"
+                raw
+                :class="ui.socialLink"
+              >
                 <UIcon name="i-ph-facebook-logo" class="size-5" />
                 Facebook
                 <span class="sr-only">(nouvel onglet)</span>

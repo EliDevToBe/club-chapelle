@@ -1,12 +1,21 @@
 <template>
   <div :class="ui.root">
     <UContainer :class="ui.container">
-      <p>© {{ currentYear }} {{ associationName }}</p>
+      <div :class="ui.inlineList">
+        <p>© {{ currentYear }} {{ associationName }}</p>
+      </div>
 
       <ul :class="ui.inlineList" aria-label="Affiliations">
         <li v-for="affiliation in AFFILIATIONS" :key="affiliation.to">
           <ULink :to="affiliation.to" target="_blank" :class="ui.link">
-            {{ affiliation.label }}
+            <span class="flex items-center gap-1">
+              <img
+                :src="affiliation.logo"
+                :alt="affiliation.alt"
+                :class="[ui.affiliateLogo, affiliation.logoClass]"
+              />
+              {{ affiliation.label }}
+            </span>
             <span class="sr-only">(nouvel onglet)</span>
           </ULink>
         </li>
@@ -25,7 +34,10 @@
             target="_blank"
             :class="ui.link"
           >
-            Avec ❤️ pour les Archers de la Chapelle
+            <span class="flex items-center gap-1">
+              Avec ❤️ pour les Archers de la Chapelle
+              <UIcon name="i-ph-github-logo-duotone" />
+            </span>
             <span class="sr-only">(nouvel onglet)</span>
           </ULink>
         </li>
@@ -35,12 +47,30 @@
 </template>
 
 <script setup lang="ts">
+import fftaLogo from "~/assets/ffta-logo.svg";
 import { ASSOCIATION_LEGAL_NAME } from "~~/shared/website/site-settings.seed";
 
 const AFFILIATIONS = [
-  { label: "FFTA", to: "https://www.ffta.fr/" },
-  { label: "Comité régional Île-de-France", to: "https://www.tiralarcidf.com/" },
-  { label: "Comité départemental Paris", to: "https://www.tiralarc75.fr/" },
+  {
+    label: "FFTA",
+    to: "https://www.ffta.fr/",
+    logo: fftaLogo,
+    alt: "Logo FFTA",
+    logoClass: "bg-white rounded-full",
+  },
+  {
+    label: "Comité régional Île-de-France",
+    to: "https://www.tiralarcidf.com/",
+    logo: "https://www.tiralarcidf.com/favicon.ico",
+    alt: "Logo Comité régional Île-de-France",
+  },
+  {
+    label: "Comité départemental Paris",
+    to: "https://www.tiralarc75.fr/",
+    logo: "https://image.jimcdn.com/app/cms/image/transf/dimension=368x2048:format=png/path/sbb8f48a2570a7cb2/image/i81628e94c40d3dd9/version/1765982888/image.png",
+    alt: "Logo Comité départemental Paris",
+    logoClass: "bg-white rounded-full",
+  },
 ];
 
 const associationName = ASSOCIATION_LEGAL_NAME;
@@ -49,8 +79,9 @@ const currentYear = new Date().getFullYear();
 const ui = {
   root: "border-t border-default",
   container:
-    "flex flex-col gap-4 py-6 text-sm text-muted lg:flex-row lg:items-center lg:justify-between",
+    "grid grid-cols-3 gap-4 py-6 text-sm text-muted lg:flex-row lg:items-center lg:justify-between ",
   inlineList: "flex flex-wrap gap-x-5 gap-y-2",
   link: "hover:text-highlighted transition-colors",
+  affiliateLogo: "w-6 h-6",
 };
 </script>
