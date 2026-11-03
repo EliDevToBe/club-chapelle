@@ -16,7 +16,7 @@
       </div>
 
       <img
-        :src="HERO_IMAGE.src"
+        :src="heroImage"
         :alt="HERO_IMAGE.alt"
         width="900"
         height="1260"
@@ -29,14 +29,13 @@
 </template>
 
 <script setup lang="ts">
+import heroImage from "~/assets/zach_hero.webp";
 import SiteSection from "~/components/layout/SiteSection.vue";
 import TextContentSection from "~/components/website/TextContentSection.vue";
 import { TEXT_SECTION_KEYS } from "~~/shared/website/website-config.keys";
 
-/** Portrait placeholder (Unsplash License) until the club provides its own hero photo. */
 const HERO_IMAGE = {
-  src: "https://images.unsplash.com/photo-1590585382453-8b749e9d5224?q=80&w=1200&auto=format&fit=crop",
-  alt: "Archer bandant un arc traditionnel en extérieur",
+  alt: "Archer tirant à l'arc en extérieur",
 };
 
 const ui = {
