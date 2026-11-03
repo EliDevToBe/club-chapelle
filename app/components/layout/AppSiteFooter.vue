@@ -41,7 +41,7 @@
         <div :class="ui.crestColumn">
           <img
             src="/club-logo.svg"
-            alt="Écusson ARC 18 Paris — Les Archers de la Chapelle"
+            alt="Écusson ARC 18 Paris - Les Archers de la Chapelle"
             width="380"
             height="515"
             :class="ui.crest"

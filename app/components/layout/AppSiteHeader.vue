@@ -12,7 +12,7 @@
   >
     <template #title>
       <ArcherGlyph :class="ui.logo" />
-      <span class="sr-only">Les Archers de la Chapelle — accueil</span>
+      <span class="sr-only">Les Archers de la Chapelle - accueil</span>
     </template>
 
     <template #right>
@@ -187,7 +187,7 @@ const ui = {
   navList: "gap-8",
   navLink: [
     "px-0 py-1 font-label font-bold uppercase tracking-wide text-base",
-    "text-primary! hover:underline underline-offset-6 decoration-2 before:hidden",
+    "text-primary-500! hover:underline underline-offset-6 decoration-2 before:hidden",
     // The menu's default focus ring is drawn on `::before`, hidden above, so restore a visible one.
     "focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary",
   ],
