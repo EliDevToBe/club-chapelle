@@ -1,14 +1,12 @@
 <template>
   <div :class="ui.root">
     <UContainer :class="ui.container">
-      <div :class="ui.inlineList">
-        <p>© {{ currentYear }} {{ associationName }}</p>
-      </div>
+      <p :class="ui.copyright">© {{ currentYear }} {{ associationName }}</p>
 
-      <ul :class="ui.inlineList" aria-label="Affiliations">
+      <ul :class="ui.affiliations" aria-label="Affiliations">
         <li v-for="affiliation in AFFILIATIONS" :key="affiliation.to">
           <ULink :to="affiliation.to" target="_blank" :class="ui.link">
-            <span class="flex items-center gap-1">
+            <span class="flex items-center gap-2">
               <img
                 :src="affiliation.logo"
                 :alt="affiliation.alt"
@@ -21,11 +19,9 @@
         </li>
       </ul>
 
-      <ul :class="ui.inlineList" aria-label="Informations légales">
-        <li>
+      <ul :class="ui.legal" aria-label="Informations légales">
+        <li class="flex items-center gap-2">
           <ULink to="/legal-notice" :class="ui.link">Mentions légales</ULink>
-        </li>
-        <li>
           <ULink to="/privacy-policy" :class="ui.link">Confidentialité</ULink>
         </li>
         <li>
@@ -34,8 +30,8 @@
             target="_blank"
             :class="ui.link"
           >
-            <span class="flex items-center gap-1">
-              Avec ❤️ pour les Archers de la Chapelle
+            <span class="whitespace-nowrap flex items-center">
+              <span> Avec ❤️ pour les Archers de la Chapelle&nbsp;</span>
               <UIcon name="i-ph-github-logo-duotone" />
             </span>
             <span class="sr-only">(nouvel onglet)</span>
@@ -79,9 +75,13 @@ const currentYear = new Date().getFullYear();
 const ui = {
   root: "border-t border-default",
   container:
-    "grid grid-cols-3 gap-4 py-6 text-sm text-muted lg:flex-row lg:items-center lg:justify-between ",
-  inlineList: "flex flex-wrap gap-x-5 gap-y-2",
-  link: "hover:text-highlighted transition-colors",
-  affiliateLogo: "w-6 h-6",
+    "flex flex-col items-center gap-6 py-8 text-center text-sm text-muted md:grid md:grid-cols-3 md:items-start md:gap-4 md:py-6 md:text-left",
+  // Mobile: copyright closes the footer; desktop: it leads the first column.
+  copyright: "order-last md:order-none",
+  affiliations: "flex flex-col items-center gap-3 md:items-start md:gap-2",
+  legal:
+    "flex flex-wrap justify-center gap-x-5 gap-y-2 md:flex-col md:justify-start",
+  link: "flex items-center gap-1 hover:text-highlighted transition-colors",
+  affiliateLogo: "size-6 shrink-0",
 };
 </script>
