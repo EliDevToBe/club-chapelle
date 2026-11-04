@@ -44,7 +44,7 @@ export const DEFAULT_TARIFS: Tarifs = {
     },
     {
       id: "tarifs-callout-close",
-      text: " avec nos entraîneurs !",
+      text: ` avec nos entraîneurs\u00A0!`,
       style: "plain",
       insert_contact_email: false,
     },
