@@ -34,12 +34,12 @@
 </template>
 
 <script setup lang="ts">
+import competitionThumbnail from "~/assets/competition_thumbnail.webp";
+import heroClubLifeThumbnail from "~/assets/hero_clublife_thumbnail.webp";
+import instagramThumbnail from "~/assets/instagram_thumbnail.webp";
 import SiteSection from "~/components/layout/SiteSection.vue";
 import { MAIN_SECTION_TITLE } from "~/components/ui/style";
 import { useSiteSettings } from "~/composables/useSiteSettings";
-import instagramThumbnail from "~/assets/instagram_thumbnail.webp";
-import competitionThumbnail from "~/assets/competition_thumbnail.webp";
-import heroClubLifeThumbnail from "~/assets/hero_clublife_thumbnail.webp";
 
 type DiscoverCard = {
   label: string;
