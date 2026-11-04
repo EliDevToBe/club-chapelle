@@ -17,7 +17,7 @@
                 alt=""
                 width="900"
                 height="600"
-                :class="ui.image"
+                :class="[ui.image, card?.shiftingClass]"
                 loading="lazy"
                 decoding="async"
               />
@@ -37,11 +37,15 @@
 import SiteSection from "~/components/layout/SiteSection.vue";
 import { MAIN_SECTION_TITLE } from "~/components/ui/style";
 import { useSiteSettings } from "~/composables/useSiteSettings";
+import instagramThumbnail from "~/assets/instagram_thumbnail.webp";
+import competitionThumbnail from "~/assets/competition_thumbnail.webp";
+import heroClubLifeThumbnail from "~/assets/hero_clublife_thumbnail.webp";
 
 type DiscoverCard = {
   label: string;
   to: string;
   image: string;
+  shiftingClass?: string;
 };
 
 const { instagramUrl, facebookUrl } = await useSiteSettings();
@@ -52,27 +56,26 @@ const cards = computed<DiscoverCard[]>(() => {
     {
       label: "La vie du club",
       to: facebookUrl.value,
-      image:
-        "https://images.unsplash.com/photo-1693581132302-17886bf4e3f1?q=80&w=1200&auto=format&fit=crop",
+      image: heroClubLifeThumbnail,
     },
     {
       label: "Les concours",
       to: facebookUrl.value,
-      image:
-        "https://images.unsplash.com/photo-1776847651583-1d804b5cc339?q=80&w=1200&auto=format&fit=crop",
+      image: competitionThumbnail,
+      shiftingClass: "scale-200 origin-[95%_200px] group-hover:scale-[1.9]",
     },
     {
       label: "L'actu Instagram",
       to: instagramUrl.value,
-      image:
-        "https://images.unsplash.com/photo-1658314756005-eace6f871a44?q=80&w=1200&auto=format&fit=crop",
+      image: instagramThumbnail,
+      shiftingClass: "object-[center_-42px]",
     },
   ];
 });
 
 const ui = {
   stack: "flex flex-col gap-10",
-  grid: "grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-2.5",
+  grid: "grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-2.5 object",
   card: "group flex flex-col gap-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary",
   imageFrame: "block overflow-hidden",
   image:
