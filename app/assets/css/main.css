@@ -94,8 +94,10 @@
   --ui-border-inverted: #fff;
 }
 
+/* Class added after load by plugins/smooth-scroll.client.ts, so the browser's
+   scroll restoration on refresh stays instant instead of animating. */
 @media (prefers-reduced-motion: no-preference) {
-  html {
+  html.smooth-scroll {
     scroll-behavior: smooth;
   }
 }
