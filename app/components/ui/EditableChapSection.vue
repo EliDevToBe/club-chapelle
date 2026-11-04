@@ -1,6 +1,6 @@
 <template>
   <ChapSection :is-main-section="isMainSection">
-    <template #title>
+    <template v-if="!hideTitle" #title>
       <input
         v-if="isEditing"
         v-model="titleDraft"
@@ -10,16 +10,12 @@
         :aria-label="ui.copy.titleAria"
         :placeholder="titlePlaceholder"
       />
-      <component
-        :is="isMainSection ? 'h2' : 'h3'"
-        v-else
-        :class="[titleClass, { 'sr-only': hideTitle }]"
-      >
+      <component :is="isMainSection ? 'h2' : 'h3'" v-else :class="titleClass">
         {{ title }}
       </component>
     </template>
 
-    <template v-if="enableSubtitle" #description>
+    <template v-if="enableSubtitle && !hideTitle" #description>
       <input
         v-if="isEditing"
         v-model="subtitleDraft"
@@ -35,13 +31,15 @@
     </template>
 
     <template v-if="isAdmin && !isEditing" #title-actions>
-      <div class="flex justify-center" :class="ui.editTrigger">
+      <div
+        class="flex justify-center"
+        :class="{ [ui.editTrigger]: !hideTitle }"
+      >
         <UButton
           color="neutral"
           variant="ghost"
           size="sm"
           icon="i-ph-gear-duotone"
-          :class="ui.editTrigger"
           :aria-label="editAria"
           :disabled="pending"
           @click="emit('enter-edit')"
@@ -81,7 +79,11 @@ const props = withDefaults(
     subtitle?: string;
     enableSubtitle?: boolean;
     isMainSection?: boolean;
-    /** Keeps the title for assistive tech and editing, but hides it visually (e.g. under the hero title). */
+    /**
+     * Paragraphs only: no title or subtitle, read or edit (e.g. under the hero `h1`).
+     * The stored title is kept and re-saved unchanged; the edit button stays visible
+     * since there is no title to hover.
+     */
     hideTitle?: boolean;
     isEditing: boolean;
     isAdmin?: boolean;
@@ -124,8 +126,10 @@ const titleClass = computed(() => {
 const ui = {
   editTrigger:
     "opacity-0 transition-opacity duration-150 group-hover/title:opacity-100 group-focus-within/title:opacity-100 [@media(hover:none)]:opacity-100",
-  inlineInput:
-    "w-full min-w-0 bg-transparent border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary",
+  inlineInput: [
+    "w-full min-w-0 border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary",
+    "bg-transparent",
+  ],
   mainTitle: MAIN_SECTION_TITLE,
   sectionTitle: SECTION_TITLE,
   description: "text-muted text-sm",

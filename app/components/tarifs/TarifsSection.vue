@@ -57,7 +57,8 @@
             <template v-else>
               <span :class="LIST_ITEM_LABEL">{{ item.label }}</span>
               <span :class="LIST_ITEM_DETAIL">
-                <span aria-hidden="true">-&gt; </span>{{ item.amount }}
+                <UIcon name="i-ph-arrow-right-bold" class="text-arc-grey-400" />
+                {{ item.amount }}
               </span>
             </template>
           </EditableChapListItem>

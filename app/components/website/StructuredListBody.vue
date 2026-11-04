@@ -8,7 +8,10 @@
     :placeholder="introPlaceholder"
     autoresize
     :ui="{
-      base: 'text-muted text-base!',
+      base: [
+        'text-muted text-base!',
+        hasReversedColor ? 'bg-arc-grey-200!' : '',
+      ],
     }"
   />
   <p v-else-if="viewIntro">
@@ -52,6 +55,7 @@ const props = withDefaults(
     introPlaceholder?: string;
     addLabel: string;
     dragHandleSelector?: string;
+    hasReversedColor?: boolean;
   }>(),
   {
     isSaving: false,

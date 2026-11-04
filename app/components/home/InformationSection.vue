@@ -11,8 +11,13 @@
         <TarifsSection />
       </div>
 
-      <div :class="ui.scheduleBox">
-        <OpeningHoursSection />
+      <div
+        :class="[
+          ui.scheduleBox,
+          isEditing ? ui.scheduleBoxEditing : ui.scheduleBoxIdle,
+        ]"
+      >
+        <OpeningHoursSection v-model:is-editing="isEditing" />
       </div>
     </div>
   </SiteSection>
@@ -27,8 +32,17 @@ import { TEXT_SECTION_KEYS } from "~~/shared/website/website-config.keys";
 
 const ui = {
   grid: "grid grid-cols-1 gap-12 lg:grid-cols-6 lg:gap-x-2.5",
-  mainColumn: "flex flex-col gap-12 lg:col-span-3 lg:pr-10",
+  // Both columns are pinned to row 1 *and* an explicit column on lg, so the schedule box can widen
+  // over the text while editing. Without `col-start-1`, grid auto-placement pushes the text column
+  // into implicit columns past the box instead of letting them overlap.
+  mainColumn:
+    "flex flex-col gap-12 lg:col-span-3 lg:col-start-1 lg:row-start-1 lg:pr-10",
   scheduleBox:
-    "border-2 border-default p-6 sm:p-10 lg:col-span-3 lg:col-start-4 lg:mt-24 lg:self-start",
+    "border-2 border-default p-6 sm:p-10 lg:row-start-1 lg:mt-24 lg:self-start",
+  scheduleBoxIdle: "lg:col-span-3 lg:col-start-4",
+  scheduleBoxEditing:
+    "relative z-10 bg-arc-grey-100! shadow-2xl lg:col-span-5 lg:col-start-2",
 };
+
+const isEditing = ref(false);
 </script>
