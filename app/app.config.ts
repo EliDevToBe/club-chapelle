@@ -1,9 +1,17 @@
 export default defineAppConfig({
   ui: {
     colors: {
-      primary: "brand-carrot",
-      secondary: "brand-greenblue",
-      neutral: "chapblack",
+      primary: "arc-orange",
+      secondary: "arc-grey",
+      neutral: "arc-grey",
+    },
+
+    container: {
+      // Each breakpoint is restated so tailwind-merge drops the theme's `sm:px-6 lg:px-8`.
+      base: [
+        "w-full max-w-(--ui-container) mx-auto",
+        "px-(--container-gutter) sm:px-(--container-gutter) lg:px-(--container-gutter)",
+      ],
     },
 
     header: {
@@ -40,9 +48,9 @@ export default defineAppConfig({
           class: {
             base: "group transition-colors",
             linkLeadingIcon:
-              "group-hover:text-secondary group-active:text-secondary-600!",
+              "group-hover:text-primary group-active:text-primary-800!",
             link: [
-              "hover:text-secondary active:text-secondary-600!",
+              "hover:text-primary active:text-primary-800!",
               "transition-colors",
             ],
           },
@@ -50,7 +58,12 @@ export default defineAppConfig({
         {
           active: true,
           variant: "link",
-          class: { link: ["text-primary-500", "active:text-primary-600!"] },
+          class: {
+            link: [
+              "text-primary underline underline-offset-6 decoration-2",
+              "active:text-primary-800!",
+            ],
+          },
         },
         {
           variant: "link",
@@ -67,6 +80,13 @@ export default defineAppConfig({
             list: "gap-2",
           },
         },
+        {
+          // The label's default `truncate` (overflow: hidden) clips the offset underline.
+          variant: "link",
+          class: {
+            linkLabel: "overflow-visible",
+          },
+        },
       ],
     },
 
@@ -74,14 +94,14 @@ export default defineAppConfig({
       slots: {
         dots: "absolute inset-x-0 -bottom-7 flex flex-wrap items-center justify-center gap-3",
         dot: [
-          "cursor-pointer size-3 bg-secondary-800 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+          "cursor-pointer size-3 bg-primary-500/30 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
           "transition",
         ],
       },
       variants: {
         active: {
           true: {
-            dot: "data-[state=active]:bg-secondary-500",
+            dot: "data-[state=active]:bg-primary-500",
           },
         },
       },
@@ -90,7 +110,7 @@ export default defineAppConfig({
     button: {
       slots: {
         base: [
-          "cursor-pointer justify-center rounded-lg font-medium inline-flex items-center disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabled:opacity-75 aria-disabled:opacity-75",
+          "cursor-pointer justify-center font-label font-semibold uppercase tracking-wide inline-flex items-center disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabled:opacity-75 aria-disabled:opacity-75",
           "transition-colors",
         ],
       },
@@ -104,11 +124,11 @@ export default defineAppConfig({
           variant: "solid",
           class: {
             base: [
-              "cursor-pointer text-inverted bg-primary-500",
-              "hover:bg-primary",
+              "cursor-pointer text-arc-grey-950 bg-primary-500",
+              "hover:bg-primary-600",
               "active:bg-primary-600",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
-              "disabled:bg-gray-600! aria-disabled:bg-primary",
+              "disabled:bg-accented! aria-disabled:bg-primary-500",
             ],
           },
         },
@@ -117,11 +137,11 @@ export default defineAppConfig({
           variant: "solid",
           class: {
             base: [
-              "cursor-pointer text-inverted bg-secondary-500",
-              "hover:bg-secondary",
-              "active:bg-secondary-600",
+              "cursor-pointer text-inverted bg-secondary",
+              "hover:bg-secondary-700",
+              "active:bg-secondary-800",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary",
-              "disabled:bg-secondary aria-disabled:bg-secondary",
+              "disabled:bg-accented aria-disabled:bg-secondary",
             ],
           },
         },
@@ -131,7 +151,7 @@ export default defineAppConfig({
           class: {
             base: [
               "cursor-pointer",
-              "active:bg-secondary/7 active:text-secondary-600",
+              "active:bg-secondary/7 active:text-secondary-800",
             ],
           },
         },
@@ -142,7 +162,7 @@ export default defineAppConfig({
             base: [
               "ring ring-inset ring-primary/50 text-primary",
               "hover:bg-primary/10",
-              "active:bg-primary/7 active:ring-primary/30 active:text-primary-500",
+              "active:bg-primary/7 active:ring-primary/30 active:text-primary-800",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               "disabled:bg-transparent aria-disabled:bg-transparent",
               "dark:disabled:bg-transparent dark:aria-disabled:bg-transparent",
@@ -156,7 +176,7 @@ export default defineAppConfig({
             base: [
               "ring ring-inset ring-secondary/50 text-secondary",
               "hover:bg-secondary/10",
-              "active:bg-secondary/7 active:ring-secondary/30 active:text-secondary-500",
+              "active:bg-secondary/7 active:ring-secondary/30 active:text-secondary-800",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary",
               "disabled:bg-transparent aria-disabled:bg-transparent",
               "dark:disabled:bg-transparent dark:aria-disabled:bg-transparent",
@@ -169,7 +189,7 @@ export default defineAppConfig({
           class: {
             base: [
               "cursor-pointer",
-              "text-primary-500 hover:text-primary hover:underline hover:underline-offset-4",
+              "text-primary hover:text-primary-800 hover:underline hover:underline-offset-4",
             ],
           },
         },
@@ -178,9 +198,9 @@ export default defineAppConfig({
           variant: "ghost",
           class: {
             base: [
-              "text-secondary-500",
-              "hover:bg-secondary/10 hover:text-secondary-300",
-              "active:bg-secondary/7 active:text-secondary-600",
+              "text-secondary",
+              "hover:bg-secondary/10 hover:text-highlighted",
+              "active:bg-secondary/7 active:text-highlighted",
               "focus:outline-none focus-visible:bg-secondary/10",
               "disabled:bg-transparent aria-disabled:bg-transparent",
               "dark:disabled:bg-transparent dark:aria-disabled:bg-transparent",
@@ -298,38 +318,27 @@ export default defineAppConfig({
 
     tabs: {
       slots: {
-        list: "bg-neutral-800/40!",
+        // Long uppercase labels wrap on phones instead of being cut ("GESTION DU C…").
+        label: "whitespace-normal text-center leading-tight",
         trigger: [
+          "font-label uppercase tracking-wide",
           "data-[state=inactive]:text-muted",
-          "hover:data-[state=inactive]:not-disabled:text-secondary",
+          "hover:data-[state=inactive]:not-disabled:text-highlighted",
           "hover:data-[state=inactive]:not-disabled:cursor-pointer",
         ],
       },
-      compoundVariants: [
-        {
-          color: "primary",
-          variant: "pill",
-          class: {
-            indicator: "bg-primary/20! outline outline-primary-500/75!",
-            trigger: [
-              "data-[state=active]:text-primary outline-primary-500/75 focus-visible:outline-3",
-              "in-[[data-slot=list]:not(:has([data-slot=indicator]))]:data-[state=active]:before:bg-primary/20",
-            ],
-          },
-        },
-      ],
     },
 
     card: {
       slots: {
         root: "border border-default ring-transparent!",
-        header: "bg-neutral-800/30",
+        header: "bg-muted",
       },
     },
 
     calendar: {
       slots: {
-        cellTrigger: "data-disabled:text-secondary-800!",
+        cellTrigger: "data-disabled:text-dimmed!",
       },
     },
 
@@ -348,19 +357,19 @@ export default defineAppConfig({
     pagination: {
       slots: {
         prev: [
-          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:text-dimmed! aria-disabled:text-dimmed!",
           "disabled:opacity-100 aria-disabled:opacity-100",
         ],
         next: [
-          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:text-dimmed! aria-disabled:text-dimmed!",
           "disabled:opacity-100 aria-disabled:opacity-100",
         ],
         first: [
-          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:text-dimmed! aria-disabled:text-dimmed!",
           "disabled:opacity-100 aria-disabled:opacity-100",
         ],
         last: [
-          "disabled:text-secondary-800! aria-disabled:text-secondary-800!",
+          "disabled:text-dimmed! aria-disabled:text-dimmed!",
           "disabled:opacity-100 aria-disabled:opacity-100",
         ],
       },

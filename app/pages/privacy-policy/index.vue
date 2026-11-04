@@ -1,7 +1,7 @@
 <template>
   <ContentPageWrapper>
     <ChapSection
-      is-main-section
+      is-page-title
       title="Politique de confidentialité"
       description="Comment l’association traite vos données personnelles"
     >
@@ -29,7 +29,7 @@
       <ContentTextWrapper class="text-muted">
         <p>
           <span :class="ui.listObject">Données : </span>
-          <span>nom, adresse e-mail, objet et message</span>
+          <span>nom, adresse e-mail et message</span>
         </p>
         <p>
           <span :class="ui.listObject">Finalité : </span>
@@ -298,6 +298,10 @@ import { useFeatureFlags } from "~/composables/useFeatureFlags";
 import { useSiteSettings } from "~/composables/useSiteSettings";
 import { ASSOCIATION_LEGAL_NAME } from "~~/shared/website/site-settings.seed";
 
+definePageMeta({
+  compactFooter: true,
+});
+
 useHead({
   title: "Politique de confidentialité - Arc18",
 });
@@ -309,6 +313,6 @@ const facebookFeedFlag = isEnabled("facebook_feed");
 const associationName = ASSOCIATION_LEGAL_NAME;
 
 const ui = {
-  listObject: "text-neutral-300 font-semibold",
+  listObject: "text-highlighted font-semibold",
 };
 </script>

@@ -52,7 +52,7 @@
         />
 
         <!-- Progress bar -->
-        <div class="mt-2 w-full md:w-80">
+        <div class="mt-2 w-full">
           <UProgress
             size="sm"
             :model-value="successfulRequirements"
@@ -131,10 +131,6 @@
       </template>
     </div>
   </UForm>
-
-  <ChapWatermark>
-    <img class="opacity-15 size-230" aria-hidden="true" src="/club-logo.svg" />
-  </ChapWatermark>
 </template>
 
 <script setup lang="ts">
@@ -149,7 +145,6 @@ import {
   authLoginFormSchema,
 } from "~/schemas/auth-flow.zod";
 import ChapListItem from "../ui/ChapListItem.vue";
-import ChapWatermark from "../ui/ChapWatermark.vue";
 
 export type AuthFlowMode =
   | "login"
@@ -195,11 +190,11 @@ const { addToastError } = useChapToast();
 const { getZodIssues } = useZod();
 
 const ui = {
-  form: "max-w-100 flex flex-col gap-4",
-  formInput: "w-full md:w-80",
-  formActions: "w-full md:w-80 mt-4 flex items-center justify-end",
-  rowBetween: "w-full md:w-80 flex justify-start",
-  privacyNotice: "w-full md:w-80 text-sm text-muted mt-3",
+  form: "w-full flex flex-col gap-4",
+  formInput: "w-full",
+  formActions: "w-full mt-4 flex items-center justify-end",
+  rowBetween: "w-full flex justify-start",
+  privacyNotice: "w-full text-sm text-muted mt-3",
 };
 
 const form = reactive({

@@ -1,7 +1,7 @@
 <template>
   <ContentPageWrapper>
     <ChapSection
-      is-main-section
+      is-page-title
       title="Mentions légales"
       description="Identification de l’éditeur et de l’hébergeur du site."
     >
@@ -93,6 +93,7 @@ import { ASSOCIATION_LEGAL_NAME } from "~~/shared/website/site-settings.seed";
 
 definePageMeta({
   layout: "default",
+  compactFooter: true,
 });
 
 useHead({

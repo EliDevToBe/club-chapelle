@@ -9,7 +9,7 @@
       </ChapWatermark>
 
       <ChapSection
-        is-main-section
+        is-page-title
         title="Travaux en cours"
         description="Cette partie du site est encore en préparation."
       >
@@ -24,7 +24,7 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <ChapButton to="/" label="Retour à l'accueil" />
         <ChapButton
-          to="/infos"
+          to="/#informations"
           variant="solid"
           color="secondary"
           label="Informations pratiques"

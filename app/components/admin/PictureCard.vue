@@ -8,12 +8,12 @@
   >
     <div class="flex justify-center group relative">
       <span
-        class="hidden group-hover:block absolute top-2 left-2 text-sm text-primary-600"
+        class="hidden group-hover:block absolute top-2 left-2 text-sm text-primary"
         >{{ `${image.mimetype.split("/").at(-1)?.toUpperCase()}` }}</span
       >
       <span
         v-if="image.size"
-        :class="`hidden group-hover:block absolute ${selected ? 'top-7 left-2' : 'top-2 right-2'} text-sm text-primary-600`"
+        :class="`hidden group-hover:block absolute ${selected ? 'top-7 left-2' : 'top-2 right-2'} text-sm text-primary`"
         >{{ `${formatBytes(image.size)}` }}</span
       >
 

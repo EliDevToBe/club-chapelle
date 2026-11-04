@@ -10,7 +10,6 @@ import { API_ERROR_REASON } from "~~/shared/api-error-reasons";
 type ContactBody = {
   name?: string;
   email?: string;
-  subject?: string;
   message?: string;
 };
 
@@ -42,7 +41,6 @@ export default defineEventHandler(async (event) => {
   const result = await submitContactMessageHandler.submit({
     name: body.name ?? "",
     email: body.email ?? "",
-    subject: body.subject ?? "",
     message: body.message ?? "",
   });
 

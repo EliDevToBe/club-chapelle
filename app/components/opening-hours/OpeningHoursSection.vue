@@ -25,6 +25,7 @@
         :intro-placeholder="ui.copy.introPlaceholder"
         :add-label="ui.copy.addSlot"
         @add="addSlot"
+        :has-reversed-color="isEditing"
       >
         <template #item="{ item: slot, index: slotIndex }">
           <EditableChapListItem
@@ -32,6 +33,7 @@
             :disabled="isSaving"
             :reorder-aria="`${ui.copy.reorderAria} ${slotIndex + 1}`"
             :remove-aria="`${ui.copy.removeAria} ${slotIndex + 1}`"
+            :bullet="false"
             @remove="removeSlot(slotIndex)"
           >
             <span v-if="isEditing" :class="ui.editLine">
@@ -72,17 +74,22 @@
               />
             </span>
             <template v-else>
-              <span :class="[ui.listMainElement, scheduleClass(slot)]">
-                {{ slot.label }} de {{ slot.time_range }} :
+              <span :class="[LIST_ITEM_LABEL, scheduleClass(slot)]">
+                {{ slot.label }} de {{ slot.time_range }}
               </span>
-              <template v-if="slot.highlight && slot.highlight_text">
-                {{ " " }}
-                <span :class="ui.highlightText">{{ slot.highlight_text }}</span>
-              </template>
-              <template v-if="slot.audience">
-                {{ " " }}
-                <span :class="ui.audienceView">{{ slot.audience }}</span>
-              </template>
+              <span
+                v-if="(slot.highlight && slot.highlight_text) || slot.audience"
+                :class="LIST_ITEM_DETAIL"
+              >
+                <UIcon name="i-ph-arrow-right-bold" class="text-arc-grey-400" />
+                <template v-if="slot.highlight && slot.highlight_text">
+                  <span :class="ui.highlightText">
+                    {{ slot.highlight_text }}
+                  </span>
+                  {{ " " }}
+                </template>
+                <span v-if="slot.audience">{{ slot.audience }}</span>
+              </span>
             </template>
 
             <template v-if="isEditing" #trailing>
@@ -106,7 +113,10 @@
             :placeholder="ui.copy.epiloguePlaceholder"
             autoresize
             :ui="{
-              base: 'text-muted text-base!',
+              base: [
+                'text-muted text-base!',
+                isEditing ? 'bg-arc-grey-200!' : '',
+              ],
             }"
           />
           <p v-else-if="openingHours.epilogue">
@@ -122,6 +132,7 @@
 import ContentTextWrapper from "~/components/layout/ContentTextWrapper.vue";
 import EditableChapListItem from "~/components/ui/EditableChapListItem.vue";
 import EditableChapSection from "~/components/ui/EditableChapSection.vue";
+import { LIST_ITEM_DETAIL, LIST_ITEM_LABEL } from "~/components/ui/style";
 import StructuredListBody from "~/components/website/StructuredListBody.vue";
 import { useChapToast } from "~/composables/useChapToasts";
 import { useOpeningHours } from "~/composables/useOpeningHours";
@@ -133,43 +144,42 @@ import {
   parseOpeningHours,
 } from "~~/shared/website/opening-hours.schema";
 
-const ui = {
-  listMainElement: "text-default font-semibold",
-  highlightText: "text-secondary-300 font-semibold underline",
-  audienceView: "text-muted",
-  editLine: "flex flex-wrap items-baseline gap-x-1 gap-y-1",
-  inlineInput:
-    "min-w-[6ch] max-w-full bg-transparent border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary-500",
-  scheduleInput: "font-semibold text-highlighted",
-  highlightInput: "text-secondary-300 font-semibold underline min-w-[12ch]",
-  audienceInput: "text-muted min-w-[12ch] flex-1",
-  epilogueInput: "w-full bg-transparent text-muted text-base md:text-lg",
-  copy: {
-    editAria: "Modifier les créneaux",
-    reorderAria: "Réordonner le créneau",
-    removeAria: "Supprimer le créneau",
-    labelAria: "Libellé",
-    timeAria: "Horaires",
-    highlightAria: "Texte mis en avant",
-    audienceAria: "Public",
-    labelPlaceholder: "le lundi soir",
-    timePlaceholder: "19h30 à minuit",
-    highlightPlaceholder: "dédié à l'initiation",
-    audiencePlaceholder: "ouvert à toutes et tous",
-    introPlaceholder: "Introduction des créneaux",
-    epiloguePlaceholder: "Texte sous la liste",
-    initiation: "Initiation",
-    addSlot: "Ajouter un créneau",
-  },
-};
+const ui = computed(() => {
+  return {
+    highlightText: "text-highlighted font-semibold underline",
+    editLine: "flex flex-wrap items-baseline gap-x-1 gap-y-1",
+    inlineInput:
+      "min-w-[6ch] max-w-full bg-transparent border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary",
+    scheduleInput: "font-semibold text-highlighted",
+    highlightInput: "text-highlighted font-semibold underline min-w-[12ch]",
+    audienceInput: "text-muted min-w-[12ch] flex-1",
+    epilogueInput: "w-full text-muted text-base md:text-lg bg-transparent",
+    copy: {
+      editAria: "Modifier les créneaux",
+      reorderAria: "Réordonner le créneau",
+      removeAria: "Supprimer le créneau",
+      labelAria: "Libellé",
+      timeAria: "Horaires",
+      highlightAria: "Texte mis en avant",
+      audienceAria: "Public",
+      labelPlaceholder: "le lundi soir",
+      timePlaceholder: "19h30 à minuit",
+      highlightPlaceholder: "dédié à l'initiation",
+      audiencePlaceholder: "ouvert à toutes et tous",
+      introPlaceholder: "Introduction des créneaux",
+      epiloguePlaceholder: "Texte sous la liste",
+      initiation: "Initiation",
+      addSlot: "Ajouter un créneau",
+    },
+  };
+});
 
 const { addToastError, addToastSuccess } = useChapToast();
 const { getZodIssues } = useZod();
 const { isAdmin, hydrateIfNeeded } = useAuthUser();
 const { openingHours, saveOpeningHours, isSaving, pending } =
   await useOpeningHours();
-
-const isEditing = ref(false);
+const isEditing = defineModel<boolean>("isEditing", { default: false });
 const formState = reactive<OpeningHours>({
   title: "",
   subtitle: "",
@@ -180,7 +190,7 @@ const formState = reactive<OpeningHours>({
 
 const scheduleClass = (slot: OpeningHoursSlot): string | undefined => {
   if (slot.highlight) {
-    return "text-primary-500";
+    return "text-primary";
   }
 
   return undefined;

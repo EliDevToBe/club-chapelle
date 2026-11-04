@@ -1,5 +1,5 @@
 <template>
-  <ChapListItem>
+  <ChapListItem :bullet="bullet">
     <template v-if="isEditing" #leading>
       <button
         type="button"
@@ -39,9 +39,11 @@ withDefaults(
     reorderAria: string;
     removeAria: string;
     dragHandleClass?: string;
+    bullet?: boolean;
   }>(),
   {
     disabled: false,
+    bullet: true,
     dragHandleClass: "section-drag-handle",
   },
 );
