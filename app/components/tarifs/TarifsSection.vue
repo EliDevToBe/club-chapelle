@@ -199,8 +199,7 @@ const ui = {
     "rounded-md border border-muted bg-transparent px-1.5 py-1 text-sm text-highlighted",
   segmentInput: "min-w-[12ch] flex-1 text-muted",
   addRow: "flex justify-center",
-  emailLink:
-    "text-primary font-bold hover:underline hover:underline-offset-4",
+  emailLink: "text-primary font-bold hover:underline hover:underline-offset-4",
   copy: {
     editAria: "Modifier les tarifs",
     reorderItemAria: "Réordonner le tarif",
