@@ -1,6 +1,6 @@
 <template>
   <ChapSection :is-main-section="isMainSection">
-    <template #title>
+    <template v-if="!hideTitle" #title>
       <input
         v-if="isEditing"
         v-model="titleDraft"
@@ -10,12 +10,12 @@
         :aria-label="ui.copy.titleAria"
         :placeholder="titlePlaceholder"
       />
-      <div v-else :class="titleClass">
+      <component :is="isMainSection ? 'h2' : 'h3'" v-else :class="titleClass">
         {{ title }}
-      </div>
+      </component>
     </template>
 
-    <template v-if="enableSubtitle" #description>
+    <template v-if="enableSubtitle && !hideTitle" #description>
       <input
         v-if="isEditing"
         v-model="subtitleDraft"
@@ -31,13 +31,15 @@
     </template>
 
     <template v-if="isAdmin && !isEditing" #title-actions>
-      <div class="flex justify-center" :class="ui.editTrigger">
+      <div
+        class="flex justify-center"
+        :class="{ [ui.editTrigger]: !hideTitle }"
+      >
         <UButton
           color="neutral"
           variant="ghost"
           size="sm"
           icon="i-ph-gear-duotone"
-          :class="ui.editTrigger"
           :aria-label="editAria"
           :disabled="pending"
           @click="emit('enter-edit')"
@@ -69,6 +71,7 @@
 
 <script setup lang="ts">
 import ChapSection from "~/components/ui/ChapSection.vue";
+import { MAIN_SECTION_TITLE, SECTION_TITLE } from "~/components/ui/style";
 
 const props = withDefaults(
   defineProps<{
@@ -76,6 +79,12 @@ const props = withDefaults(
     subtitle?: string;
     enableSubtitle?: boolean;
     isMainSection?: boolean;
+    /**
+     * Paragraphs only: no title or subtitle, read or edit (e.g. under the hero `h1`).
+     * The stored title is kept and re-saved unchanged; the edit button stays visible
+     * since there is no title to hover.
+     */
+    hideTitle?: boolean;
     isEditing: boolean;
     isAdmin?: boolean;
     pending?: boolean;
@@ -88,6 +97,7 @@ const props = withDefaults(
     subtitle: "",
     enableSubtitle: false,
     isMainSection: false,
+    hideTitle: false,
     isAdmin: false,
     pending: false,
     isSaving: false,
@@ -116,10 +126,12 @@ const titleClass = computed(() => {
 const ui = {
   editTrigger:
     "opacity-0 transition-opacity duration-150 group-hover/title:opacity-100 group-focus-within/title:opacity-100 [@media(hover:none)]:opacity-100",
-  inlineInput:
-    "w-full min-w-0 bg-transparent border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary-500",
-  mainTitle: "text-2xl font-semibold text-highlighted md:text-3xl",
-  sectionTitle: "text-lg font-semibold text-highlighted md:text-2xl",
+  inlineInput: [
+    "w-full min-w-0 border-0 border-b border-dashed border-muted px-0.5 py-0 leading-relaxed focus:outline-none focus:border-primary",
+    "bg-transparent",
+  ],
+  mainTitle: MAIN_SECTION_TITLE,
+  sectionTitle: SECTION_TITLE,
   description: "text-muted text-sm",
   actions: "flex justify-end gap-2 pt-2",
   copy: {

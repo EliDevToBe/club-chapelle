@@ -65,6 +65,7 @@ export const API_ERROR_REASON = {
     invalid_opening_hours: "invalid_opening_hours",
     invalid_text_section: "invalid_text_section",
     invalid_tarifs: "invalid_tarifs",
+    invalid_featured_event: "invalid_featured_event",
   },
   contact: {
     recipient_not_configured: "contact_recipient_not_configured",
@@ -135,6 +136,7 @@ export const API_ERROR_STATUS: Record<ApiErrorReason, number> = {
   invalid_opening_hours: 400,
   invalid_text_section: 400,
   invalid_tarifs: 400,
+  invalid_featured_event: 400,
   contact_recipient_not_configured: 500,
   invalid_form_data: 400,
 };

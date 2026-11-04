@@ -8,12 +8,13 @@
         <div v-if="$slots.title" :class="ui.titleSlot">
           <slot name="title" />
         </div>
-        <div
+        <component
+          :is="headingTag"
           v-else-if="title"
-          :class="isMainSection ? ui.mainTitle : ui.sectionTitle"
+          :class="isPageTitle || isMainSection ? ui.mainTitle : ui.sectionTitle"
         >
           {{ title }}
-        </div>
+        </component>
 
         <div v-if="$slots['title-actions']" :class="ui.titleActions">
           <slot name="title-actions" />
@@ -32,23 +33,36 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(
+import { MAIN_SECTION_TITLE, SECTION_TITLE } from "./style";
+
+const props = withDefaults(
   defineProps<{
     title?: string;
     description?: string;
     isMainSection?: boolean;
+    /** The page's own title: renders the main style as the page `h1`. */
+    isPageTitle?: boolean;
   }>(),
   {
     isMainSection: false,
+    isPageTitle: false,
   },
 );
+
+const headingTag = computed(() => {
+  if (props.isPageTitle) {
+    return "h1";
+  }
+
+  return props.isMainSection ? "h2" : "h3";
+});
 
 const ui = {
   titleRow: "group/title flex items-center gap-2 sm:relative",
   titleSlot: "min-w-0",
   titleActions: "shrink-0 sm:absolute sm:-translate-x-8",
-  mainTitle: "text-2xl font-semibold text-highlighted md:text-3xl",
-  sectionTitle: "text-lg font-semibold text-highlighted md:text-2xl",
+  mainTitle: MAIN_SECTION_TITLE,
+  sectionTitle: SECTION_TITLE,
   description: "text-muted text-sm",
 };
 </script>

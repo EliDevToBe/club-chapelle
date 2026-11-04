@@ -13,12 +13,7 @@ export const DEFAULT_TARIFS: Tarifs = {
     },
     {
       id: "tarif-mineurs",
-      label: "mineur·e·s, étudiant·e·s",
-      amount: "170 euros",
-    },
-    {
-      id: "tarif-reduit",
-      label: "demandeur·euse·s d'emploi et + de 70 ans",
+      label: "mineur·e·s, étudiant·e·s, demandeur·euse·s d'emploi et 70+ ans",
       amount: "170 euros",
     },
   ],
@@ -49,7 +44,7 @@ export const DEFAULT_TARIFS: Tarifs = {
     },
     {
       id: "tarifs-callout-close",
-      text: " avec nos entraîneurs !",
+      text: ` avec nos entraîneurs\u00A0!`,
       style: "plain",
       insert_contact_email: false,
     },

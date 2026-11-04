@@ -290,7 +290,7 @@ const ui = {
   filterWrapper: [
     "flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4 mb-6 p-4",
     "rounded-lg border border-default",
-    "bg-neutral-800/30",
+    "bg-muted",
   ],
   colName: "min-w-40",
   colEmail: "min-w-48",

@@ -1,9 +1,8 @@
 <template>
-  <ContentPageWrapper class="items-center">
+  <AuthPageShell>
     <ChapSection
       v-if="!recoveryToken"
-      class="place-self-center"
-      is-main-section
+      is-page-title
       title="Lien invalide ou expiré"
     >
       <p class="max-w-md text-muted mb-6">
@@ -14,7 +13,7 @@
     </ChapSection>
 
     <div v-else>
-      <ChapSection is-main-section title="Nouveau mot de passe">
+      <ChapSection is-page-title title="Nouveau mot de passe">
         <AuthFlowForm
           mode="resetPassword"
           :loading="pending"
@@ -22,14 +21,14 @@
         />
       </ChapSection>
     </div>
-  </ContentPageWrapper>
+  </AuthPageShell>
 </template>
 
 <script setup lang="ts">
 import AuthFlowForm, {
   type AuthFlowSubmitPayload,
 } from "~/components/auth/AuthFlowForm.vue";
-import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
+import AuthPageShell from "~/components/auth/AuthPageShell.vue";
 import ChapButton from "~/components/ui/ChapButton.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 import { useAuthUser } from "~/composables/useAuthUser";
@@ -38,6 +37,7 @@ import type { SessionUser } from "~~/shared/auth/session-user";
 
 definePageMeta({
   layout: "default",
+  compactFooter: true,
 });
 
 useHead({

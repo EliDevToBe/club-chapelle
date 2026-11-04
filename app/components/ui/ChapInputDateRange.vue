@@ -47,7 +47,7 @@
       <template #trailing>
         <div
           v-if="hasRangeValue"
-          class="cursor-pointer text-secondary hover:text-secondary-500 flex justify-center items-center shrink-0"
+          class="cursor-pointer text-secondary hover:text-highlighted flex justify-center items-center shrink-0"
           @click="onClearRange"
         >
           <UIcon name="i-ph-x-bold" class="size-4" />

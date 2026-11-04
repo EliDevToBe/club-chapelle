@@ -28,7 +28,6 @@ describe("SubmitContactMessage", () => {
     const result = await submitContactMessage.submit({
       name: "   ",
       email: "a@b.co",
-      subject: "Hello",
       message: "This is a long enough contact message.",
     });
     expect(result).toEqual({ ok: false, error: "validation" });
@@ -40,8 +39,18 @@ describe("SubmitContactMessage", () => {
     const result = await submitContactMessage.submit({
       name: "Jean",
       email: "not-an-email",
-      subject: "Hello",
       message: "This is a long enough contact message.",
+    });
+    expect(result).toEqual({ ok: false, error: "validation" });
+    expect(mail.sendTemplateEmail).not.toHaveBeenCalled();
+  });
+
+  it("returns validation when message is shorter than 20 characters", async () => {
+    const submitContactMessage = new SubmitContactMessage(mail, options);
+    const result = await submitContactMessage.submit({
+      name: "Jean",
+      email: "a@b.co",
+      message: "Trop court",
     });
     expect(result).toEqual({ ok: false, error: "validation" });
     expect(mail.sendTemplateEmail).not.toHaveBeenCalled();
@@ -56,7 +65,6 @@ describe("SubmitContactMessage", () => {
     const result = await submitContactMessage.submit({
       name: "Marie Dupont",
       email: "Marie@Example.COM",
-      subject: "Question",
       message: "Bonjour, je souhaite avoir plus d'informations.",
     });
     expect(result).toEqual({ ok: true });
@@ -86,7 +94,6 @@ describe("SubmitContactMessage", () => {
     const result = await submitContactMessage.submit({
       name: "Test",
       email: "t@t.co",
-      subject: "Subj",
       message: "This is a message with at least twenty characters.",
     });
     expect(result).toEqual({ ok: false, error: "send_failed" });

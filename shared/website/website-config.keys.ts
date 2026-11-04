@@ -7,6 +7,7 @@ export const WEBSITE_CONFIG_KEYS = {
   infosIntroduction: "infos_introduction",
   clubPhilosophy: "club_philosophy",
   tarifs: "tarifs",
+  featuredEvent: "featured_event",
 } as const;
 
 export const TEXT_SECTION_KEYS = {
@@ -54,6 +55,7 @@ export const WEBSITE_CONFIG_API_ENDPOINTS = {
   siteSettings: "/api/admin/website-config/site-settings",
   openingHours: "/api/admin/website-config/opening-hours",
   tarifs: "/api/admin/website-config/tarifs",
+  featuredEvent: "/api/admin/website-config/featured-event",
 } as const;
 
 export const WEBSITE_CONFIG_PUBLIC_ENDPOINTS = {
@@ -61,6 +63,7 @@ export const WEBSITE_CONFIG_PUBLIC_ENDPOINTS = {
   siteSettings: "/api/website-config/site-settings",
   openingHours: "/api/website-config/opening-hours",
   tarifs: "/api/website-config/tarifs",
+  featuredEvent: "/api/website-config/featured-event",
 } as const;
 
 export type WebsiteConfigApiEndpoint =

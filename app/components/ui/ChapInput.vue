@@ -2,7 +2,7 @@
   <UInput v-model="model" :placeholder="placeholder" :icon="icon" :class>
     <template #trailing v-if="clearable && !!model">
       <div
-        class="cursor-pointer text-secondary hover:text-secondary-500 flex justify-center items-center shrink-0"
+        class="cursor-pointer text-secondary hover:text-highlighted flex justify-center items-center shrink-0"
         @click="model = ''"
       >
         <UIcon name="i-ph-x-bold" class="size-4" />

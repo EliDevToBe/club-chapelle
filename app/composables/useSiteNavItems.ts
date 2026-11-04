@@ -9,14 +9,9 @@ export const useSiteNavItems = () => {
   const competitionFlag = isEnabled("competition_dashboard");
   const facebookFeedFlag = isEnabled("facebook_feed");
 
+  /** Public links; the logo is the way home and the account menu holds member links. */
   const baseNavItems = computed<NavigationMenuItem[]>(() => {
     const items: NavigationMenuItem[] = [];
-
-    items.push({
-      label: "Accueil",
-      to: "/",
-      active: route.path === "/" || route.path === "",
-    });
 
     if (facebookFeedFlag.value) {
       items.push({
@@ -29,34 +24,35 @@ export const useSiteNavItems = () => {
     items.push(
       {
         label: "Infos",
-        to: "/infos",
-        active: route.path.startsWith("/infos"),
+        to: { path: "/", hash: "#informations" },
+        active: false,
       },
       {
         label: "Contact",
-        to: "/contact",
-        active: route.path.startsWith("/contact"),
+        to: { path: "/", hash: "#contact" },
+        active: false,
       },
     );
-
-    if (user.value && competitionFlag.value) {
-      items.push({
-        label: "Compétitions",
-        to: "/competitions",
-        active: route.path.startsWith("/competitions"),
-      });
-    }
 
     return items;
   });
 
-  /** Admin + settings links shown in the mobile drawer and desktop profile dropdown. */
+  /** Member links shown in the mobile drawer and desktop account dropdown. */
   const accountNavItems = computed<NavigationMenuItem[]>(() => {
     if (!user.value) {
       return [];
     }
 
     const items: NavigationMenuItem[] = [];
+
+    if (competitionFlag.value) {
+      items.push({
+        label: "Compétitions",
+        to: "/competitions",
+        active: route.path.startsWith("/competitions"),
+        icon: "i-ph-target-duotone",
+      });
+    }
 
     if (isAdmin.value) {
       items.push({

@@ -97,7 +97,7 @@
 
     <div v-else-if="galleryImages.length === 0" :class="ui.noResultWrapper">
       Aucun visuel trouvé dans le dossier Sirv
-      <code class="text-primary-500">/chapelle</code>.
+      <code class="text-primary">/chapelle</code>.
     </div>
 
     <div v-else :class="ui.pictureWrapper">

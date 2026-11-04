@@ -1,13 +1,13 @@
 <template>
-  <ContentPageWrapper>
-    <ChapSection class="place-self-center" is-main-section title="Connexion">
+  <AuthPageShell>
+    <ChapSection is-page-title title="Connexion">
       <AuthFlowForm
         v-model:mode="mode"
         :loading="authPending"
         @submit="onAuthSubmit"
       />
     </ChapSection>
-  </ContentPageWrapper>
+  </AuthPageShell>
 </template>
 
 <script setup lang="ts">
@@ -15,13 +15,14 @@ import AuthFlowForm, {
   type AuthFlowMode,
   type AuthFlowSubmitPayload,
 } from "~/components/auth/AuthFlowForm.vue";
-import ContentPageWrapper from "~/components/layout/ContentPageWrapper.vue";
+import AuthPageShell from "~/components/auth/AuthPageShell.vue";
 import ChapSection from "~/components/ui/ChapSection.vue";
 import { useAuthUser } from "~/composables/useAuthUser";
 import { useChapToast } from "~/composables/useChapToasts";
 
 definePageMeta({
   layout: "default",
+  compactFooter: true,
 });
 
 useHead({

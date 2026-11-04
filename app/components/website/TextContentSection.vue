@@ -6,6 +6,7 @@
     :subtitle="textSection.subtitle"
     v-model:subtitle-draft="formState.subtitle"
     :is-main-section="isMainSection"
+    :hide-title="hideTitle"
     :is-editing="isEditing"
     :is-admin="isAdmin === true"
     :pending="pending"
@@ -15,7 +16,7 @@
     @cancel="cancelEdit"
     @save="saveEdit"
   >
-    <ContentTextWrapper :class="muted ? 'text-muted' : undefined">
+    <ContentTextWrapper :class="[{ 'text-muted': muted }, textClass]">
       <div
         v-if="isEditing"
         ref="paragraphsEl"
@@ -112,10 +113,14 @@ const props = withDefaults(
   defineProps<{
     sectionKey: TextSectionKey;
     isMainSection?: boolean;
+    hideTitle?: boolean;
     muted?: boolean;
+    /** Extra classes for the paragraphs (e.g. accent colour in the hero, italics for the philosophy). */
+    textClass?: string;
   }>(),
   {
     isMainSection: false,
+    hideTitle: false,
     muted: false,
   },
 );

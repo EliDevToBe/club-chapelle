@@ -14,8 +14,27 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      htmlAttrs: { class: "dark" },
+      htmlAttrs: { lang: "fr" },
     },
+  },
+
+  fonts: {
+    families: [
+      {
+        name: "Newsreader",
+        provider: "google",
+        weights: ["200 800"],
+        styles: ["normal", "italic"],
+        global: true,
+      },
+      {
+        name: "Jost",
+        provider: "google",
+        weights: ["400 800"],
+        styles: ["normal", "italic"],
+        global: true,
+      },
+    ],
   },
 
   css: ["~/assets/css/main.css"],
@@ -54,5 +73,8 @@ export default defineNuxtConfig({
 
   routeRules: {
     // Club routes are now handled by the auth middleware
+    // Infos and contact now live on the home one-pager and in the footer.
+    "/infos": { redirect: { to: "/#informations", statusCode: 301 } },
+    "/contact": { redirect: { to: "/#contact", statusCode: 301 } },
   },
 });

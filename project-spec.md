@@ -15,17 +15,17 @@ This document describes goals, functional requirements, role permissions, domain
 - Staff can create a competition, attach participants, and see **who still owes a fee** in one overview.
 - A **Member** can log in and see **only** their participations (and public competition listings as defined).
 - **Revoking** access does not erase historical participation data (see **Archer shell** below).
-- Public visitors can navigate **landing**, **infos**, **contact**, and **Actualités**, view a **landing carousel** of **images curated by the club** (see **MVP** under §2 and §10.1), read **recent club news** from the **Facebook feed** (v0.8), and reach **Instagram** and **Facebook** profile links.
-- **Admins** can update **contact settings** (v1.1) and **Infos créneaux in place** on `/infos` (v1.2 POC) without code changes; remaining Infos/Accueil copy blocks follow later v1.2 slices.
+- Public visitors can navigate the **landing one-pager** (including the practical **Informations** section) and **Actualités**, reach the club through the **contact footer** on the landing and **Actualités**, view a **landing carousel** of **images curated by the club** (see **MVP** under §2 and §10.1), read **recent club news** from the **Facebook feed** (v0.8), and reach **Instagram** and **Facebook** profile links.
+- **Admins** can update **contact settings** (v1.1) and **créneaux in place** on the landing **Informations** section (v1.2 POC) without code changes; remaining Infos/Accueil copy blocks follow later v1.2 slices.
 
 ## 2. Public website
 
 
 | Area                    | Purpose                                                                                              |
 | ----------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Landing**             | First impression, key messages, entry to the rest of the site.                                       |
-| **Infos**               | Practical and club information (schedule, pricing, club philosophy—see **Editable public content**). |
-| **Contact**             | How to reach the club: **site settings** (email, address, social links) plus the **contact form**; not a CMS page. |
+| **Landing**             | One-pager: hero welcome, Admin-editable **featured event**, **Découvrir** cards (social links for now), club philosophy with the curated carousel, and **Informations** (`#informations`). |
+| **Infos**               | The landing **Informations** section (introduction, tarifs, créneaux—see **Editable public content**); `/infos` redirects to `/#informations`. |
+| **Contact**             | Footer block on the **landing** and **Actualités** (not on legal, auth, or member pages) (anchor `#contact`; `/contact` redirects there): **site settings** (email, address, social links) plus the **contact form**; not a CMS page. |
 | **Actualités**          | Public **Facebook feed** (v0.8): read-only recent posts with links to each post on Facebook.         |
 | **Legal notice**        | LCEN publisher and host identification (`/legal-notice`); identity fields from **site settings**. |
 | **Privacy policy**      | GDPR/CNIL privacy policy (`/privacy-policy`), including strictly necessary session cookies.         |
@@ -33,7 +33,9 @@ This document describes goals, functional requirements, role permissions, domain
 
 **Navigation**
 
-- Four public top-level tabs: **Accueil** (landing), **Infos**, **Contact**, and **Actualités** (Facebook feed).
+- Sticky header: the club glyph links to **Accueil**; public links **Infos** (scrolls to `#informations` on the landing), **Contact** (`/#contact`, the contact footer), and **Actualités** only while the `facebook_feed` flag is on; then **Se connecter**, or once signed in an **account menu** (**Compétitions** when its flag is on, **Admin** for Admins, **Paramètres**, **Se déconnecter**).
+- The header is transparent at the top of the page and turns into a dark translucent bar on scroll so orange links stay legible over content.
+- **Member-area** pages (`/admin`, `/settings`, `/competitions`) the **auth** pages (`/login`, `/reset-password`, `/accept-invite`), and the **legal** pages (`/legal-notice`, `/privacy-policy`) use a **compact footer** (copyright, affiliations, legal links) without the CONTACT band and form.
 
 **Social feed (v0.8 — Actualités)**
 
@@ -46,14 +48,14 @@ This document describes goals, functional requirements, role permissions, domain
 **Site settings (v1.1)**
 
 - **Admin-managed** values stored in JSON **`website_config`** (same pattern as the landing carousel): contact **email**, club **address** (practice venue, e.g. gymnasium), **Instagram** and **Facebook** profile URLs, plus **legal identity** used on mentions légales: **registered office** (siège social — **not** the gymnasium address), **publication director**, **RNA**, optional **SIRET**, and **hosting provider** name, address, and phone.
-- The **Contact** page **displays** contact email, club address, and social links; it is not a surface for editable content blocks.
+- The **contact footer** **displays** contact email, club address, and social links; it is not a surface for editable content blocks.
 - Runtime config or environment variables may provide **seed defaults** until settings are saved; public social **display** URLs should ultimately come from admin-managed settings. Legal identity fields may start **empty** and must be filled before a public production launch.
 - Facebook **API secrets** for the feed remain server-side env only.
 
 **Legal pages and GDPR (pre-v2)**
 
 - Public routes **`/legal-notice`** and **`/privacy-policy`**; footer links on every page (default layout). Copy is **versioned in code**; identity interpolates from site settings.
-- The **contact form** shows an **information notice** (GDPR art. 13) and a link to `/privacy-policy`. **Do not** add an “I accept the GDPR” checkbox (false consent).
+- The **contact form** collects **name**, **e-mail**, and **message** only, and shows an **information notice** (GDPR art. 13) and a link to `/privacy-policy`. **Do not** add an “I accept the GDPR” checkbox (false consent).
 - Member space is **invitation-only** (no public self-registration). **No public terms of use (CGU).** When invitations ship (v1.5), the invitation e-mail and activation form must link to `/privacy-policy` (information only — still no CGU checkbox).
 - Session cookies `club-access` and `club-refresh` are **strictly necessary**; document them in the privacy policy. **No cookie banner** unless a tracker, pixel, or client-side Facebook SDK is added.
 - **No terms of sale (CGV)** until the site takes online payment or distance selling.
@@ -62,10 +64,10 @@ This document describes goals, functional requirements, role permissions, domain
 **Editable public content (v1.2)**
 
 - **Admin-managed** content blocks, also in JSON **`website_config`**:
-  - **Accueil:** welcome / foreword (`homepage_welcome`) — title, optional subtitle, paragraphs.
+  - **Accueil:** welcome / foreword (`homepage_welcome`) — title (screen-reader only under the hero title), optional subtitle, paragraphs; **featured event** (`featured_event`) — on/off, title (screen-reader only), image URL and alt text, paragraphs, button label and link. Image URLs must be absolute `http(s)`; the button link may also be a site path starting with `/`; any other scheme (`javascript:`, `data:`, `//host`) is rejected. The block is **off by default** (seed `enabled: false`); while hidden, the public endpoint returns no content (Admins read it through the Admin endpoint).
   - **Infos:** introduction (`infos_introduction`); **créneaux** (structured availability list under **`opening_hours`**, including the Infos section title and optional subtitle); **tarifs** (structured pricing list under **`tarifs`**: title, optional subtitle, intro, label/amount rows, styled callout segments); club philosophy (`club_philosophy`).
 - **Hybrid editing model:** paragraphs are **text blocks**; créneaux and tarifs are **structured lists** with typed fields (labels, times, amounts)—not a single WYSIWYG page per section. Tarifs callout copy is a list of styled segments (`plain` / `highlight` / `emphasis`); a segment may insert the site-settings **contact email** as a `mailto:` link rather than storing an address.
-- **Schedule authority:** créneaux detail lives on **Infos**; **Admins** edit them **in place** on that page (gear beside the section title). Contact **Quand ?** reads the same `opening_hours` **slots** read-only and keeps its own heading. Accueil welcome, Infos introduction, tarifs, and philosophy are Admin-editable **in place** on the public pages.
+- **Schedule authority:** créneaux detail lives in the landing **Informations** section; **Admins** edit them **in place** there (gear beside the section title). Accueil welcome, featured event, Infos introduction, tarifs, and philosophy are Admin-editable **in place** on the landing.
 
 **Media**
 
@@ -102,7 +104,7 @@ Capabilities are cumulative by level.
 | View public **Actualités** feed (Facebook; **§2**)                                                     | ✅     | ✅      | ✅    |
 | **Upload** and **curate** the **landing carousel** images (MVP club gallery; **§2**)                  | ❌     | ❌      | ✅    |
 | **Edit site settings** (contact email, address, social profile URLs; **v1.1**)                         | ❌     | ❌      | ✅    |
-| **Edit public content blocks** (Accueil welcome, Infos sections; **v1.2**)                             | ❌     | ❌      | ✅    |
+| **Edit public content blocks** (Accueil welcome, featured event, Informations sections; **v1.2**)       | ❌     | ❌      | ✅    |
 | Log in                                                                                                 | ✅     | ✅      | ✅    |
 | Browse **available competitions** (club-managed list/pool)                                             | ✅     | ✅      | ✅    |
 | View **own** participations                                                                            | ✅     | ✅      | ✅    |
